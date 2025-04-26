@@ -38,7 +38,7 @@ export default function MonthlyPointsViewer() {
     setView(viewList[0]);
   }, [viewList]);
 
-  const start = new Date(`${year}-${month}-01`);
+  const start = new Date(`${year}-${String(month).padStart(2, '0')}-01`);
   const end = endOfMonth(start);
   const days = eachDayOfInterval({ start, end });
 
