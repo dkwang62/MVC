@@ -15,7 +15,7 @@ sample_day = next(iter(data[resort].values()))
 room_types = [k for k in sample_day if k not in ("Day", "HolidayWeek", "HolidayWeekStart")]
 room_type = st.selectbox("Select Room Type", options=room_types)
 
-checkin_date = st.date_input("Check-in Date (2025)", min_value=datetime(2025, 1, 1), max_value=datetime(2025, 12, 31))
+checkin_date = st.date_input("Check-in Date (2025)", min_value=datetime(2024, 1, 27), max_value=datetime(2026, 12, 31))
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=1)
 
 # Reference fallback points (for special spillover cases)
