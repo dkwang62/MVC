@@ -77,7 +77,7 @@ def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, f
             entry = data[resort][date_str]
             if entry.get("HolidayWeekStart", False):
                 start_str = date_str
-                end_str = (current + timedelta(days=6)).strftime("%Y-%m-%d")  # 7-day holiday week
+                end_str = (current + timedelta(days=7)).strftime("%Y-%m-%d")  # 7 nights, checkout on 8th day
 
                 # Check if this holiday week overlaps with user’s stay
                 week_range_start = current
