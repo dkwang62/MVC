@@ -4,7 +4,7 @@ import math
 from datetime import datetime, timedelta
 
 # Load updated JSON file with HolidayWeekStart flags
-with open("Marriott_2025_with_AllHolidayWeekStarts.json", "r") as f:
+with open("Marriott_2025.json", "r") as f:
     data = json.load(f)
 
 # UI controls
