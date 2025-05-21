@@ -64,29 +64,40 @@ def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights
 # -- Holiday Weeks Summary using HolidayWeekStart --
 def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, fallback_points=None):
     summaries = []
-    end_date = checkin_date + timedelta(days=num_nights)
+    
+    # Expand search window: 7 days before check-in, to cover weeks starting just before
+    search_start = checkin_date - timedelta(days=7)
+    search_end = checkin_date + timedelta(days=num_nights)
 
-    for i in range(num_nights):
-        current = checkin_date + timedelta(days=i)
+    current = search_start
+    while current < search_end:
         date_str = current.strftime("%Y-%m-%d")
 
         try:
             entry = data[resort][date_str]
             if entry.get("HolidayWeekStart", False):
                 start_str = date_str
-                end_str = (current + timedelta(days=8)).strftime("%Y-%m-%d")  # checkout after 7 nights
-                points = entry.get(room_type, fallback_points)
-                rent = f"${math.ceil(points * 0.81)}" if isinstance(points, int) else "N/A"
+                end_str = (current + timedelta(days=8)).strftime("%Y-%m-%d")  # 7 nights, checkout on 8th day
 
-                summaries.append({
-                    "Holiday Week Start": start_str,
-                    "Holiday Week End (Checkout)": end_str,
-                    "Points on Start Day": points,
-                    "Estimated Rent": rent
-                })
+                # Check if this holiday week overlaps with user’s stay
+                week_range_start = current
+                week_range_end = current + timedelta(days=7)
+
+                if week_range_end >= checkin_date and week_range_start < search_end:
+                    points = entry.get(room_type, fallback_points)
+                    rent = f"${math.ceil(points * 0.81)}" if isinstance(points, int) else "N/A"
+
+                    summaries.append({
+                        "Holiday Week Start": start_str,
+                        "Holiday Week End (Checkout)": end_str,
+                        "Points on Start Day": points,
+                        "Estimated Rent": rent
+                    })
 
         except KeyError:
-            continue
+            pass
+
+        current += timedelta(days=1)
 
     return summaries
 
