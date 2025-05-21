@@ -8,7 +8,7 @@ with open("Marriott_2025.json", "r") as f:
     data = json.load(f)
 
 # UI controls
-st.title("Marriott Points & Holiday Week Calculator")
+st.title("Marriott Vacation Club Points Calculator")
 
 resort = st.selectbox("Select Resort", options=list(data.keys()))
 sample_day = next(iter(data[resort].values()))
