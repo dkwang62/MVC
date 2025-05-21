@@ -4,7 +4,7 @@ import math
 from datetime import datetime, timedelta
 
 # Load the updated data file
-with open("Marriott_2025_updated.json", "r") as file:
+with open("Marriott_2025.json", "r") as file:
     data = json.load(file)
 
 # UI
