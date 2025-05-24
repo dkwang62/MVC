@@ -283,7 +283,14 @@ if st.button("\U0001F4CA Calculate"):
                 barmode="group",
                 title="Non-Holiday Rent by Room Type",
                 labels={"Rent": "Estimated Rent ($)"},
-                height=400
+                height=400,
+                text="Rent",  # Display the Rent values on the bars
+                text_auto=True  # Automatically position the text
+            )
+            # Customize the text to show $ sign
+            fig_non_holiday.update_traces(
+                texttemplate="$%{text}",
+                textposition="auto"
             )
             st.plotly_chart(fig_non_holiday, use_container_width=True)
 
@@ -306,7 +313,14 @@ if st.button("\U0001F4CA Calculate"):
                 barmode="group",
                 title="Holiday Week Rent by Room Type",
                 labels={"Rent": "Estimated Rent ($)"},
-                height=400
+                height=400,
+                text="Rent",  # Display the Rent values on the bars
+                text_auto=True  # Automatically position the text
+            )
+            # Customize the text to show $ sign
+            fig_holiday.update_traces(
+                texttemplate="$%{text}",
+                textposition="auto"
             )
             st.plotly_chart(fig_holiday, use_container_width=True)
 
