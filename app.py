@@ -7,7 +7,7 @@ import io
 import plotly.express as px
 
 # Debug statement to verify deployment
-st.write("App version: 2025-05-24-v14")
+st.write("App version: 2025-05-24-v15")
 
 # Initialize session state for debug messages and chart offset
 if "debug_messages" not in st.session_state:
@@ -125,6 +125,9 @@ discount_multiplier = 1 - (discount_percent / 100)
 
 # Main calculation block
 if submit_button:
+    # Debug to confirm form submission
+    st.write("Form submitted successfully!")
+
     # Function definitions
     def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
         """
