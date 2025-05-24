@@ -11,6 +11,8 @@ if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
 if "chart_offset" not in st.session_state:
     st.session_state.chart_offset = 0
+if "num_nights" not in st.session_state:
+    st.session_state.num_nights = 7  # Default value
 
 # Load JSON data with error handling
 try:
@@ -47,17 +49,6 @@ with st.sidebar:
         format_func=lambda x: f"{x}%" if x else "No Discount"
     )
     st.caption("\U0001F4A1 Discount applies only to points. Rent is always based on the original points value.")
-    num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=7)
-    st.session_state.chart_offset = st.slider(
-        "Select 7-Day Chart Offset (days)",
-        min_value=0,
-        max_value=max(0, num_nights - 7),
-        value=0,
-        step=1,
-        help="Adjust to view different 7-day periods of your stay."
-    )
-
-discount_multiplier = 1 - (discount_percent / 100)
 
 # Title and user input
 st.title("\U0001F3DD Marriott Vacation Club Points Calculator")
@@ -70,37 +61,55 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - Points are **rounded down** when discounts are applied.
     """)
 
-resort_display = st.selectbox("\U0001F3E8 Select Resort", options=display_resorts, key="resort_select")
-resort = reverse_aliases.get(resort_display, resort_display)
+# Use a form to collect inputs and ensure proper sequencing
+with st.form(key="input_form"):
+    resort_display = st.selectbox("\U0001F3E8 Select Resort", options=display_resorts, key="resort_select")
+    resort = reverse_aliases.get(resort_display, resort_display)
 
-# Debug: Log the selected resort key
-st.session_state.debug_messages.append(f"Selected resort key: {resort}")
+    # Debug: Log the selected resort key
+    st.session_state.debug_messages.append(f"Selected resort key: {resort}")
 
-# Validate resort exists in data
-if resort not in data:
-    st.error(f"Resort '{resort}' not found in Marriott_2025.json. Available resorts: {list(data.keys())}")
-    st.warning("Please update the Marriott_2025.json file to include this resort or select a different one.")
-    st.session_state.debug_messages.append(f"Resort not found: {resort}. Available: {list(data.keys())}")
-    st.stop()
+    # Validate resort exists in data
+    if resort not in data:
+        st.error(f"Resort '{resort}' not found in Marriott_2025.json. Available resorts: {list(data.keys())}")
+        st.warning("Please update the Marriott_2025.json file to include this resort or select a different one.")
+        st.session_state.debug_messages.append(f"Resort not found: {resort}. Available: {list(data.keys())}")
+        st.stop()
 
-# Get room types for the selected resort
-try:
-    sample_day = next(iter(data[resort].values()))
-    room_types = [k for k in sample_day if k not in ("Day", "HolidayWeek", "HolidayWeekStart")]
-except StopIteration:
-    st.error(f"No data available for {resort} in Marriott_2025.json.")
-    st.session_state.debug_messages.append(f"No data entries for resort: {resort}")
-    st.stop()
+    # Get room types for the selected resort
+    try:
+        sample_day = next(iter(data[resort].values()))
+        room_types = [k for k in sample_day if k not in ("Day", "HolidayWeek", "HolidayWeekStart")]
+    except StopIteration:
+        st.error(f"No data available for {resort} in Marriott_2025.json.")
+        st.session_state.debug_messages.append(f"No data entries for resort: {resort}")
+        st.stop()
 
-if not room_types:
-    st.error(f"No room types found for {resort} in Marriott_2025.json.")
-    st.session_state.debug_messages.append(f"No room types found for resort: {resort}")
-    st.stop()
+    if not room_types:
+        st.error(f"No room types found for {resort} in Marriott_2025.json.")
+        st.session_state.debug_messages.append(f"No room types found for resort: {resort}")
+        st.stop()
 
-room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key="room_type_select")
-compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type])
+    room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key="room_type_select")
+    compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
+    checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
+    st.session_state.num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=st.session_state.num_nights)
+
+    # Slider for chart offset
+    st.session_state.chart_offset = st.slider(
+        "Select 7-Day Chart Offset (days)",
+        min_value=0,
+        max_value=max(0, st.session_state.num_nights - 7),
+        value=st.session_state.chart_offset,
+        step=1,
+        help="Adjust to view different 7-day periods of your stay."
+    )
+
+    submit_button = st.form_submit_button(label="\U0001F4CA Calculate")
+
+# Set discount multiplier after form submission
+discount_multiplier = 1 - (discount_percent / 100)
 
 # Set reference points dynamically using the first available date
 first_date = next(iter(data[resort]), None)
@@ -238,13 +247,13 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
     return compare_df_pivot, chart_df
 
 # Main Calculation
-if st.button("\U0001F4CA Calculate"):
+if submit_button:
     breakdown, total_points, total_rent = calculate_non_holiday_stay(
-        data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent
+        data, resort, room_type, checkin_date, st.session_state.num_nights, discount_multiplier, discount_percent
     )
 
     holiday_weeks = summarize_holiday_weeks(
-        data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier, discount_percent
+        data, resort, room_type, checkin_date, st.session_state.num_nights, reference_points, discount_multiplier, discount_percent
     )
 
     st.subheader("\U0001F4CB Non-Holiday Stay Breakdown")
@@ -275,7 +284,7 @@ if st.button("\U0001F4CA Calculate"):
         st.subheader("\U0001F6CF Room Type Comparison")
         all_rooms = [room_type] + compare_rooms
         compare_df, chart_df = compare_room_types(
-            data, resort, all_rooms, checkin_date, num_nights,
+            data, resort, all_rooms, checkin_date, st.session_state.num_nights,
             discount_multiplier, discount_percent
         )
         st.dataframe(compare_df, use_container_width=True)
@@ -292,7 +301,7 @@ if st.button("\U0001F4CA Calculate"):
         if not chart_df.empty:
             # Calculate the date range for the title
             start_date = checkin_date + timedelta(days=st.session_state.chart_offset)
-            end_date = start_date + timedelta(days=min(6, num_nights - st.session_state.chart_offset - 1))
+            end_date = start_date + timedelta(days=min(6, st.session_state.num_nights - st.session_state.chart_offset - 1))
             start_date_str = start_date.strftime("%B %-d")
             end_date_str = end_date.strftime("%-d, %Y")
             title = f"Non-Holiday Rent Comparison ({start_date_str}-{end_date_str})"
