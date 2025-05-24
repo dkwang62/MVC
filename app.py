@@ -3,6 +3,7 @@ import json
 import math
 from datetime import datetime, timedelta
 import pandas as pd
+import io
 
 # Load JSON data
 with open("Marriott_2025.json", "r") as f:
@@ -78,8 +79,7 @@ def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights
 
             row = {
                 "Date": date_str,
-                "Day": entry.get("Day", "N/A"),
-                "Estimated Rent": rent_val
+                "Day": entry.get("Day", "N/A")
             }
 
             if discount_percent == 0:
@@ -87,6 +87,8 @@ def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights
             else:
                 row["Original Points"] = raw_points
                 row["Discounted Points"] = discounted_points
+
+            row["Estimated Rent ($)"] = f"${rent_val}"
 
             total_points += discounted_points
             total_rent += rent_val
@@ -97,7 +99,7 @@ def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights
                 "Date": date_str,
                 "Day": "N/A",
                 "Points Required": "Date Not Found",
-                "Estimated Rent": "N/A"
+                "Estimated Rent ($)": "N/A"
             })
 
     return rows, total_points, total_rent
@@ -126,7 +128,7 @@ def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, f
                 summary = {
                     "Holiday Week Start": date_str,
                     "Holiday Week End (Checkout)": (current + timedelta(days=7)).strftime("%Y-%m-%d"),
-                    "Estimated Rent": rent_val
+                    "Estimated Rent ($)": f"${rent_val}"
                 }
 
                 if discount_percent == 0:
@@ -169,7 +171,7 @@ def compare_room_types(data, resort, selected_rooms, checkin_date, num_nights, d
                     "Room Type": room,
                     "Original Points": raw_points,
                     "Discounted Points": discounted_points if discount_percent else raw_points,
-                    "Estimated Rent": rent_val
+                    "Estimated Rent ($)": f"${rent_val}"
                 })
 
                 if date_str not in chart_data:
@@ -207,18 +209,21 @@ if st.button("\U0001F4CA Calculate"):
         st.dataframe(df_holidays, use_container_width=True)
 
     output_df = pd.DataFrame(breakdown)
-    excel_filename = f"{resort}_{room_type}_stay.xlsx"
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        output_df.to_excel(writer, index=False)
     st.download_button(
         label="\U0001F4C4 Download Breakdown as Excel",
-        data=output_df.to_excel(index=False, engine='openpyxl'),
-        file_name=excel_filename,
+        data=buffer.getvalue(),
+        file_name=f"{resort}_stay_breakdown.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
     st.subheader("\U0001F4C5 Visual Calendar View")
-    cal_data = df_breakdown[["Date", "Estimated Rent"]].copy()
+    cal_data = df_breakdown[["Date", "Estimated Rent ($)"]].copy()
     cal_data["Date"] = pd.to_datetime(cal_data["Date"])
     cal_data.set_index("Date", inplace=True)
+    cal_data["Estimated Rent ($)"] = cal_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
     st.line_chart(cal_data)
 
     if compare_rooms:
@@ -231,9 +236,12 @@ if st.button("\U0001F4CA Calculate"):
         st.dataframe(compare_df, use_container_width=True)
         st.line_chart(compare_chart)
 
+        buffer2 = io.BytesIO()
+        with pd.ExcelWriter(buffer2, engine='openpyxl') as writer:
+            compare_df.to_excel(writer, index=False)
         st.download_button(
             label="\U0001F4C5 Download Room Comparison as Excel",
-            data=compare_df.to_excel(index=False, engine="openpyxl"),
+            data=buffer2.getvalue(),
             file_name=f"{resort}_room_comparison.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
