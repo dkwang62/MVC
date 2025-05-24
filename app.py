@@ -54,10 +54,45 @@ num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_val
 
 reference_points = data[resort].get("2025-07-31", {}).get(room_type)
 
-# (all function definitions remain unchanged)
-# ... calculate_non_holiday_stay
-# ... summarize_holiday_weeks
-# ... compare_room_types
+# Function definitions
+def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
+    """
+    Calculate points and rent for a non-holiday stay.
+    Returns a breakdown list, total points, and total rent.
+    """
+    breakdown = []
+    total_points = 0
+    total_rent = 0
+    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+
+    for i in range(num_nights):
+        date = (checkin_date + timedelta(days=i)).strftime("%Y-%m-%d")
+        points = data[resort].get(date, {}).get(room_type, reference_points)
+        if points is None:
+            points = reference_points
+        discounted_points = math.floor(points * discount_multiplier)
+        rent = points * rate_per_point
+        breakdown.append({
+            "Date": date,
+            "Points": discounted_points,
+            "Estimated Rent ($)": f"${rent:.2f}"
+        })
+        total_points += discounted_points
+        total_rent += rent
+
+    return breakdown, total_points, total_rent
+
+def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier, discount_percent):
+    """
+    Placeholder for summarizing holiday weeks.
+    """
+    return []
+
+def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
+    """
+    Placeholder for comparing room types.
+    """
+    return pd.DataFrame(), pd.DataFrame()
 
 # Main Calculation
 if st.button("\U0001F4CA Calculate"):
