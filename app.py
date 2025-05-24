@@ -7,7 +7,7 @@ import io
 import plotly.express as px
 
 # Debug statement to verify deployment
-st.write("App version: 2025-05-24-v15")
+st.write("App version: 2025-05-24-v17 - Form should have a Calculate button below")
 
 # Initialize session state for debug messages and chart offset
 if "debug_messages" not in st.session_state:
@@ -99,16 +99,6 @@ with st.form(key="input_form"):
     checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
     st.session_state.num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=st.session_state.num_nights)
 
-    # Slider for chart offset
-    st.session_state.chart_offset = st.slider(
-        "Select 7-Day Chart Offset (days)",
-        min_value=0,
-        max_value=max(0, st.session_state.num_nights - 7),
-        value=st.session_state.chart_offset,
-        step=1,
-        help="Adjust to view different 7-day periods of your stay."
-    )
-
     # Submit button for the form
     submit_button = st.form_submit_button(label="\U0001F4CA Calculate")
 
@@ -127,6 +117,16 @@ discount_multiplier = 1 - (discount_percent / 100)
 if submit_button:
     # Debug to confirm form submission
     st.write("Form submitted successfully!")
+
+    # Slider for chart offset (moved inside submission to avoid pre-evaluation)
+    st.session_state.chart_offset = st.slider(
+        "Select 7-Day Chart Offset (days)",
+        min_value=0,
+        max_value=max(0, st.session_state.num_nights - 7),
+        value=st.session_state.chart_offset,
+        step=1,
+        help="Adjust to view different 7-day periods of your stay."
+    )
 
     # Function definitions
     def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
