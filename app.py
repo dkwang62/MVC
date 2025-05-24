@@ -90,9 +90,36 @@ def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, r
 
 def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
     """
-    Placeholder for comparing room types.
+    Compare points and rent across room types for the stay.
+    Returns a DataFrame for the table and a chart DataFrame.
     """
-    return pd.DataFrame(), pd.DataFrame()
+    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+    compare_data = []
+    
+    for room in room_types:
+        for i in range(num_nights):
+            date = (checkin_date + timedelta(days=i)).strftime("%Y-%m-%d")
+            points = data[resort].get(date, {}).get(room, reference_points)
+            if points is None:
+                points = reference_points
+            discounted_points = math.floor(points * discount_multiplier)
+            rent = points * rate_per_point
+            compare_data.append({
+                "Date": date,
+                "Room Type": room,
+                "Points": discounted_points,
+                "Estimated Rent ($)": f"${rent:.2f}"
+            })
+    
+    compare_df = pd.DataFrame(compare_data)
+    
+    # Create chart data with dates as index and rent per room type as columns
+    chart_data = compare_df[["Date", "Room Type", "Estimated Rent ($)"]].copy()
+    chart_data["Estimated Rent ($)"] = chart_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
+    chart_data = chart_data.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)")
+    chart_data.index = pd.to_datetime(chart_data.index)
+    
+    return compare_df, chart_data
 
 # Main Calculation
 if st.button("\U0001F4CA Calculate"):
