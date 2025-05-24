@@ -4,7 +4,6 @@ import math
 from datetime import datetime, timedelta
 import pandas as pd
 import io
-import matplotlib.pyplot as plt
 
 # Load JSON data
 with open("Marriott_2025.json", "r") as f:
@@ -92,7 +91,7 @@ def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, r
 def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
     """
     Compare points and rent across room types for the stay.
-    Returns a DataFrame for the table and a chart-ready DataFrame.
+    Returns a DataFrame for the table.
     """
     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
     compare_data = []
@@ -114,12 +113,7 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
     
     compare_df = pd.DataFrame(compare_data)
     
-    # Create chart data with melted format for clustered bar chart
-    chart_data = compare_df[["Date", "Room Type", "Estimated Rent ($)"]].copy()
-    chart_data["Estimated Rent ($)"] = chart_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
-    chart_data = chart_data.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)")
-    
-    return compare_df, chart_data
+    return compare_df
 
 # Main Calculation
 if st.button("\U0001F4CA Calculate"):
@@ -151,35 +145,14 @@ if st.button("\U0001F4CA Calculate"):
         mime="text/csv"
     )
 
-    if len(compare_rooms) > 0:  # Only show calendar view if comparing room types
-        st.subheader("\U0001F4C5 Visual Calendar View")
-        cal_data = df_breakdown[["Date", "Estimated Rent ($)"]].copy()
-        cal_data["Date"] = pd.to_datetime(cal_data["Date"])
-        cal_data.set_index("Date", inplace=True)
-        cal_data["Estimated Rent ($)"] = cal_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
-        st.line_chart(cal_data)
-
     if compare_rooms:
         st.subheader("\U0001F6CF Room Type Comparison")
         all_rooms = [room_type] + compare_rooms
-        compare_df, compare_chart = compare_room_types(
+        compare_df = compare_room_types(
             data, resort, all_rooms, checkin_date, num_nights,
             discount_multiplier, discount_percent
         )
         st.dataframe(compare_df, use_container_width=True)
-
-        # Create clustered bar chart with labels
-        fig, ax = plt.subplots(figsize=(10, 6))
-        compare_chart.plot(kind='bar', ax=ax, width=0.8)
-        for i in range(len(compare_chart.index)):
-            for j in range(len(compare_chart.columns)):
-                height = compare_chart.iloc[i, j]
-                ax.text(i, height, f'${height:.0f}', ha='center', va='bottom')
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Estimated Rent ($)")
-        ax.set_title("Room Type Comparison")
-        ax.legend(title="Room Type")
-        st.pyplot(fig)
 
         compare_csv = compare_df.to_csv(index=False).encode('utf-8')
         st.download_button(
