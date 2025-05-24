@@ -111,143 +111,144 @@ with st.form(key="input_form"):
 # Set discount multiplier after form submission
 discount_multiplier = 1 - (discount_percent / 100)
 
-# Set reference points dynamically using the first available date
-first_date = next(iter(data[resort]), None)
-reference_points = data[resort].get(first_date, {}).get(room_type)
-if reference_points is None:
-    st.error(f"No points data found for {room_type} in {resort}. Please select a different room type.")
-    st.session_state.debug_messages.append(f"No points for {room_type} on {first_date} in {resort}")
-    st.stop()
+# Main calculation block
+if submit_button:
+    # Set reference points dynamically using the first available date
+    first_date = next(iter(data[resort]), None)
+    reference_points = data[resort].get(first_date, {}).get(room_type)
+    if reference_points is None:
+        st.error(f"No points data found for {room_type} in {resort}. Please select a different room type.")
+        st.session_state.debug_messages.append(f"No points for {room_type} on {first_date} in {resort}")
+        st.stop()
 
-# Function definitions
-def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
-    """
-    Calculate points and rent for a non-holiday stay.
-    Returns a breakdown list, total points, and total rent.
-    """
-    breakdown = []
-    total_points = 0
-    total_rent = 0
-    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+    # Function definitions
+    def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
+        """
+        Calculate points and rent for a non-holiday stay.
+        Returns a breakdown list, total points, and total rent.
+        """
+        breakdown = []
+        total_points = 0
+        total_rent = 0
+        rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
 
-    for i in range(num_nights):
-        date = checkin_date + timedelta(days=i)
-        date_str = date.strftime("%Y-%m-%d")
-        entry = data[resort].get(date_str, {})
-
-        # Skip holiday week days
-        if entry.get("HolidayWeek", False):
-            continue
-
-        points = entry.get(room_type, reference_points)
-        if points is None:
-            points = reference_points
-            st.session_state.debug_messages.append(f"Using reference points for {room_type} on {date_str}: {points}")
-        discounted_points = math.floor(points * discount_multiplier)
-        rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
-        breakdown.append({
-            "Date": date_str,
-            "Points": discounted_points,
-            "Estimated Rent ($)": f"${rent}"
-        })
-        total_points += discounted_points
-        total_rent += rent
-
-    return breakdown, total_points, total_rent
-
-def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier, discount_percent):
-    """
-    Summarize holiday weeks that overlap with the stay period.
-    Returns a list of holiday week summaries.
-    """
-    summaries = []
-    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
-    
-    # Expand search window: 7 days before check-in to cover weeks starting just before
-    search_start = checkin_date - timedelta(days=7)
-    search_end = checkin_date + timedelta(days=num_nights)
-
-    current = search_start
-    while current < search_end:
-        date_str = current.strftime("%Y-%m-%d")
-        entry = data[resort].get(date_str, {})
-
-        if entry.get("HolidayWeekStart", False):
-            start_str = date_str
-            end_str = (current + timedelta(days=7)).strftime("%Y-%m-%d")  # 7 nights, checkout on 8th day
-
-            # Check if this holiday week overlaps with user’s stay
-            week_range_start = current
-            week_range_end = current + timedelta(days=6)
-
-            if week_range_end >= checkin_date and week_range_start < search_end:
-                points = entry.get(room_type, reference_points)
-                if points is None:
-                    points = reference_points
-                    st.session_state.debug_messages.append(f"Using reference points for holiday week starting {start_str}: {points}")
-                discounted_points = math.floor(points * discount_multiplier)
-                rent = math.ceil(points * rate_per_point)  # Rent based on original points
-                summaries.append({
-                    "Holiday Week Start": start_str,
-                    "Holiday Week End (Checkout)": end_str,
-                    "Points on Start Day": discounted_points,
-                    "Estimated Rent ($)": f"${rent}"
-                })
-
-        current += timedelta(days=1)
-
-    return summaries
-
-def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
-    """
-    Compare points and rent across room types for the stay.
-    Returns a DataFrame for the table and a DataFrame for the non-holiday bar chart.
-    """
-    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
-    compare_data = []
-    chart_data = []
-    
-    for room in room_types:
         for i in range(num_nights):
             date = checkin_date + timedelta(days=i)
             date_str = date.strftime("%Y-%m-%d")
-            # Get the day of the week (e.g., "Sun", "Mon", "Tue")
-            day_of_week = date.strftime("%a")
             entry = data[resort].get(date_str, {})
-            
+
             # Skip holiday week days
             if entry.get("HolidayWeek", False):
                 continue
-                
-            points = entry.get(room, reference_points)
+
+            points = entry.get(room_type, reference_points)
             if points is None:
                 points = reference_points
-                st.session_state.debug_messages.append(f"Using reference points for {room} on {date_str}: {points}")
+                st.session_state.debug_messages.append(f"Using reference points for {room_type} on {date_str}: {points}")
             discounted_points = math.floor(points * discount_multiplier)
             rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
-            compare_data.append({
-                "Day of Week": day_of_week,  # Separate column for day
-                "Date": date_str,           # Separate column for date
-                "Room Type": room,
+            breakdown.append({
+                "Date": date_str,
+                "Points": discounted_points,
                 "Estimated Rent ($)": f"${rent}"
             })
-            chart_data.append({
-                "Date": date_str,
-                "Day": day_of_week,
-                "Room Type": room,
-                "Rent": rent
-            })
-    
-    compare_df = pd.DataFrame(compare_data)
-    # Pivot the DataFrame to have room types as columns and rent as values
-    compare_df_pivot = compare_df.pivot(index=["Day of Week", "Date"], columns="Room Type", values="Estimated Rent ($)").reset_index()
-    
-    chart_df = pd.DataFrame(chart_data)
-    
-    return compare_df_pivot, chart_df
+            total_points += discounted_points
+            total_rent += rent
 
-# Main Calculation
-if submit_button:
+        return breakdown, total_points, total_rent
+
+    def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier, discount_percent):
+        """
+        Summarize holiday weeks that overlap with the stay period.
+        Returns a list of holiday week summaries.
+        """
+        summaries = []
+        rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+        
+        # Expand search window: 7 days before check-in to cover weeks starting just before
+        search_start = checkin_date - timedelta(days=7)
+        search_end = checkin_date + timedelta(days=num_nights)
+
+        current = search_start
+        while current < search_end:
+            date_str = current.strftime("%Y-%m-%d")
+            entry = data[resort].get(date_str, {})
+
+            if entry.get("HolidayWeekStart", False):
+                start_str = date_str
+                end_str = (current + timedelta(days=7)).strftime("%Y-%m-%d")  # 7 nights, checkout on 8th day
+
+                # Check if this holiday week overlaps with user’s stay
+                week_range_start = current
+                week_range_end = current + timedelta(days=6)
+
+                if week_range_end >= checkin_date and week_range_start < search_end:
+                    points = entry.get(room_type, reference_points)
+                    if points is None:
+                        points = reference_points
+                        st.session_state.debug_messages.append(f"Using reference points for holiday week starting {start_str}: {points}")
+                    discounted_points = math.floor(points * discount_multiplier)
+                    rent = math.ceil(points * rate_per_point)  # Rent based on original points
+                    summaries.append({
+                        "Holiday Week Start": start_str,
+                        "Holiday Week End (Checkout)": end_str,
+                        "Points on Start Day": discounted_points,
+                        "Estimated Rent ($)": f"${rent}"
+                    })
+
+            current += timedelta(days=1)
+
+        return summaries
+
+    def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
+        """
+        Compare points and rent across room types for the stay.
+        Returns a DataFrame for the table and a DataFrame for the non-holiday bar chart.
+        """
+        rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+        compare_data = []
+        chart_data = []
+        
+        for room in room_types:
+            for i in range(num_nights):
+                date = checkin_date + timedelta(days=i)
+                date_str = date.strftime("%Y-%m-%d")
+                # Get the day of the week (e.g., "Sun", "Mon", "Tue")
+                day_of_week = date.strftime("%a")
+                entry = data[resort].get(date_str, {})
+                
+                # Skip holiday week days
+                if entry.get("HolidayWeek", False):
+                    continue
+                    
+                points = entry.get(room, reference_points)
+                if points is None:
+                    points = reference_points
+                    st.session_state.debug_messages.append(f"Using reference points for {room} on {date_str}: {points}")
+                discounted_points = math.floor(points * discount_multiplier)
+                rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
+                compare_data.append({
+                    "Day of Week": day_of_week,  # Separate column for day
+                    "Date": date_str,           # Separate column for date
+                    "Room Type": room,
+                    "Estimated Rent ($)": f"${rent}"
+                })
+                chart_data.append({
+                    "Date": date_str,
+                    "Day": day_of_week,
+                    "Room Type": room,
+                    "Rent": rent
+                })
+        
+        compare_df = pd.DataFrame(compare_data)
+        # Pivot the DataFrame to have room types as columns and rent as values
+        compare_df_pivot = compare_df.pivot(index=["Day of Week", "Date"], columns="Room Type", values="Estimated Rent ($)").reset_index()
+        
+        chart_df = pd.DataFrame(chart_data)
+        
+        return compare_df_pivot, chart_df
+
+    # Perform calculations
     breakdown, total_points, total_rent = calculate_non_holiday_stay(
         data, resort, room_type, checkin_date, st.session_state.num_nights, discount_multiplier, discount_percent
     )
