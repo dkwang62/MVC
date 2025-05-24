@@ -6,9 +6,11 @@ import pandas as pd
 import io
 import plotly.express as px
 
-# Initialize session state for debug messages
+# Initialize session state for debug messages and chart offset
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
+if "chart_offset" not in st.session_state:
+    st.session_state.chart_offset = 0
 
 # Load JSON data with error handling
 try:
@@ -45,6 +47,15 @@ with st.sidebar:
         format_func=lambda x: f"{x}%" if x else "No Discount"
     )
     st.caption("\U0001F4A1 Discount applies only to points. Rent is always based on the original points value.")
+    # Slider to adjust chart offset
+    st.session_state.chart_offset = st.slider(
+        "Select 7-Day Chart Offset (days)",
+        min_value=0,
+        max_value=max(0, num_nights - 7) if 'num_nights' in locals() else 0,
+        value=0,
+        step=1,
+        help="Adjust to view different 7-day periods of your stay."
+    )
 
 discount_multiplier = 1 - (discount_percent / 100)
 
@@ -192,7 +203,7 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
         for i in range(num_nights):
             date = checkin_date + timedelta(days=i)
             date_str = date.strftime("%Y-%m-%d")
-            # Get the day of the week (e.g., "Mon", "Tue")
+            # Get the day of the week (e.g., "Sun", "Mon", "Tue")
             day_of_week = date.strftime("%a")
             entry = data[resort].get(date_str, {})
             
@@ -207,7 +218,8 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
             discounted_points = math.floor(points * discount_multiplier)
             rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
             compare_data.append({
-                "Date": date_str,
+                "Day of Week": day_of_week,  # Separate column for day
+                "Date": date_str,           # Separate column for date
                 "Room Type": room,
                 "Estimated Rent ($)": f"${rent}"
             })
@@ -220,7 +232,7 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
     
     compare_df = pd.DataFrame(compare_data)
     # Pivot the DataFrame to have room types as columns and rent as values
-    compare_df_pivot = compare_df.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)").reset_index()
+    compare_df_pivot = compare_df.pivot(index=["Day of Week", "Date"], columns="Room Type", values="Estimated Rent ($)").reset_index()
     
     chart_df = pd.DataFrame(chart_data)
     
@@ -280,13 +292,18 @@ if st.button("\U0001F4CA Calculate"):
         # Non-Holiday Bar Chart
         if not chart_df.empty:
             # Calculate the date range for the title
-            start_date_str = checkin_date.strftime("%B %-d")
-            end_date = checkin_date + timedelta(days=num_nights - 1)
+            start_date = checkin_date + timedelta(days=st.session_state.chart_offset)
+            end_date = start_date + timedelta(days=min(6, num_nights - st.session_state.chart_offset - 1))
+            start_date_str = start_date.strftime("%B %-d")
             end_date_str = end_date.strftime("%-d, %Y")
             title = f"Non-Holiday Rent Comparison ({start_date_str}-{end_date_str})"
             st.subheader("\U0001F4CA " + title)
+            # Limit to 7 days based on offset
+            start_idx = st.session_state.chart_offset
+            end_idx = min(start_idx + 7, len(chart_df))
+            chart_df_limited = chart_df.iloc[start_idx:end_idx].copy()
             fig_non_holiday = px.bar(
-                chart_df,
+                chart_df_limited,
                 x="Day",
                 y="Rent",
                 color="Room Type",
@@ -301,19 +318,21 @@ if st.button("\U0001F4CA Calculate"):
                 texttemplate="$%{text}",
                 textposition="auto"
             )
-            # Ensure the x-axis days are in the correct order
+            # Ensure the x-axis days are in the correct order for the selected 7 days
+            days_order = [(checkin_date + timedelta(days=i)).strftime("%a") for i in range(start_idx, end_idx) if not data[resort].get((checkin_date + timedelta(days=i)).strftime("%Y-%m-%d"), {}).get("HolidayWeek", False)]
             fig_non_holiday.update_xaxes(
                 categoryorder="array",
-                categoryarray=[(checkin_date + timedelta(days=i)).strftime("%a") for i in range(num_nights) if not data[resort].get((checkin_date + timedelta(days=i)).strftime("%Y-%m-%d"), {}).get("HolidayWeek", False)]
+                categoryarray=days_order
             )
             st.plotly_chart(fig_non_holiday, use_container_width=True)
 
         # Holiday Week Bar Chart
         if holiday_weeks:
-            # Update the title for the holiday chart as well
-            holiday_start = min(datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") for week in holiday_weeks)
-            holiday_end = max(datetime.strptime(week["Holiday Week End (Checkout)"], "%Y-%m-%d") for week in holiday_weeks)
-            holiday_title = f"Holiday Week Rent Comparison ({holiday_start.strftime('%B %-d')}-{holiday_end.strftime('%-d, %Y')})"
+            # Update the title for the holiday chart based on offset
+            offset_end_date = checkin_date + timedelta(days=st.session_state.chart_offset + 6)
+            holiday_start = min(datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") for week in holiday_weeks if checkin_date <= datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") <= offset_end_date)
+            holiday_end = max(datetime.strptime(week["Holiday Week End (Checkout)"], "%Y-%m-%d") for week in holiday_weeks if checkin_date <= datetime.strptime(week["Holiday Week End (Checkout)"], "%Y-%m-%d") <= offset_end_date)
+            holiday_title = f"Holiday Week Rent Comparison ({holiday_start.strftime('%B %-d')}-{holiday_end.strftime('%-d, %Y')})" if holiday_weeks else "Holiday Week Rent Comparison (No Data)"
             st.subheader("\U0001F389 " + holiday_title)
             holiday_chart_data = [
                 {"Holiday Week": f"{week['Holiday Week Start']} to {week['Holiday Week End (Checkout)']}", 
@@ -321,6 +340,7 @@ if st.button("\U0001F4CA Calculate"):
                  "Rent": math.ceil(data[resort].get(week['Holiday Week Start'], {}).get(room, reference_points) * 0.81)}
                 for week in holiday_weeks
                 for room in all_rooms
+                if checkin_date <= datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") <= offset_end_date
             ]
             holiday_chart_df = pd.DataFrame(holiday_chart_data)
             fig_holiday = px.bar(
