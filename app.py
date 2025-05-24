@@ -4,6 +4,7 @@ import math
 from datetime import datetime, timedelta
 import pandas as pd
 import io
+import matplotlib.pyplot as plt
 
 # Load JSON data
 with open("Marriott_2025.json", "r") as f:
@@ -71,11 +72,11 @@ def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights
         if points is None:
             points = reference_points
         discounted_points = math.floor(points * discount_multiplier)
-        rent = points * rate_per_point
+        rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
         breakdown.append({
             "Date": date,
             "Points": discounted_points,
-            "Estimated Rent ($)": f"${rent:.2f}"
+            "Estimated Rent ($)": f"${rent}"
         })
         total_points += discounted_points
         total_rent += rent
@@ -91,7 +92,7 @@ def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, r
 def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
     """
     Compare points and rent across room types for the stay.
-    Returns a DataFrame for the table and a chart DataFrame.
+    Returns a DataFrame for the table and a chart-ready DataFrame.
     """
     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
     compare_data = []
@@ -103,21 +104,20 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
             if points is None:
                 points = reference_points
             discounted_points = math.floor(points * discount_multiplier)
-            rent = points * rate_per_point
+            rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
             compare_data.append({
                 "Date": date,
                 "Room Type": room,
                 "Points": discounted_points,
-                "Estimated Rent ($)": f"${rent:.2f}"
+                "Estimated Rent ($)": f"${rent}"
             })
     
     compare_df = pd.DataFrame(compare_data)
     
-    # Create chart data with dates as index and rent per room type as columns
+    # Create chart data with melted format for clustered bar chart
     chart_data = compare_df[["Date", "Room Type", "Estimated Rent ($)"]].copy()
     chart_data["Estimated Rent ($)"] = chart_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
     chart_data = chart_data.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)")
-    chart_data.index = pd.to_datetime(chart_data.index).date  # Ensure only date, no time
     
     return compare_df, chart_data
 
@@ -151,12 +151,13 @@ if st.button("\U0001F4CA Calculate"):
         mime="text/csv"
     )
 
-    st.subheader("\U0001F4C5 Visual Calendar View")
-    cal_data = df_breakdown[["Date", "Estimated Rent ($)"]].copy()
-    cal_data["Date"] = pd.to_datetime(cal_data["Date"])
-    cal_data.set_index("Date", inplace=True)
-    cal_data["Estimated Rent ($)"] = cal_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
-    st.line_chart(cal_data)
+    if len(compare_rooms) > 0:  # Only show calendar view if comparing room types
+        st.subheader("\U0001F4C5 Visual Calendar View")
+        cal_data = df_breakdown[["Date", "Estimated Rent ($)"]].copy()
+        cal_data["Date"] = pd.to_datetime(cal_data["Date"])
+        cal_data.set_index("Date", inplace=True)
+        cal_data["Estimated Rent ($)"] = cal_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
+        st.line_chart(cal_data)
 
     if compare_rooms:
         st.subheader("\U0001F6CF Room Type Comparison")
@@ -166,7 +167,19 @@ if st.button("\U0001F4CA Calculate"):
             discount_multiplier, discount_percent
         )
         st.dataframe(compare_df, use_container_width=True)
-        st.bar_chart(compare_chart)  # Changed to bar chart
+
+        # Create clustered bar chart with labels
+        fig, ax = plt.subplots(figsize=(10, 6))
+        compare_chart.plot(kind='bar', ax=ax, width=0.8)
+        for i in range(len(compare_chart.index)):
+            for j in range(len(compare_chart.columns)):
+                height = compare_chart.iloc[i, j]
+                ax.text(i, height, f'${height:.0f}', ha='center', va='bottom')
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Estimated Rent ($)")
+        ax.set_title("Room Type Comparison")
+        ax.legend(title="Room Type")
+        st.pyplot(fig)
 
         compare_csv = compare_df.to_csv(index=False).encode('utf-8')
         st.download_button(
