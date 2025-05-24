@@ -7,7 +7,7 @@ import io
 import plotly.express as px
 
 # Debug statement to verify deployment
-st.write("App version: 2025-05-24-v19 - Form should have a Calculate button below")
+st.write("App version: 2025-05-24-v20 - Form should have a Calculate button below")
 
 # Initialize session state for debug messages and chart offset
 if "debug_messages" not in st.session_state:
@@ -369,7 +369,7 @@ if submit_button:
                 color="Room Type",
                 barmode="group",
                 title=holiday_title,
-                labels{"Rent": "Estimated Rent ($)"},
+                labels={"Rent": "Estimated Rent ($)"},  # Fixed missing comma
                 height=400,
                 text="Rent",
                 text_auto=True
