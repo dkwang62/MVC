@@ -38,7 +38,7 @@ if not display_resorts:
     st.session_state.debug_messages.append("No resorts found in data.")
     st.stop()
 
-# Subtle discount setting in sidebar with tooltip
+# Sidebar setup
 with st.sidebar:
     discount_percent = st.selectbox(
         "Apply Points Discount",
@@ -47,11 +47,11 @@ with st.sidebar:
         format_func=lambda x: f"{x}%" if x else "No Discount"
     )
     st.caption("\U0001F4A1 Discount applies only to points. Rent is always based on the original points value.")
-    # Slider to adjust chart offset
+    num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=7)
     st.session_state.chart_offset = st.slider(
         "Select 7-Day Chart Offset (days)",
         min_value=0,
-        max_value=max(0, num_nights - 7) if 'num_nights' in locals() else 0,
+        max_value=max(0, num_nights - 7),
         value=0,
         step=1,
         help="Adjust to view different 7-day periods of your stay."
@@ -101,7 +101,6 @@ room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key=
 compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
 checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
-num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=7)
 
 # Set reference points dynamically using the first available date
 first_date = next(iter(data[resort]), None)
