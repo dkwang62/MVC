@@ -209,20 +209,22 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
             compare_data.append({
                 "Date": date_str,
                 "Room Type": room,
-                "Points": discounted_points,
                 "Estimated Rent ($)": f"${rent}"
             })
             chart_data.append({
                 "Date": date_str,
-                "Day": day_of_week,  # Add day of the week
+                "Day": day_of_week,
                 "Room Type": room,
                 "Rent": rent
             })
     
     compare_df = pd.DataFrame(compare_data)
+    # Pivot the DataFrame to have room types as columns and rent as values
+    compare_df_pivot = compare_df.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)").reset_index()
+    
     chart_df = pd.DataFrame(chart_data)
     
-    return compare_df, chart_df
+    return compare_df_pivot, chart_df
 
 # Main Calculation
 if st.button("\U0001F4CA Calculate"):
@@ -285,7 +287,7 @@ if st.button("\U0001F4CA Calculate"):
             st.subheader("\U0001F4CA " + title)
             fig_non_holiday = px.bar(
                 chart_df,
-                x="Day",  # Use day of the week instead of date
+                x="Day",
                 y="Rent",
                 color="Room Type",
                 barmode="group",
