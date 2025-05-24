@@ -7,7 +7,7 @@ import io
 import plotly.express as px
 
 # Debug statement to verify deployment
-st.write("App version: 2025-05-24-v17 - Form should have a Calculate button below")
+st.write("App version: 2025-05-24-v19 - Form should have a Calculate button below")
 
 # Initialize session state for debug messages and chart offset
 if "debug_messages" not in st.session_state:
@@ -79,7 +79,7 @@ with st.form(key="input_form"):
         st.session_state.debug_messages.append(f"Resort not found: {resort}. Available: {list(data.keys())}")
         st.stop()
 
-    # Get room types for the selected resort
+    # Dynamically populate room types based on selected resort
     try:
         sample_day = next(iter(data[resort].values()))
         room_types = [k for k in sample_day if k not in ("Day", "HolidayWeek", "HolidayWeekStart")]
@@ -93,8 +93,8 @@ with st.form(key="input_form"):
         st.session_state.debug_messages.append(f"No room types found for resort: {resort}")
         st.stop()
 
-    room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key="room_type_select")
-    compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type])
+    room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key=f"room_type_select_{resort}")
+    compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type], key=f"compare_rooms_{resort}")
 
     checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
     st.session_state.num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=st.session_state.num_nights)
@@ -118,15 +118,18 @@ if submit_button:
     # Debug to confirm form submission
     st.write("Form submitted successfully!")
 
-    # Slider for chart offset (moved inside submission to avoid pre-evaluation)
-    st.session_state.chart_offset = st.slider(
-        "Select 7-Day Chart Offset (days)",
-        min_value=0,
-        max_value=max(0, st.session_state.num_nights - 7),
-        value=st.session_state.chart_offset,
-        step=1,
-        help="Adjust to view different 7-day periods of your stay."
-    )
+    # Only show slider if num_nights > 7
+    if st.session_state.num_nights > 7:
+        max_slider_value = max(0, st.session_state.num_nights - 7)
+        st.session_state.debug_messages.append(f"num_nights: {st.session_state.num_nights}, max_slider_value: {max_slider_value}")
+        st.session_state.chart_offset = st.slider(
+            "Select 7-Day Chart Offset (days)",
+            min_value=0,
+            max_value=max_slider_value,
+            value=st.session_state.chart_offset,
+            step=1,
+            help="Adjust to view different 7-day periods of your stay."
+        )
 
     # Function definitions
     def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
@@ -306,7 +309,7 @@ if submit_button:
         )
 
         # Non-Holiday Bar Chart
-        if not chart_df.empty:
+        if not chart_df.empty and st.session_state.num_nights > 7:
             # Calculate the date range for the title
             start_date = checkin_date + timedelta(days=st.session_state.chart_offset)
             end_date = start_date + timedelta(days=min(6, st.session_state.num_nights - st.session_state.chart_offset - 1))
@@ -343,7 +346,7 @@ if submit_button:
             st.plotly_chart(fig_non_holiday, use_container_width=True)
 
         # Holiday Week Bar Chart
-        if holiday_weeks:
+        if holiday_weeks and st.session_state.num_nights > 7:
             # Update the title for the holiday chart based on offset
             offset_end_date = checkin_date + timedelta(days=st.session_state.chart_offset + 6)
             holiday_start = min(datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") for week in holiday_weeks if checkin_date <= datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") <= offset_end_date)
@@ -366,7 +369,7 @@ if submit_button:
                 color="Room Type",
                 barmode="group",
                 title=holiday_title,
-                labels={"Rent": "Estimated Rent ($)"},
+                labels{"Rent": "Estimated Rent ($)"},
                 height=400,
                 text="Rent",
                 text_auto=True
