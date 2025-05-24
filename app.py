@@ -6,6 +6,9 @@ import pandas as pd
 import io
 import plotly.express as px
 
+# Debug statement to verify deployment
+st.write("App version: 2025-05-24-v14")
+
 # Initialize session state for debug messages and chart offset
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
@@ -106,21 +109,22 @@ with st.form(key="input_form"):
         help="Adjust to view different 7-day periods of your stay."
     )
 
+    # Submit button for the form
     submit_button = st.form_submit_button(label="\U0001F4CA Calculate")
 
-# Set discount multiplier after form submission
+# Set reference points outside the submit block since it's needed for validation
+first_date = next(iter(data[resort]), None)
+reference_points = data[resort].get(first_date, {}).get(room_type)
+if reference_points is None:
+    st.error(f"No points data found for {room_type} in {resort}. Please select a different room type.")
+    st.session_state.debug_messages.append(f"No points for {room_type} on {first_date} in {resort}")
+    st.stop()
+
+# Set discount multiplier
 discount_multiplier = 1 - (discount_percent / 100)
 
 # Main calculation block
 if submit_button:
-    # Set reference points dynamically using the first available date
-    first_date = next(iter(data[resort]), None)
-    reference_points = data[resort].get(first_date, {}).get(room_type)
-    if reference_points is None:
-        st.error(f"No points data found for {room_type} in {resort}. Please select a different room type.")
-        st.session_state.debug_messages.append(f"No points for {room_type} on {first_date} in {resort}")
-        st.stop()
-
     # Function definitions
     def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
         """
