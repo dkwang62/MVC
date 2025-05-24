@@ -192,6 +192,8 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
         for i in range(num_nights):
             date = checkin_date + timedelta(days=i)
             date_str = date.strftime("%Y-%m-%d")
+            # Get the day of the week (e.g., "Mon", "Tue")
+            day_of_week = date.strftime("%a")
             entry = data[resort].get(date_str, {})
             
             # Skip holiday week days
@@ -212,6 +214,7 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
             })
             chart_data.append({
                 "Date": date_str,
+                "Day": day_of_week,  # Add day of the week
                 "Room Type": room,
                 "Rent": rent
             })
@@ -274,29 +277,42 @@ if st.button("\U0001F4CA Calculate"):
 
         # Non-Holiday Bar Chart
         if not chart_df.empty:
-            st.subheader("\U0001F4CA Non-Holiday Rent Comparison (July 1-4, 2025)")
+            # Calculate the date range for the title
+            start_date_str = checkin_date.strftime("%B %-d")
+            end_date = checkin_date + timedelta(days=num_nights - 1)
+            end_date_str = end_date.strftime("%-d, %Y")
+            title = f"Non-Holiday Rent Comparison ({start_date_str}-{end_date_str})"
+            st.subheader("\U0001F4CA " + title)
             fig_non_holiday = px.bar(
                 chart_df,
-                x="Date",
+                x="Day",  # Use day of the week instead of date
                 y="Rent",
                 color="Room Type",
                 barmode="group",
-                title="Non-Holiday Rent by Room Type",
-                labels={"Rent": "Estimated Rent ($)"},
+                title=title,
+                labels={"Rent": "Estimated Rent ($)", "Day": "Day of Week"},
                 height=400,
-                text="Rent",  # Display the Rent values on the bars
-                text_auto=True  # Automatically position the text
+                text="Rent",
+                text_auto=True
             )
-            # Customize the text to show $ sign
             fig_non_holiday.update_traces(
                 texttemplate="$%{text}",
                 textposition="auto"
+            )
+            # Ensure the x-axis days are in the correct order
+            fig_non_holiday.update_xaxes(
+                categoryorder="array",
+                categoryarray=[(checkin_date + timedelta(days=i)).strftime("%a") for i in range(num_nights) if not data[resort].get((checkin_date + timedelta(days=i)).strftime("%Y-%m-%d"), {}).get("HolidayWeek", False)]
             )
             st.plotly_chart(fig_non_holiday, use_container_width=True)
 
         # Holiday Week Bar Chart
         if holiday_weeks:
-            st.subheader("\U0001F389 Holiday Week Rent Comparison (July 7-14, 2025)")
+            # Update the title for the holiday chart as well
+            holiday_start = min(datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") for week in holiday_weeks)
+            holiday_end = max(datetime.strptime(week["Holiday Week End (Checkout)"], "%Y-%m-%d") for week in holiday_weeks)
+            holiday_title = f"Holiday Week Rent Comparison ({holiday_start.strftime('%B %-d')}-{holiday_end.strftime('%-d, %Y')})"
+            st.subheader("\U0001F389 " + holiday_title)
             holiday_chart_data = [
                 {"Holiday Week": f"{week['Holiday Week Start']} to {week['Holiday Week End (Checkout)']}", 
                  "Room Type": room, 
@@ -311,13 +327,12 @@ if st.button("\U0001F4CA Calculate"):
                 y="Rent",
                 color="Room Type",
                 barmode="group",
-                title="Holiday Week Rent by Room Type",
+                title=holiday_title,
                 labels={"Rent": "Estimated Rent ($)"},
                 height=400,
-                text="Rent",  # Display the Rent values on the bars
-                text_auto=True  # Automatically position the text
+                text="Rent",
+                text_auto=True
             )
-            # Customize the text to show $ sign
             fig_holiday.update_traces(
                 texttemplate="$%{text}",
                 textposition="auto"
