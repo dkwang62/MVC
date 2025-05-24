@@ -117,7 +117,7 @@ def compare_room_types(data, resort, room_types, checkin_date, num_nights, disco
     chart_data = compare_df[["Date", "Room Type", "Estimated Rent ($)"]].copy()
     chart_data["Estimated Rent ($)"] = chart_data["Estimated Rent ($)"].str.replace("$", "").astype(float)
     chart_data = chart_data.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)")
-    chart_data.index = pd.to_datetime(chart_data.index)
+    chart_data.index = pd.to_datetime(chart_data.index).date  # Ensure only date, no time
     
     return compare_df, chart_data
 
@@ -166,7 +166,7 @@ if st.button("\U0001F4CA Calculate"):
             discount_multiplier, discount_percent
         )
         st.dataframe(compare_df, use_container_width=True)
-        st.line_chart(compare_chart)
+        st.bar_chart(compare_chart)  # Changed to bar chart
 
         compare_csv = compare_df.to_csv(index=False).encode('utf-8')
         st.download_button(
