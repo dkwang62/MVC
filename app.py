@@ -1,9 +1,119 @@
-# Marriott Points Calculator - Complete App with Charts and Holidays
 import streamlit as st
 import math
 from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
+
+# Season and holiday data
+season_blocks = {
+    "Kauai Beach Club": {
+        "2025": {
+            "Low Season": [
+                ["2025-01-03", "2025-01-30"],
+                ["2025-03-28", "2025-04-17"],
+                ["2025-04-25", "2025-06-05"],
+                ["2025-08-29", "2025-11-20"],
+                ["2025-12-05", "2025-12-18"]
+            ],
+            "High Season": [
+                ["2025-01-31", "2025-02-13"],
+                ["2025-02-21", "2025-03-27"],
+                ["2025-06-06", "2025-07-03"],
+                ["2025-07-11", "2025-08-28"]
+            ]
+        },
+        "2026": {
+            "Low Season": [
+                ["2026-01-02", "2026-01-29"],
+                ["2026-03-27", "2026-04-02"],
+                ["2026-04-10", "2026-06-04"],
+                ["2026-08-28", "2026-11-19"],
+                ["2026-12-04", "2026-12-17"]
+            ],
+            "High Season": [
+                ["2026-01-30", "2026-02-12"],
+                ["2026-02-20", "2026-03-26"],
+                ["2026-06-05", "2026-07-02"],
+                ["2026-07-10", "2026-08-27"]
+            ]
+        }
+    },
+    "Ko Olina Beach Club": {
+        "2025": {
+            "Low Season": [
+                ["2025-01-03", "2025-01-30"],
+                ["2025-03-28", "2025-04-17"],
+                ["2025-04-25", "2025-06-05"],
+                ["2025-08-29", "2025-11-20"],
+                ["2025-12-05", "2025-12-18"]
+            ],
+            "High Season": [
+                ["2025-01-31", "2025-02-13"],
+                ["2025-02-21", "2025-03-27"],
+                ["2025-06-06", "2025-07-03"],
+                ["2025-07-11", "2025-08-28"]
+            ]
+        },
+        "2026": {
+            "Low Season": [
+                ["2026-01-02", "2026-01-29"],
+                ["2026-03-27", "2026-04-02"],
+                ["2026-04-10", "2026-06-04"],
+                ["2026-08-28", "2026-11-19"],
+                ["2026-12-04", "2026-12-17"]
+            ],
+            "High Season": [
+                ["2026-01-30", "2026-02-12"],
+                ["2026-02-20", "2026-03-26"],
+                ["2026-06-05", "2026-07-02"],
+                ["2026-07-10", "2026-08-27"]
+            ]
+        }
+    }
+}
+
+holiday_weeks = {
+    "Kauai Beach Club": {
+        "2025": {
+            "Presidents Day": ["2025-02-14", "2025-02-20"],
+            "Easter": ["2025-04-18", "2025-04-24"],
+            "Independence Day": ["2025-07-04", "2025-07-10"],
+            "Thanksgiving": ["2025-11-21", "2025-11-27"],
+            "Thanksgiving 2": ["2025-11-28", "2025-12-04"],
+            "Christmas": ["2025-12-19", "2025-12-24"],
+            "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
+        },
+        "2026": {
+            "Presidents Day": ["2026-02-13", "2026-02-19"],
+            "Easter": ["2026-04-03", "2026-04-09"],
+            "Independence Day": ["2026-07-03", "2026-07-09"],
+            "Thanksgiving": ["2026-11-20", "2026-11-26"],
+            "Thanksgiving 2": ["2026-11-27", "2026-12-03"],
+            "Christmas": ["2026-12-18", "2026-12-24"],
+            "New Year's Eve/Day": ["2026-12-25", "2026-12-31"]
+        }
+    },
+    "Ko Olina Beach Club": {
+        "2025": {
+            "Presidents Day": ["2025-02-14", "2025-02-20"],
+            "Easter": ["2025-04-18", "2025-04-24"],
+            "Independence Day": ["2025-07-04", "2025-07-10"],
+            "Thanksgiving": ["2025-11-21", "2025-11-27"],
+            "Thanksgiving 2": ["2025-11-28", "2025-12-04"],
+            "Christmas": ["2025-12-19", "2025-12-24"],
+            "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
+        },
+        "2026": {
+            "Presidents Day": ["2026-02-13", "2026-02-19"],
+            "Easter": ["2026-04-03", "2026-04-09"],
+            "Independence Day": ["2026-07-03", "2026-07-09"],
+            "Thanksgiving": ["2026-11-20", "2026-11-26"],
+            "Thanksgiving 2": ["2026-11-27", "2026-12-03"],
+            "Christmas": ["2026-12-18", "2026-12-24"],
+            "New Year's Eve/Day": ["2026-12-25", "2026-12-31"]
+        }
+    }
+}
 
 # Room view legend
 room_view_legend = {
@@ -12,64 +122,11 @@ room_view_legend = {
     "PH MA": "Penthouse Mountain View", "PH MK": "Penthouse Ocean View"
 }
 
-def describe_room_type(room_code):
-    for key, label in room_view_legend.items():
-        if room_code.endswith(" " + key):
-            return f"{room_code} ({label})"
-        elif room_code == key:
-            return f"{room_code} ({label})"
-    return room_code
-
-def get_day_type(date_obj):
-    weekday = date_obj.weekday()
-    return "Fri–Sat" if weekday in (4, 5) else "Sun–Thu"
-
-def classify_date(resort, date_str):
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-    year = str(date_obj.year)
-
-    # Check if the date falls in any holiday week
-    for holiday_name, (start_str, end_str) in holiday_weeks.get(resort, {}).get(year, {}).items():
-        start = datetime.strptime(start_str, "%Y-%m-%d")
-        end = datetime.strptime(end_str, "%Y-%m-%d")
-        if start <= date_obj <= end:
-            return {"season": "Holiday Week", "holiday": holiday_name}
-
-    # Then check high and low season
-    for season_type in ["High Season", "Low Season"]:
-        for start_str, end_str in season_blocks.get(resort, {}).get(year, {}).get(season_type, []):
-            start = datetime.strptime(start_str, "%Y-%m-%d")
-            end = datetime.strptime(end_str, "%Y-%m-%d")
-            if start <= date_obj <= end:
-                return {"season": season_type, "holiday": None}
-
-    # Default to unknown
-    return {"season": "Unknown", "holiday": None}
-
-def lookup_points(resort, room_type, date_str):
-    # Convert date string to datetime object
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-    year = str(date_obj.year)
-    tag = classify_date(resort, date_str)
-
-    # Determine if it's a holiday
-    if tag["season"] == "Holiday Week":
-        holiday = tag["holiday"]
-        return reference_points[resort]["Holiday Week"].get(holiday, {}).get(room_type)
-
-    # Determine if it's high or low season
-    day_type = get_day_type(date_obj)
-    season = tag["season"]
-    if season in reference_points[resort]:
-        return reference_points[resort][season].get(day_type, {}).get(room_type)
-
-    return None
-
-
+# Points reference with corrected Unicode
 reference_points = {
     "Kauai Beach Club": {
         "Low Season": {
-            "Fri\u2013Sat": {
+            "Fri-Sat": {
                 "Parlor GV": 175,
                 "Parlor OV": 225,
                 "Parlor OF": 275,
@@ -82,7 +139,7 @@ reference_points = {
                 "2BR OV": 750,
                 "2BR OF": 925
             },
-            "Sun\u2013Thu": {
+            "Sun-Thu": {
                 "Parlor GV": 125,
                 "Parlor OV": 175,
                 "Parlor OF": 200,
@@ -97,7 +154,7 @@ reference_points = {
             }
         },
         "High Season": {
-            "Fri\u2013Sat": {
+            "Fri-Sat": {
                 "Parlor GV": 200,
                 "Parlor OV": 275,
                 "Parlor OF": 300,
@@ -110,7 +167,7 @@ reference_points = {
                 "2BR OV": 875,
                 "2BR OF": 1075
             },
-            "Sun\u2013Thu": {
+            "Sun-Thu": {
                 "Parlor GV": 150,
                 "Parlor OV": 200,
                 "Parlor OF": 225,
@@ -203,7 +260,7 @@ reference_points = {
                 "2BR OV": 5100,
                 "2BR OF": 6250
             },
-            "New Year\u2019s Eve/Day": {
+            "New Year's Eve/Day": {
                 "Parlor GV": 1550,
                 "Parlor OV": 1775,
                 "Parlor OF": 2125,
@@ -220,7 +277,7 @@ reference_points = {
     },
     "Ko Olina Beach Club": {
         "Low Season": {
-            "Fri\u2013Sat": {
+            "Fri-Sat": {
                 "Studio MA": 340,
                 "Studio MK": 360,
                 "Studio PH MA": 340,
@@ -236,7 +293,7 @@ reference_points = {
                 "3BR MA": 925,
                 "3BR MK": 1175
             },
-            "Sun\u2013Thu": {
+            "Sun-Thu": {
                 "Studio MA": 205,
                 "Studio MK": 270,
                 "Studio PH MA": 205,
@@ -254,7 +311,7 @@ reference_points = {
             }
         },
         "High Season": {
-            "Fri\u2013Sat": {
+            "Fri-Sat": {
                 "Studio MA": 360,
                 "Studio MK": 430,
                 "Studio PH MA": 360,
@@ -270,7 +327,7 @@ reference_points = {
                 "3BR MA": 1075,
                 "3BR MK": 1375
             },
-            "Sun\u2013Thu": {
+            "Sun-Thu": {
                 "Studio MA": 250,
                 "Studio MK": 295,
                 "Studio PH MA": 250,
@@ -384,7 +441,7 @@ reference_points = {
                 "3BR MA": 6250,
                 "3BR MK": 8025
             },
-            "New Year\u2019s Eve/Day": {
+            "New Year's Eve/Day": {
                 "Studio MA": 2365,
                 "Studio MK": 2835,
                 "Studio PH MA": 2365,
@@ -404,20 +461,66 @@ reference_points = {
     }
 }
 
+def describe_room_type(room_code):
+    for key, label in room_view_legend.items():
+        if room_code.endswith(" " + key):
+            return f"{room_code} ({label})"
+        elif room_code == key:
+            return f"{room_code} ({label})"
+    return room_code
 
-# --- Streamlit App UI ---
+def get_day_type(date_obj):
+    weekday = date_obj.weekday()
+    return "Fri-Sat" if weekday in (4, 5) else "Sun-Thu"
+
+def classify_date(resort, date_str):
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    year = str(date_obj.year)
+
+    # Check if the date falls in any holiday week
+    for holiday_name, (start_str, end_str) in holiday_weeks.get(resort, {}).get(year, {}).items():
+        start = datetime.strptime(start_str, "%Y-%m-%d")
+        end = datetime.strptime(end_str, "%Y-%m-%d")
+        if start <= date_obj <= end:
+            return {"season": "Holiday Week", "holiday": holiday_name}
+
+    # Then check high and low season
+    for season_type in ["High Season", "Low Season"]:
+        for start_str, end_str in season_blocks.get(resort, {}).get(year, {}).get(season_type, []):
+            start = datetime.strptime(start_str, "%Y-%m-%d")
+            end = datetime.strptime(end_str, "%Y-%m-%d")
+            if start <= date_obj <= end:
+                return {"season": season_type, "holiday": None}
+
+    # Default to unknown
+    return {"season": "Unknown", "holiday": None}
+
+def lookup_points(resort, room_type, date_str):
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    year = str(date_obj.year)
+    tag = classify_date(resort, date_str)
+
+    if tag["season"] == "Holiday Week":
+        holiday = tag["holiday"]
+        return reference_points[resort]["Holiday Week"].get(holiday, {}).get(room_type)
+
+    day_type = get_day_type(date_obj)
+    season = tag["season"]
+    if season in reference_points[resort]:
+        return reference_points[resort][season].get(day_type, {}).get(room_type)
+
+    return None
+
+# Streamlit App UI
 st.set_page_config(page_title="Marriott Points Calculator", layout="wide")
 st.title("Marriott Vacation Club Points Calculator (Rules-Based)")
 
 resort = st.selectbox("Select Resort", list(reference_points.keys()))
-
 room_set = set()
 for s in reference_points[resort]["Low Season"].values():
     room_set.update(s.keys())
-
 room_type_display = st.selectbox("Room Type", [describe_room_type(r) for r in sorted(room_set)])
 room_code = room_type_display.split(" (")[0]
-
 checkin_date = st.date_input("Check-in Date", value=datetime(2025, 7, 1))
 nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
 
@@ -435,6 +538,14 @@ for i in range(nights):
     date_str = date.strftime("%Y-%m-%d")
     rate = lookup_points(resort, room_code, date_str)
     if rate is None:
+        results.append({
+            "Date": date_str,
+            "Day": date.strftime("%a"),
+            "Season": "Unknown",
+            "Holiday": "-",
+            "Points": 0,
+            "Rent ($)": 0
+        })
         continue
     discount_rate = math.floor(rate * discount_multiplier)
     rent = math.ceil(rate * (0.81 if date.year == 2025 else 0.86))
@@ -456,7 +567,6 @@ st.success(f"Total Points: {total_points}")
 st.success(f"Estimated Rent: ${total_rent}")
 st.download_button("Download CSV", df.to_csv(index=False).encode("utf-8"), "stay_breakdown.csv")
 
-
 # Holiday Week Summary
 holiday_rows = [r for r in results if r["Season"] == "Holiday Week"]
 if holiday_rows:
@@ -471,3 +581,38 @@ fig = px.bar(
 )
 fig.update_traces(texttemplate="$%{text}", textposition="outside")
 st.plotly_chart(fig, use_container_width=True)
+
+# Timeline Visualization
+st.subheader("📅 Season and Holiday Timeline")
+def create_timeline_df(resort, year):
+    data = []
+    for season, ranges in season_blocks[resort][year].items():
+        for start, end in ranges:
+            data.append({
+                "Task": season,
+                "Start": datetime.strptime(start, "%Y-%m-%d"),
+                "End": datetime.strptime(end, "%Y-%m-%d"),
+                "Type": "Season"
+            })
+    for holiday, dates in holiday_weeks[resort][year].items():
+        data.append({
+            "Task": holiday,
+            "Start": datetime.strptime(dates[0], "%Y-%m-%d"),
+            "End": datetime.strptime(dates[1], "%Y-%m-%d"),
+            "Type": "Holiday"
+        })
+    return pd.DataFrame(data)
+
+year = str(checkin_date.year)
+timeline_df = create_timeline_df(resort, year)
+fig_timeline = px.timeline(
+    timeline_df,
+    x_start="Start",
+    x_end="End",
+    y="Task",
+    color="Type",
+    title=f"{resort} - {year} Seasons and Holidays",
+    color_discrete_map={"Season": "#636EFA", "Holiday": "#EF553B"}
+)
+fig_timeline.update_yaxes(categoryorder="category descending")
+st.plotly_chart(fig_timeline, use_container_width=True)
