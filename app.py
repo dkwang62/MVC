@@ -1,10 +1,22 @@
 import streamlit as st
+import json
 import math
 from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 
-# Season and holiday data
+# --- Configuration ---
+st.set_page_config(page_title="Marriott Points Calculator", layout="wide")
+st.title("\U0001F3DD Marriott Vacation Club Points Calculator")
+
+# --- Room View Descriptions ---
+room_view_legend = {
+    "GV": "Garden View", "OV": "Ocean View", "OF": "Ocean Front",
+    "MA": "Mountain View", "MK": "Ocean View",
+    "PH MA": "Penthouse Mountain View", "PH MK": "Penthouse Ocean View"
+}
+
+# --- Season and Holiday Data ---
 season_blocks = {
     "Kauai Beach Club": {
         "2025": {
@@ -115,14 +127,7 @@ holiday_weeks = {
     }
 }
 
-# Room view legend
-room_view_legend = {
-    "GV": "Garden View", "OV": "Ocean View", "OF": "Ocean Front",
-    "MA": "Mountain View", "MK": "Ocean View",
-    "PH MA": "Penthouse Mountain View", "PH MK": "Penthouse Ocean View"
-}
-
-# Points reference with corrected Unicode
+# --- Reference Points ---
 reference_points = {
     "Kauai Beach Club": {
         "Low Season": {
@@ -460,207 +465,12 @@ reference_points = {
         }
     }
 }
-import streamlit as st
-import math
-from datetime import datetime, timedelta
-import pandas as pd
-import plotly.express as px
-
-# --- Configuration ---
-st.set_page_config(page_title="Marriott Points Calculator", layout="wide")
-st.title("Marriott Vacation Club Points Calculator (Rules-Based)")
-
-# --- Room View Descriptions ---
-room_view_legend = {
-    "GV": "Garden View", "OV": "Ocean View", "OF": "Ocean Front",
-    "MA": "Mountain View", "MK": "Ocean View",
-    "PH MA": "Penthouse Mountain View", "PH MK": "Penthouse Ocean View"
-}
-
-def describe_room_type(code):
-    for k, label in room_view_legend.items():
-        if code.endswith(" " + k):
-            return f"{code} ({label})"
-        elif code == k:
-            return f"{code} ({label})"
-    return code
-
-def get_day_type(date_obj):
-    return "Fri-Sat" if date_obj.weekday() in [4, 5] else "Sun-Thu"
-
-# --- Season and Holiday Data ---
-# [Use your full season_blocks and holiday_weeks dictionaries from previous code. They're too long to repeat here.]
-
-# To save space, define `season_blocks` and `holiday_weeks` exactly as you did in your last message above.
-
-# --- Reference Point Table (Trimmed Here for Brevity) ---
-# Paste your entire `reference_points` dictionary from your full code here.
-
-# --- Date Classification ---
-def classify_date(resort, date_str):
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-    year = str(date_obj.year)
-    for holiday, (start, end) in holiday_weeks.get(resort, {}).get(year, {}).items():
-        if datetime.strptime(start, "%Y-%m-%d") <= date_obj <= datetime.strptime(end, "%Y-%m-%d"):
-            return {"season": "Holiday Week", "holiday": holiday}
-    for season in ["High Season", "Low Season"]:
-        for start, end in season_blocks.get(resort, {}).get(year, {}).get(season, []):
-            if datetime.strptime(start, "%Y-%m-%d") <= date_obj <= datetime.strptime(end, "%Y-%m-%d"):
-                return {"season": season, "holiday": None}
-    return {"season": "Unknown", "holiday": None}
-
-def lookup_points(resort, room, date_str):
-    tag = classify_date(resort, date_str)
-    dt = datetime.strptime(date_str, "%Y-%m-%d")
-    if tag["season"] == "Holiday Week":
-        return reference_points[resort]["Holiday Week"].get(tag["holiday"], {}).get(room)
-    elif tag["season"] in ["High Season", "Low Season"]:
-        day_type = get_day_type(dt)
-        return reference_points[resort][tag["season"]][day_type].get(room)
-    return None
-
-# --- User Inputs ---
-resort = st.selectbox("Select Resort", list(reference_points.keys()))
-room_set = set()
-for day_rates in reference_points[resort]["Low Season"].values():
-    room_set.update(day_rates.keys())
-room_type_display = st.selectbox("Room Type", [describe_room_type(r) for r in sorted(room_set)])
-room_code = room_type_display.split(" (")[0]
-
-checkin_date = st.date_input("Check-in Date", value=datetime(2025, 7, 1))
-nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
-
-with st.sidebar:
-    discount = st.selectbox("Points Discount", [0, 25, 30], index=0)
-discount_multiplier = 1 - (discount / 100)
-
-# --- Main Calculation ---
-results = []
-total_points = 0
-total_rent = 0
-
-for i in range(nights):
-    date = checkin_date + timedelta(days=i)
-    date_str = date.strftime("%Y-%m-%d")
-    rate = lookup_points(resort, room_code, date_str)
-    tag = classify_date(resort, date_str)
-    if rate is None:
-        results.append({
-            "Date": date_str, "Day": date.strftime("%a"), "Season": "Unknown",
-            "Holiday": "-", "Points": 0, "Rent ($)": 0
-        })
-        continue
-    discount_pts = math.floor(rate * discount_multiplier)
-    rent = math.ceil(rate * (0.81 if date.year == 2025 else 0.86))
-    results.append({
-        "Date": date_str,
-        "Day": date.strftime("%a"),
-        "Season": tag["season"],
-        "Holiday": tag["holiday"] or "-",
-        "Points": discount_pts,
-        "Rent ($)": rent
-    })
-    total_points += discount_pts
-    total_rent += rent
-
-df = pd.DataFrame(results)
-st.dataframe(df, use_container_width=True)
-st.success(f"Total Points: {total_points}")
-st.success(f"Estimated Rent: ${total_rent}")
-st.download_button("Download CSV", df.to_csv(index=False).encode("utf-8"), "stay_breakdown.csv")
-
-# --- Holiday Summary ---
-holiday_rows = [r for r in results if r["Season"] == "Holiday Week"]
-if holiday_rows:
-    st.subheader("🎉 Holiday Week Summary")
-    st.dataframe(pd.DataFrame(holiday_rows), use_container_width=True)
-
-# --- Rent Breakdown Chart ---
-st.subheader("📊 Rent Breakdown by Day")
-fig = px.bar(df, x="Day", y="Rent ($)", color="Season", barmode="group", text="Rent ($)")
-fig.update_traces(texttemplate="$%{text}", textposition="outside")
-st.plotly_chart(fig, use_container_width=True)
-
-# --- Season and Holiday Timeline ---
-def create_timeline_df(resort, year):
-    data = []
-    for season, blocks in season_blocks[resort][year].items():
-        for start, end in blocks:
-            data.append({"Task": season, "Start": datetime.strptime(start, "%Y-%m-%d"), "End": datetime.strptime(end, "%Y-%m-%d"), "Type": "Season"})
-    for holiday, (start, end) in holiday_weeks[resort][year].items():
-        data.append({"Task": holiday, "Start": datetime.strptime(start, "%Y-%m-%d"), "End": datetime.strptime(end, "%Y-%m-%d"), "Type": "Holiday"})
-    return pd.DataFrame(data)
-
-st.subheader("📅 Season and Holiday Timeline")
-timeline_df = create_timeline_df(resort, str(checkin_date.year))
-timeline_fig = px.timeline(timeline_df, x_start="Start", x_end="End", y="Task", color="Type",
-                           color_discrete_map={"Season": "#636EFA", "Holiday": "#EF553B"})
-timeline_fig.update_yaxes(categoryorder="category descending")
-st.plotly_chart(timeline_fig, use_container_width=True)
-#   ttttttttttttttt
-def describe_room_type(room_code):
-    for key, label in room_view_legend.items():
-        if room_code.endswith(" " + key):
-            return f"{room_code} ({label})"
-        elif room_code == key:
-            return f"{room_code} ({label})"
-    return room_code
-
-def get_day_type(date_obj):
-    weekday = date_obj.weekday()
-    return "Fri-Sat" if weekday in (4, 5) else "Sun-Thu"
-
-def classify_date(resort, date_str):
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-    year = str(date_obj.year)
-
-    # Check if the date falls in any holiday week
-    for holiday_name, (start_str, end_str) in holiday_weeks.get(resort, {}).get(year, {}).items():
-        start = datetime.strptime(start_str, "%Y-%m-%d")
-        end = datetime.strptime(end_str, "%Y-%m-%d")
-        if start <= date_obj <= end:
-            return {"season": "Holiday Week", "holiday": holiday_name}
-
-    # Then check high and low season
-    for season_type in ["High Season", "Low Season"]:
-        for start_str, end_str in season_blocks.get(resort, {}).get(year, {}).get(season_type, []):
-            start = datetime.strptime(start_str, "%Y-%m-%d")
-            end = datetime.strptime(end_str, "%Y-%m-%d")
-            if start <= date_obj <= end:
-                return {"season": season_type, "holiday": None}
-
-    # Default to unknown
-    return {"season": "Unknown", "holiday": None}
-
-def lookup_points(resort, room_type, date_str):
-    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-    year = str(date_obj.year)
-    tag = classify_date(resort, date_str)
-
-    if tag["season"] == "Holiday Week":
-        holiday = tag["holiday"]
-        return reference_points[resort]["Holiday Week"].get(holiday, {}).get(room_type)
-
-    day_type = get_day_type(date_obj)
-    season = tag["season"]
-    if season in reference_points[resort]:
-        return reference_points[resort][season].get(day_type, {}).get(room_type)
-
-    return None
-
-import streamlit as st
-import json
-import math
-from datetime import datetime, timedelta
-import pandas as pd
-import io
-import plotly.express as px
 
 # Initialize session state for debug messages
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
 
-# Load JSON data with error handling
+# --- Load JSON Data ---
 try:
     with open("Marriott_2025.json", "r") as f:
         data = json.load(f)
@@ -686,21 +496,151 @@ if not display_resorts:
     st.session_state.debug_messages.append("No resorts found in data.")
     st.stop()
 
-# Subtle discount setting in sidebar with tooltip
-with st.sidebar:
-    discount_percent = st.selectbox(
-        "Apply Points Discount",
-        options=[0, 25, 30],
-        index=0,
-        format_func=lambda x: f"{x}%" if x else "No Discount"
-    )
-    st.caption("\U0001F4A1 Discount applies only to points. Rent is always based on the original points value.")
+# --- Helper Functions ---
+def describe_room_type(room_code):
+    for key, label in room_view_legend.items():
+        if room_code.endswith(" " + key):
+            return f"{room_code} ({label})"
+        elif room_code == key:
+            return f"{room_code} ({label})"
+    return room_code
 
-discount_multiplier = 1 - (discount_percent / 100)
+def get_day_type(date_obj):
+    weekday = date_obj.weekday()
+    return "Fri-Sat" if weekday in (4, 5) else "Sun-Thu"
 
-# Title and user input
-st.title("\U0001F3DD Marriott Vacation Club Points Calculator")
+def classify_date(resort, date_str):
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    year = str(date_obj.year)
+    for holiday_name, (start_str, end_str) in holiday_weeks.get(resort, {}).get(year, {}).items():
+        start = datetime.strptime(start_str, "%Y-%m-%d")
+        end = datetime.strptime(end_str, "%Y-%m-%d")
+        if start <= date_obj <= end:
+            return {"season": "Holiday Week", "holiday": holiday_name}
+    for season_type in ["High Season", "Low Season"]:
+        for start_str, end_str in season_blocks.get(resort, {}).get(year, {}).get(season_type, []):
+            start = datetime.strptime(start_str, "%Y-%m-%d")
+            end = datetime.strptime(end_str, "%Y-%m-%d")
+            if start <= date_obj <= end:
+                return {"season": season_type, "holiday": None}
+    return {"season": "Unknown", "holiday": None}
 
+def lookup_points_formula(resort, room_type, date_str):
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    year = str(date_obj.year)
+    tag = classify_date(resort, date_str)
+    if tag["season"] == "Holiday Week":
+        holiday = tag["holiday"]
+        return reference_points[resort]["Holiday Week"].get(holiday, {}).get(room_type)
+    day_type = get_day_type(date_obj)
+    season = tag["season"]
+    if season in reference_points[resort]:
+        return reference_points[resort][season].get(day_type, {}).get(room_type)
+    return None
+
+def calculate_formula_based(resort, room_type, checkin_date, num_nights, discount_multiplier):
+    results = []
+    total_points = 0
+    total_rent = 0
+    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+
+    for i in range(num_nights):
+        date = checkin_date + timedelta(days=i)
+        date_str = date.strftime("%Y-%m-%d")
+        points = lookup_points_formula(resort, room_type, date_str)
+        tag = classify_date(resort, date_str)
+        if points is None:
+            results.append({
+                "Date": date_str,
+                "Day": date.strftime("%a"),
+                "Season": "Unknown",
+                "Holiday": "-",
+                "Points": 0,
+                "Rent ($)": 0
+            })
+            continue
+        discount_pts = math.floor(points * discount_multiplier)
+        rent = math.ceil(points * rate_per_point)
+        results.append({
+            "Date": date_str,
+            "Day": date.strftime("%a"),
+            "Season": tag["season"],
+            "Holiday": tag["holiday"] or "-",
+            "Points": discount_pts,
+            "Rent ($)": rent
+        })
+        total_points += discount_pts
+        total_rent += rent
+    return results, total_points, total_rent
+
+def calculate_json_based(data, resort, room_type, checkin_date, num_nights, discount_multiplier):
+    breakdown = []
+    total_points = 0
+    total_rent = 0
+    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+    reference_points = data[resort].get(next(iter(data[resort])), {}).get(room_type)
+
+    for i in range(num_nights):
+        date = checkin_date + timedelta(days=i)
+        date_str = date.strftime("%Y-%m-%d")
+        entry = data[resort].get(date_str, {})
+        points = entry.get(room_type, reference_points)
+        if points is None:
+            points = reference_points
+            st.session_state.debug_messages.append(f"Using reference points for {room_type} on {date_str}: {points}")
+        discounted_points = math.floor(points * discount_multiplier)
+        rent = math.ceil(points * rate_per_point)
+        breakdown.append({
+            "Date": date_str,
+            "Day": date.strftime("%a"),
+            "Points": discounted_points,
+            "Rent ($)": rent,
+            "Holiday": "Yes" if entry.get("HolidayWeek", False) else "No"
+        })
+        total_points += discounted_points
+        total_rent += rent
+    return breakdown, total_points, total_rent
+
+def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier):
+    summaries = []
+    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+    search_start = checkin_date - timedelta(days=7)
+    search_end = checkin_date + timedelta(days=num_nights)
+    current = search_start
+    while current < search_end:
+        date_str = current.strftime("%Y-%m-%d")
+        entry = data[resort].get(date_str, {})
+        if entry.get("HolidayWeekStart", False):
+            start_str = date_str
+            end_str = (current + timedelta(days=6)).strftime("%Y-%m-%d")
+            week_range_start = current
+            week_range_end = current + timedelta(days=6)
+            if week_range_end >= checkin_date and week_range_start < search_end:
+                points = entry.get(room_type, reference_points)
+                if points is None:
+                    points = reference_points
+                    st.session_state.debug_messages.append(f"Using reference points for holiday week starting {start_str}: {points}")
+                discounted_points = math.floor(points * discount_multiplier)
+                rent = math.ceil(points * rate_per_point)
+                summaries.append({
+                    "Holiday Week Start": start_str,
+                    "Holiday Week End": end_str,
+                    "Points": discounted_points,
+                    "Rent ($)": rent
+                })
+        current += timedelta(days=1)
+    return summaries
+
+def create_timeline_df(resort, year):
+    data = []
+    for season, blocks in season_blocks[resort][year].items():
+        for start, end in blocks:
+            data.append({"Task": season, "Start": datetime.strptime(start, "%Y-%m-%d"), "End": datetime.strptime(end, "%Y-%m-%d"), "Type": "Season"})
+    for holiday, (start, end) in holiday_weeks[resort][year].items():
+        data.append({"Task": holiday, "Start": datetime.strptime(start, "%Y-%m-%d"), "End": datetime.strptime(end, "%Y-%m-%d"), "Type": "Holiday"})
+    return pd.DataFrame(data)
+
+# --- User Inputs ---
 with st.expander("ℹ️ How Rent Is Calculated"):
     st.markdown("""
     - **Rent is estimated based on original points only.**
@@ -709,189 +649,64 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - Points are **rounded down** when discounts are applied.
     """)
 
+calculation_method = st.radio("Calculation Method", ["JSON-Based (Default)", "Formula-Based"], index=0)
+
 resort_display = st.selectbox("\U0001F3E8 Select Resort", options=display_resorts, key="resort_select")
 resort = reverse_aliases.get(resort_display, resort_display)
 
-# Debug: Log the selected resort key
-st.session_state.debug_messages.append(f"Selected resort key: {resort}")
-
-# Validate resort exists in data
+# Validate resort exists
 if resort not in data:
     st.error(f"Resort '{resort}' not found in Marriott_2025.json. Available resorts: {list(data.keys())}")
-    st.warning("Please update the Marriott_2025.json file to include this resort or select a different one.")
     st.session_state.debug_messages.append(f"Resort not found: {resort}. Available: {list(data.keys())}")
     st.stop()
 
-# Get room types for the selected resort
-try:
-    sample_day = next(iter(data[resort].values()))
-    room_types = [k for k in sample_day if k not in ("Day", "HolidayWeek", "HolidayWeekStart")]
-except StopIteration:
-    st.error(f"No data available for {resort} in Marriott_2025.json.")
-    st.session_state.debug_messages.append(f"No data entries for resort: {resort}")
-    st.stop()
-
+# Get room types
+sample_day = next(iter(data[resort].values()))
+room_types = [k for k in sample_day if k not in ("Day", "HolidayWeek", "HolidayWeekStart")]
 if not room_types:
     st.error(f"No room types found for {resort} in Marriott_2025.json.")
     st.session_state.debug_messages.append(f"No room types found for resort: {resort}")
     st.stop()
 
-room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key="room_type_select")
-compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type])
+room_type_display = st.selectbox("\U0001F6CF Select Room Type", options=[describe_room_type(r) for r in sorted(room_types)], key="room_type_select")
+room_type = room_type_display.split(" (")[0]
 
 checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
 num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=7)
 
-# Set reference points dynamically using the first available date
-first_date = next(iter(data[resort]), None)
-reference_points = data[resort].get(first_date, {}).get(room_type)
-if reference_points is None:
-    st.error(f"No points data found for {room_type} in {resort}. Please select a different room type.")
-    st.session_state.debug_messages.append(f"No points for {room_type} on {first_date} in {resort}")
-    st.stop()
+with st.sidebar:
+    discount_percent = st.selectbox("Apply Points Discount", options=[0, 25, 30], index=0, format_func=lambda x: f"{x}%" if x else "No Discount")
+discount_multiplier = 1 - (discount_percent / 100)
 
-# Function definitions
-def calculate_non_holiday_stay(data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
-    """
-    Calculate points and rent for a non-holiday stay.
-    Returns a breakdown list, total points, and total rent.
-    """
-    breakdown = []
-    total_points = 0
-    total_rent = 0
-    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
-
-    for i in range(num_nights):
-        date = checkin_date + timedelta(days=i)
-        date_str = date.strftime("%Y-%m-%d")
-        entry = data[resort].get(date_str, {})
-
-        # Skip holiday week days
-        if entry.get("HolidayWeek", False):
-            continue
-
-        points = entry.get(room_type, reference_points)
-        if points is None:
-            points = reference_points
-            st.session_state.debug_messages.append(f"Using reference points for {room_type} on {date_str}: {points}")
-        discounted_points = math.floor(points * discount_multiplier)
-        rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
-        breakdown.append({
-            "Date": date_str,
-            "Points": discounted_points,
-            "Estimated Rent ($)": f"${rent}"
-        })
-        total_points += discounted_points
-        total_rent += rent
-
-    return breakdown, total_points, total_rent
-
-def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier, discount_percent):
-    """
-    Summarize holiday weeks that overlap with the stay period.
-    Returns a list of holiday week summaries.
-    """
-    summaries = []
-    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
-    
-    # Expand search window: 7 days before check-in to cover weeks starting just before
-    search_start = checkin_date - timedelta(days=7)
-    search_end = checkin_date + timedelta(days=num_nights)
-
-    current = search_start
-    while current < search_end:
-        date_str = current.strftime("%Y-%m-%d")
-        entry = data[resort].get(date_str, {})
-
-        if entry.get("HolidayWeekStart", False):
-            start_str = date_str
-            end_str = (current + timedelta(days=7)).strftime("%Y-%m-%d")  # 7 nights, checkout on 8th day
-
-            # Check if this holiday week overlaps with user’s stay
-            week_range_start = current
-            week_range_end = current + timedelta(days=6)
-
-            if week_range_end >= checkin_date and week_range_start < search_end:
-                points = entry.get(room_type, reference_points)
-                if points is None:
-                    points = reference_points
-                    st.session_state.debug_messages.append(f"Using reference points for holiday week starting {start_str}: {points}")
-                discounted_points = math.floor(points * discount_multiplier)
-                rent = math.ceil(points * rate_per_point)  # Rent based on original points
-                summaries.append({
-                    "Holiday Week Start": start_str,
-                    "Holiday Week End (Checkout)": end_str,
-                    "Points on Start Day": discounted_points,
-                    "Estimated Rent ($)": f"${rent}"
-                })
-
-        current += timedelta(days=1)
-
-    return summaries
-
-def compare_room_types(data, resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
-    """
-    Compare points and rent across room types for the stay.
-    Returns a DataFrame for the table and a DataFrame for the non-holiday bar chart.
-    """
-    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
-    compare_data = []
-    chart_data = []
-    
-    for room in room_types:
-        for i in range(num_nights):
-            date = checkin_date + timedelta(days=i)
-            date_str = date.strftime("%Y-%m-%d")
-            # Get the day of the week (e.g., "Mon", "Tue")
-            day_of_week = date.strftime("%a")
-            entry = data[resort].get(date_str, {})
-            
-            # Skip holiday week days
-            if entry.get("HolidayWeek", False):
-                continue
-                
-            points = entry.get(room, reference_points)
-            if points is None:
-                points = reference_points
-                st.session_state.debug_messages.append(f"Using reference points for {room} on {date_str}: {points}")
-            discounted_points = math.floor(points * discount_multiplier)
-            rent = math.ceil(points * rate_per_point)  # Round rent up to nearest dollar
-            compare_data.append({
-                "Date": date_str,
-                "Room Type": room,
-                "Estimated Rent ($)": f"${rent}"
-            })
-            chart_data.append({
-                "Date": date_str,
-                "Day": day_of_week,
-                "Room Type": room,
-                "Rent": rent
-            })
-    
-    compare_df = pd.DataFrame(compare_data)
-    # Pivot the DataFrame to have room types as columns and rent as values
-    compare_df_pivot = compare_df.pivot(index="Date", columns="Room Type", values="Estimated Rent ($)").reset_index()
-    
-    chart_df = pd.DataFrame(chart_data)
-    
-    return compare_df_pivot, chart_df
-
-# Main Calculation
+# --- Main Calculation ---
 if st.button("\U0001F4CA Calculate"):
-    breakdown, total_points, total_rent = calculate_non_holiday_stay(
-        data, resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent
-    )
+    reference_points_json = data[resort].get(next(iter(data[resort])), {}).get(room_type)
+    if reference_points_json is None:
+        st.error(f"No points data found for {room_type} in {resort}. Please select a different room type.")
+        st.session_state.debug_messages.append(f"No points for {room_type} in {resort}")
+        st.stop()
 
-    holiday_weeks = summarize_holiday_weeks(
-        data, resort, room_type, checkin_date, num_nights, reference_points, discount_multiplier, discount_percent
-    )
+    if calculation_method == "Formula-Based":
+        breakdown, total_points, total_rent = calculate_formula_based(resort, room_type, checkin_date, num_nights, discount_multiplier)
+        holiday_weeks = []  # Formula-based method handles holidays in breakdown
+    else:
+        breakdown, total_points, total_rent = calculate_json_based(data, resort, room_type, checkin_date, num_nights, discount_multiplier)
+        holiday_weeks = summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points_json, discount_multiplier)
 
-    st.subheader("\U0001F4CB Non-Holiday Stay Breakdown")
+    # Display Results
+    st.subheader("\U0001F4CB Stay Breakdown")
     if breakdown:
         df_breakdown = pd.DataFrame(breakdown)
         st.dataframe(df_breakdown, use_container_width=True)
+        csv_data = df_breakdown.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="\U0001F4C4 Download Breakdown as CSV",
+            data=csv_data,
+            file_name=f"{resort}_stay_breakdown.csv",
+            mime="text/csv"
+        )
     else:
-        st.info("No non-holiday days in the selected period.")
+        st.info("No data available for the selected period.")
 
     st.success(f"Total Points Used: {total_points}")
     st.success(f"Estimated Total Rent: ${total_rent}")
@@ -901,97 +716,39 @@ if st.button("\U0001F4CA Calculate"):
         df_holidays = pd.DataFrame(holiday_weeks)
         st.dataframe(df_holidays, use_container_width=True)
 
+    # Rent Breakdown Chart
     if breakdown:
-        csv_data = df_breakdown.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="\U0001F4C4 Download Breakdown as CSV",
-            data=csv_data,
-            file_name=f"{resort}_stay_breakdown.csv",
-            mime="text/csv"
+        st.subheader("📊 Rent Breakdown by Day")
+        chart_df = pd.DataFrame(breakdown)
+        fig = px.bar(
+            chart_df,
+            x="Day",
+            y="Rent ($)",
+            color="Holiday" if calculation_method == "JSON-Based" else "Season",
+            barmode="group",
+            text="Rent ($)",
+            labels={"Rent ($)": "Estimated Rent ($)", "Day": "Day of Week"},
+            height=400
         )
+        fig.update_traces(texttemplate="$%{text}", textposition="outside")
+        st.plotly_chart(fig, use_container_width=True)
 
-    if compare_rooms:
-        st.subheader("\U0001F6CF Room Type Comparison")
-        all_rooms = [room_type] + compare_rooms
-        compare_df, chart_df = compare_room_types(
-            data, resort, all_rooms, checkin_date, num_nights,
-            discount_multiplier, discount_percent
+    # Season and Holiday Timeline (only for formula-based)
+    if calculation_method == "Formula-Based":
+        st.subheader("📅 Season and Holiday Timeline")
+        timeline_df = create_timeline_df(resort, str(checkin_date.year))
+        timeline_fig = px.timeline(
+            timeline_df,
+            x_start="Start",
+            x_end="End",
+            y="Task",
+            color="Type",
+            color_discrete_map={"Season": "#636EFA", "Holiday": "#EF553B"}
         )
-        st.dataframe(compare_df, use_container_width=True)
+        timeline_fig.update_yaxes(categoryorder="category descending")
+        st.plotly_chart(timeline_fig, use_container_width=True)
 
-        compare_csv = compare_df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="\U0001F4C5 Download Room Comparison as CSV",
-            data=compare_csv,
-            file_name=f"{resort}_room_comparison.csv",
-            mime="text/csv"
-        )
-
-        # Non-Holiday Bar Chart
-        if not chart_df.empty:
-            # Calculate the date range for the title
-            start_date_str = checkin_date.strftime("%B %-d")
-            end_date = checkin_date + timedelta(days=num_nights - 1)
-            end_date_str = end_date.strftime("%-d, %Y")
-            title = f"Non-Holiday Rent Comparison ({start_date_str}-{end_date_str})"
-            st.subheader("\U0001F4CA " + title)
-            fig_non_holiday = px.bar(
-                chart_df,
-                x="Day",
-                y="Rent",
-                color="Room Type",
-                barmode="group",
-                title=title,
-                labels={"Rent": "Estimated Rent ($)", "Day": "Day of Week"},
-                height=400,
-                text="Rent",
-                text_auto=True
-            )
-            fig_non_holiday.update_traces(
-                texttemplate="$%{text}",
-                textposition="auto"
-            )
-            # Ensure the x-axis days are in the correct order
-            fig_non_holiday.update_xaxes(
-                categoryorder="array",
-                categoryarray=[(checkin_date + timedelta(days=i)).strftime("%a") for i in range(num_nights) if not data[resort].get((checkin_date + timedelta(days=i)).strftime("%Y-%m-%d"), {}).get("HolidayWeek", False)]
-            )
-            st.plotly_chart(fig_non_holiday, use_container_width=True)
-
-        # Holiday Week Bar Chart
-        if holiday_weeks:
-            # Update the title for the holiday chart as well
-            holiday_start = min(datetime.strptime(week["Holiday Week Start"], "%Y-%m-%d") for week in holiday_weeks)
-            holiday_end = max(datetime.strptime(week["Holiday Week End (Checkout)"], "%Y-%m-%d") for week in holiday_weeks)
-            holiday_title = f"Holiday Week Rent Comparison ({holiday_start.strftime('%B %-d')}-{holiday_end.strftime('%-d, %Y')})"
-            st.subheader("\U0001F389 " + holiday_title)
-            holiday_chart_data = [
-                {"Holiday Week": f"{week['Holiday Week Start']} to {week['Holiday Week End (Checkout)']}", 
-                 "Room Type": room, 
-                 "Rent": math.ceil(data[resort].get(week['Holiday Week Start'], {}).get(room, reference_points) * 0.81)}
-                for week in holiday_weeks
-                for room in all_rooms
-            ]
-            holiday_chart_df = pd.DataFrame(holiday_chart_data)
-            fig_holiday = px.bar(
-                holiday_chart_df,
-                x="Holiday Week",
-                y="Rent",
-                color="Room Type",
-                barmode="group",
-                title=holiday_title,
-                labels={"Rent": "Estimated Rent ($)"},
-                height=400,
-                text="Rent",
-                text_auto=True
-            )
-            fig_holiday.update_traces(
-                texttemplate="$%{text}",
-                textposition="auto"
-            )
-            st.plotly_chart(fig_holiday, use_container_width=True)
-
-# Display debug messages in a collapsed expander
+# Display debug messages
 with st.expander("Debug Information"):
     if st.session_state.debug_messages:
         for msg in st.session_state.debug_messages:
