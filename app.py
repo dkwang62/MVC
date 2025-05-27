@@ -89,19 +89,13 @@ holiday_weeks = {
             "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
         },
         "2026": {
-            "Low Season": [
-                ["2026-01-02", "2026-01-29"],
-                ["2026-03-27", "2026-04-02"],
-                ["2026-04-10", "2026-06-04"],
-                ["2026-08-28", "2026-11-19"],
-                ["2026-12-04", "2026-12-17"]
-            ],
-            "High Season": [
-                ["2026-01-30", "2026-02-12"],
-                ["2026-02-20", "2026-03-26"],
-                ["2026-06-05", "2026-07-02"],
-                ["2026-07-10", "2026-08-27"]
-            ]
+            "Presidents Day": ["2026-02-13", "2026-02-19"],
+            "Easter": ["2026-04-03", "2026-04-09"],
+            "Independence Day": ["2026-07-03", "2026-07-09"],
+            "Thanksgiving": ["2026-11-20", "2026-11-26"],
+            "Thanksgiving 2": ["2026-11-27", "2026-12-03"],
+            "Christmas": ["2026-12-18", "2026-12-24"],
+            "New Year's Eve/Day": ["2026-12-25", "2026-12-31"]
         }
     },
     "Ko Olina Beach Club": {
@@ -302,7 +296,7 @@ def generate_data(resort, date):
     entry = {}
 
     # Determine season for the specific date
-    season = None  # Initialize as None to ensure we detect if no season matches
+    season = None
     try:
         for s_type in ["Low Season", "High Season"]:
             for [start, end] in season_blocks[resort][year][s_type]:
@@ -319,7 +313,7 @@ def generate_data(resort, date):
         st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
 
     if not season:
-        season = "Low Season"  # Default to Low Season if no match found
+        season = "Low Season"
         st.session_state.debug_messages.append(f"No season match found for {date_str}, defaulting to {season}")
     
     st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
@@ -372,6 +366,8 @@ def generate_data(resort, date):
 # Function to adjust date range for holiday weeks
 def adjust_date_range(resort, checkin_date, num_nights):
     year_str = str(checkin_date.year)
+    original_checkin_date = checkin_date
+    original_num_nights = num_nights
     stay_end = checkin_date + timedelta(days=num_nights - 1)
     holiday_ranges = []
     
@@ -380,8 +376,7 @@ def adjust_date_range(resort, checkin_date, num_nights):
         for h_name, [start, end] in holiday_weeks[resort][year_str].items():
             h_start = datetime.strptime(start, "%Y-%m-%d").date()
             h_end = datetime.strptime(end, "%Y-%m-%d").date()
-            st.session_state.debug_messages.append(f"Evaluating holiday {h_name}: {start} to {end}")
-            # Check if the stay period overlaps with the holiday period
+            st.session_state.debug_messages.append(f"Evaluating holiday {h_name}: {h_start} to {h_end}")
             if (h_start <= stay_end) and (h_end >= checkin_date):
                 holiday_ranges.append((h_start, h_end))
                 st.session_state.debug_messages.append(f"Holiday overlap found with {h_name}")
@@ -397,9 +392,9 @@ def adjust_date_range(resort, checkin_date, num_nights):
         adjusted_end = max(stay_end, latest_holiday_end)
         adjusted_nights = (adjusted_end - adjusted_start).days + 1
         st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end} ({adjusted_nights} nights)")
-        return adjusted_start, adjusted_nights
+        return adjusted_start, adjusted_nights, True
     st.session_state.debug_messages.append(f"No holiday week adjustment needed for {checkin_date} to {stay_end}")
-    return checkin_date, num_nights
+    return checkin_date, num_nights, False
 
 # Function to create Gantt chart
 def create_gantt_chart(resort, year):
@@ -509,8 +504,9 @@ checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).d
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=10)
 
 # Adjust date range for holidays
-checkin_date, adjusted_nights = adjust_date_range(resort, checkin_date, num_nights)
-if adjusted_nights != num_nights or checkin_date != st.session_state.get("last_checkin_date", checkin_date):
+original_checkin_date = checkin_date
+checkin_date, adjusted_nights, was_adjusted = adjust_date_range(resort, checkin_date, num_nights)
+if was_adjusted:
     st.info(f"Date range adjusted to include full holiday week: {checkin_date.strftime('%Y-%m-%d')} to {(checkin_date + timedelta(days=adjusted_nights-1)).strftime('%Y-%m-%d')} ({adjusted_nights} nights).")
 st.session_state.last_checkin_date = checkin_date
 
