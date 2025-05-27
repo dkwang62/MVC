@@ -314,26 +314,20 @@ reference_points = {
 
 # Helper function to map room type keys to descriptive names
 def get_display_room_type(room_key):
-    # First, check if the room_key is already in the legend (for AP rooms)
     if room_key in room_view_legend:
         return room_view_legend[room_key]
     
-    # Split the room key into parts (e.g., "Studio MA", "1BR PH MK")
     parts = room_key.split()
     if not parts:
         return room_key
 
-    # Base room type (e.g., "Studio", "1BR", "2BR")
     base = " ".join(parts[:-1]) if len(parts) > 1 else parts[0]
-    
-    # View type (e.g., "MA", "MK", "PH MA")
     view = parts[-1]
     if view in room_view_legend:
         view_display = room_view_legend[view]
     else:
-        view_display = view  # Fallback if not in legend (e.g., "GV", "OV")
+        view_display = view
 
-    # Handle cases like "PH MA" or "PH MK" where view is two parts
     if len(parts) > 2 and parts[-2] == "PH":
         base = " ".join(parts[:-2])
         view = " ".join(parts[-2:])
@@ -343,17 +337,14 @@ def get_display_room_type(room_key):
 
 # Helper function to map display name back to internal key
 def get_internal_room_key(display_name):
-    # Reverse mapping for AP rooms
     reverse_legend = {v: k for k, v in room_view_legend.items()}
     if display_name in reverse_legend:
         return reverse_legend[display_name]
 
-    # Split the display name into parts
     parts = display_name.split()
     if not parts:
         return display_name
 
-    # Base room type (e.g., "Studio", "1 Bedroom", "2 Bedroom")
     base_parts = []
     view_parts = []
     found_view = False
@@ -392,11 +383,14 @@ def generate_data(resort, date):
 
     # Check if the resort has AP rooms and identify AP room types
     ap_room_types = []
+    ap_display_room_types = []
     if resort == "Ko Olina Beach Club" and "AP Rooms" in reference_points[resort]:
         ap_room_types = list(reference_points[resort]["AP Rooms"]["Fri-Sat"].keys())
+        ap_display_room_types = [get_display_room_type(rt) for rt in ap_room_types]
         st.session_state.debug_messages.append(f"AP room types found: {ap_room_types}")
+        st.session_state.debug_messages.append(f"AP display room types: {ap_display_room_types}")
 
-    # Determine season for the specific date (for all resorts, including Ko Olina for normal rooms)
+    # Determine season for the specific date
     season = None
     try:
         for s_type in ["Low Season", "High Season"]:
@@ -419,75 +413,79 @@ def generate_data(resort, date):
     
     st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
 
-    # Check for holiday week (only for non-AP rooms)
+    # Check for holiday week (for all rooms, but apply logic only to non-AP rooms)
     is_holiday = False
     is_holiday_start = False
     holiday_name = None
-    if not ap_room_types or resort != "Ko Olina Beach Club":  # Skip holiday check for AP rooms
-        try:
-            for h_name, [start, end] in holiday_weeks[resort][year].items():
-                h_start = datetime.strptime(start, "%Y-%m-%d").date()
-                h_end = datetime.strptime(end, "%Y-%m-%d").date()
-                st.session_state.debug_messages.append(f"Checking holiday {h_name}: {start} to {end}")
-                if h_start <= date <= h_end:
-                    is_holiday = True
-                    holiday_name = h_name
-                    if date == h_start:
-                        is_holiday_start = True
-                    st.session_state.debug_messages.append(f"Holiday match found: {holiday_name} for {date_str}")
-                    break
-        except ValueError as e:
-            st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
+    try:
+        for h_name, [start, end] in holiday_weeks[resort][year].items():
+            h_start = datetime.strptime(start, "%Y-%m-%d").date()
+            h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            st.session_state.debug_messages.append(f"Checking holiday {h_name}: {start} to {end}")
+            if h_start <= date <= h_end:
+                is_holiday = True
+                holiday_name = h_name
+                if date == h_start:
+                    is_holiday_start = True
+                st.session_state.debug_messages.append(f"Holiday match found: {holiday_name} for {date_str}")
+                break
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
 
     # Assign points based on room type
     all_room_types = []
-    # Always include normal room types based on season and day category
-    all_room_types.extend(list(reference_points[resort][season][day_category].keys()))
+    all_display_room_types = []
+    # Include normal room types based on season and day category
+    normal_room_types = list(reference_points[resort][season][day_category].keys())
+    normal_display_room_types = [get_display_room_type(rt) for rt in normal_room_types]
+    all_room_types.extend(normal_room_types)
+    all_display_room_types.extend(normal_display_room_types)
     # Add AP room types if they exist (for Ko Olina Beach Club)
     if ap_room_types:
         all_room_types.extend(ap_room_types)
+        all_display_room_types.extend(ap_display_room_types)
 
     # Create a mapping of display names to internal keys
-    display_to_internal = {}
-    for room_type in all_room_types:
-        display_name = get_display_room_type(room_type)
-        display_to_internal[display_name] = room_type
+    display_to_internal = dict(zip(all_display_room_types, all_room_types))
+
+    # Assign points to each room type
+    for display_room_type, room_type in display_to_internal.items():
         points = 0
-        if room_type in ap_room_types:
-            # AP room: Use AP day category and skip season/holiday logic
+        is_ap_room = display_room_type in ap_display_room_types
+
+        if is_ap_room:
+            # AP room: Use AP day category and skip holiday logic
             points_ref = reference_points[resort]["AP Rooms"][ap_day_category]
             points = points_ref.get(room_type, 0)
-            st.session_state.debug_messages.append(f"Applying AP room points for {room_type} ({display_name}) on {date_str} ({ap_day_category}): {points}")
+            st.session_state.debug_messages.append(f"Applying AP room points for {room_type} ({display_room_type}) on {date_str} ({ap_day_category}): {points}")
         else:
-            # Regular room: Use season and holiday logic
+            # Regular room: Apply season and holiday logic
             if is_holiday and is_holiday_start:
                 points_ref = reference_points[resort]["Holiday Week"].get(holiday_name, {})
-                st.session_state.debug_messages.append(f"Applying Holiday Week points for {holiday_name} on {date_str}")
+                points = points_ref.get(room_type, 0)
+                st.session_state.debug_messages.append(f"Applying Holiday Week points for {holiday_name} on {date_str} for {display_room_type}: {points}")
             elif is_holiday and not is_holiday_start:
-                points_ref = {room: 0 for room in reference_points[resort]["Holiday Week"].get(holiday_name, {})}
-                st.session_state.debug_messages.append(f"Zero points for {date_str} (part of holiday week {holiday_name})")
+                points = 0
+                st.session_state.debug_messages.append(f"Zero points for {date_str} (part of holiday week {holiday_name}) for {display_room_type}")
             else:
                 points_ref = reference_points[resort][season][day_category]
-                st.session_state.debug_messages.append(f"Applying {season} {day_category} points for {date_str}")
+                points = points_ref.get(room_type, 0)
+                st.session_state.debug_messages.append(f"Applying {season} {day_category} points for {date_str} for {display_room_type}: {points}")
 
-            points = points_ref.get(room_type, 0)
-            st.session_state.debug_messages.append(f"Assigned points for {room_type} ({display_name}): {points}")
+        entry[display_room_type] = points
 
-        entry[display_name] = points
-
-    if is_holiday and not ap_room_types:  # Only add holiday info for non-AP rooms
+    # Add holiday info for all rooms (will be used differently for AP vs non-AP)
+    if is_holiday:
         entry["HolidayWeek"] = True
         entry["holiday_name"] = holiday_name
-    if is_holiday_start and not ap_room_types:
-        entry["HolidayWeekStart"] = True
+        if is_holiday_start:
+            entry["HolidayWeekStart"] = True
 
     return entry, display_to_internal
 
 # Function to adjust date range for holiday weeks
 def adjust_date_range(resort, checkin_date, num_nights):
     year_str = str(checkin_date.year)
-    original_checkin_date = checkin_date
-    original_num_nights = num_nights
     stay_end = checkin_date + timedelta(days=num_nights - 1)
     holiday_ranges = []
     
@@ -522,7 +520,6 @@ def create_gantt_chart(resort, year):
     year_str = str(year)
     
     try:
-        # Add holiday data
         for h_name, [start, end] in holiday_weeks[resort][year_str].items():
             start_date = datetime.strptime(start, "%Y-%m-%d").date()
             end_date = datetime.strptime(end, "%Y-%m-%d").date()
@@ -534,7 +531,6 @@ def create_gantt_chart(resort, year):
             })
             st.session_state.debug_messages.append(f"Added holiday: {h_name}, Start: {start_date}, Finish: {end_date}")
 
-        # Add season data
         for season_type in ["Low Season", "High Season"]:
             for i, [start, end] in enumerate(season_blocks[resort][year_str][season_type], 1):
                 start_date = datetime.strptime(start, "%Y-%m-%d").date()
@@ -657,9 +653,6 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
     total_rent = 0
     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
 
-    # Convert display name back to internal key
-    internal_room_type = display_to_internal.get(room_type, room_type)
-
     for i in range(num_nights):
         date = checkin_date + timedelta(days=i)
         date_str = date.strftime("%Y-%m-%d")
@@ -676,7 +669,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
             "Rent": rent,
             "Holiday": entry.get("holiday_name", "No")
         })
-        # Add holiday marker for AP rooms
+        # Add holiday marker
         if "HolidayWeek" in entry and entry.get("HolidayWeekStart", False):
             breakdown[-1]["HolidayMarker"] = "🏖️"
         total_points += discounted_points
@@ -707,7 +700,6 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     total_points_by_room = {room: 0 for room in room_types}  # Track total points
     
     for room in room_types:
-        internal_room = display_to_internal.get(room, room)
         for date in all_dates:
             date_str = date.strftime("%Y-%m-%d")
             day_of_week = date.strftime("%a")
@@ -718,22 +710,21 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
             rent = math.ceil(points * rate_per_point)
             compare_data.append({
                 "Date": date_str,
-                "Room Type": room,  # Use display name
+                "Room Type": room,
                 "Estimated Rent ($)": f"${rent}",
-                "Points": discounted_points  # Add points for total calculation
+                "Points": discounted_points
             })
             chart_data.append({
                 "Date": date,
                 "DateStr": date_str,
                 "Day": day_of_week,
-                "Room Type": room,  # Use display name
+                "Room Type": room,
                 "Rent": rent,
                 "Points": discounted_points,
                 "Holiday": entry.get("holiday_name", "No")
             })
-            total_points_by_room[room] += discounted_points  # Accumulate points
+            total_points_by_room[room] += discounted_points
     
-    # Add total points row
     total_row = {"Date": "Total Points"}
     for room in room_types:
         total_row[room] = total_points_by_room[room]
@@ -741,7 +732,6 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     
     compare_df = pd.DataFrame(compare_data)
     compare_df_pivot = compare_df.pivot_table(index="Date", columns="Room Type", values=["Estimated Rent ($)", "Points"], aggfunc="first").reset_index()
-    # Flatten the pivot table columns
     compare_df_pivot.columns = ['Date'] + [f"{col[1]} {col[0]}" for col in compare_df_pivot.columns[1:]]
     chart_df = pd.DataFrame(chart_data)
     
@@ -782,7 +772,6 @@ if st.button("Calculate"):
         chart_df, compare_df = compare_room_types(
             resort, all_rooms, checkin_date, adjusted_nights, discount_multiplier, discount_percent
         )
-        # Split the pivot table into rent and points for better display
         rent_columns = ["Date"] + [col for col in compare_df.columns if "Estimated Rent ($)" in col]
         points_columns = ["Date"] + [col for col in compare_df.columns if "Points" in col]
         st.write("### Estimated Rent ($)")
