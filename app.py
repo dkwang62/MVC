@@ -629,12 +629,11 @@ if st.button("Calculate"):
                     chart_df,
                     x="Day",
                     y="Rent",
-                    color="Holiday",
-                    facet_col="Room Type",
-                    barmode="group",
+                    color="Room Type",  # Color by room type for clustering
+                    barmode="group",    # Cluster bars for each day
                     title=title,
                     labels={"Rent": "Estimated Rent ($)", "Day": "Day of Week"},
-                    height=400,
+                    height=500,         # Increased height for better visibility
                     text="Rent",
                     text_auto=True
                 )
@@ -642,6 +641,11 @@ if st.button("Calculate"):
                 fig.update_xaxes(
                     categoryorder="array",
                     categoryarray=[d.strftime("%a") for d in sorted(chart_df["Date"].unique())]
+                )
+                fig.update_layout(
+                    legend_title_text="Room Type",
+                    bargap=0.2,      # Gap between bars in a group
+                    bargroupgap=0.1  # Gap between groups
                 )
                 st.plotly_chart(fig, use_container_width=True)
             else:
