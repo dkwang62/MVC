@@ -295,7 +295,7 @@ def generate_data(resort, date):
 
     entry = {}
 
-    # Determine season
+    # Determine season for the specific date
     season = "Low Season"
     try:
         for s_type in ["Low Season", "High Season"]:
@@ -310,7 +310,7 @@ def generate_data(resort, date):
     except ValueError as e:
         st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
     
-    st.session_state.debug_messages.append(f"Season determined: {season}")
+    st.session_state.debug_messages.append(f"Season determined for {date_str}: {season}")
 
     # Check for holiday week
     is_holiday = False
@@ -361,20 +361,24 @@ def adjust_date_range(resort, checkin_date, num_nights):
     stay_end = checkin_date + timedelta(days=num_nights - 1)
     holiday_ranges = []
     
-    for h_name, [start, end] in holiday_weeks[resort][year_str].items():
-        h_start = datetime.strptime(start, "%Y-%m-%d").date()
-        h_end = datetime.strptime(end, "%Y-%m-%d").date()
-        if (h_start <= stay_end) and (h_end >= checkin_date):
-            holiday_ranges.append((h_start, h_end))
-    
+    try:
+        for h_name, [start, end] in holiday_weeks[resort][year_str].items():
+            h_start = datetime.strptime(start, "%Y-%m-%d").date()
+            h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            if (h_start <= stay_end) and (h_end >= checkin_date):
+                holiday_ranges.append((h_start, h_end))
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid holiday range in {resort}, {year_str}: {e}")
+
     if holiday_ranges:
         earliest_holiday_start = min(h_start for h_start, _ in holiday_ranges)
         latest_holiday_end = max(h_end for _, h_end in holiday_ranges)
         adjusted_start = min(checkin_date, earliest_holiday_start)
         adjusted_end = max(stay_end, latest_holiday_end)
         adjusted_nights = (adjusted_end - adjusted_start).days + 1
-        st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end}")
+        st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end} ({adjusted_nights} nights)")
         return adjusted_start, adjusted_nights
+    st.session_state.debug_messages.append(f"No holiday week adjustment needed for {checkin_date} to {stay_end}")
     return checkin_date, num_nights
 
 # Function to create Gantt chart
@@ -481,8 +485,8 @@ if not room_types:
 room_type = st.selectbox("Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 7, 3).date())
-num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=4)
+checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 3, 25).date())
+num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=10)
 
 # Adjust date range for holidays
 checkin_date, adjusted_nights = adjust_date_range(resort, checkin_date, num_nights)
@@ -629,11 +633,11 @@ if st.button("Calculate"):
                     chart_df,
                     x="Day",
                     y="Rent",
-                    color="Room Type",  # Color by room type for clustering
-                    barmode="group",    # Cluster bars for each day
+                    color="Room Type",
+                    barmode="group",
                     title=title,
                     labels={"Rent": "Estimated Rent ($)", "Day": "Day of Week"},
-                    height=500,         # Increased height for better visibility
+                    height=500,
                     text="Rent",
                     text_auto=True
                 )
@@ -644,8 +648,8 @@ if st.button("Calculate"):
                 )
                 fig.update_layout(
                     legend_title_text="Room Type",
-                    bargap=0.2,      # Gap between bars in a group
-                    bargroupgap=0.1  # Gap between groups
+                    bargap=0.2,
+                    bargroupgap=0.1
                 )
                 st.plotly_chart(fig, use_container_width=True)
             else:
