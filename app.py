@@ -551,7 +551,7 @@ resort = reverse_aliases.get(resort_display, resort_display)
 st.session_state.debug_messages.append(f"Selected resort: {resort}")
 
 # Get room types
-sample_date = datetime(2025, 1, 3)
+sample_date = datetime(2025, 1, 3).date()  # Ensure date type
 sample_entry = generate_data(resort, sample_date)
 room_types = [k for k in sample_entry if k not in ("HolidayWeek", "HolidayWeekStart")]
 if not room_types:
@@ -562,7 +562,7 @@ if not room_types:
 room_type = st.selectbox("\U0001F6CF Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("\U0001F4CA Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27), max_value=datetime(2026, 12, 31), value=datetime(2025, 7, 1))
+checkin_date = st.date_input("\U0001F4C5 Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 7, 1).date())
 num_nights = st.number_input("\U0001F319 Number of Nights", min_value=1, max_value=30, value=7)
 
 # Set reference points
