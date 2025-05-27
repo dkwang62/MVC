@@ -9,7 +9,7 @@ import plotly.figure_factory as ff
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
 
-# Hardcoded data (unchanged)
+# Hardcoded data
 season_blocks = {
     "Kauai Beach Club": {
         "2025": {
@@ -190,6 +190,15 @@ reference_points = {
                 "2BR OV": 625,
                 "2BR OF": 750
             }
+        },
+        "Holiday Week": {
+            "Presidents Day": {"Parlor GV": 1375},
+            "Easter": {"Parlor GV": 1375},
+            "Independence Day": {"Parlor GV": 1150},
+            "Thanksgiving": {"Parlor GV": 975},
+            "Thanksgiving 2": {"Parlor GV": 1375},
+            "Christmas": {"Parlor GV": 1375},
+            "New Year's Eve/Day": {"Parlor GV": 1550}
         }
     },
     "Ko Olina Beach Club": {
@@ -260,17 +269,25 @@ reference_points = {
                 "3BR MA": 750,
                 "3BR MK": 975
             }
+        },
+        "Holiday Week": {
+            "Presidents Day": {"Studio MA": 2160},
+            "Easter": {"Studio MA": 2160},
+            "Independence Day": {"Studio MA": 1960},
+            "Thanksgiving": {"Studio MA": 1690},
+            "Thanksgiving 2": {"Studio MA": 2160},
+            "Christmas": {"Studio MA": 2160},
+            "New Year's Eve/Day": {"Studio MA": 2365}
         }
     }
 }
 
-# Simplified function to generate data structure (no caching)
+# Function to generate data structure
 def generate_data(resort, date):
     date_str = date.strftime("%Y-%m-%d")
     year = date.strftime("%Y")
     day_of_week = date.strftime("%a")
     
-    # Explicitly check day of week
     st.session_state.debug_messages.append(f"Processing date: {date_str}, Day of week: {day_of_week}")
     is_fri_sat = day_of_week in ["Fri", "Sat"]
     day_category = "Fri-Sat" if is_fri_sat else "Sun-Thu"
@@ -295,22 +312,72 @@ def generate_data(resort, date):
     
     st.session_state.debug_messages.append(f"Season determined: {season}")
 
+    # Check for holiday week
+    is_holiday = False
+    is_holiday_start = False
+    holiday_name = None
+    try:
+        for h_name, [start, end] in holiday_weeks[resort][year].items():
+            h_start = datetime.strptime(start, "%Y-%m-%d").date()
+            h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            if h_start <= date <= h_end:
+                is_holiday = True
+                holiday_name = h_name
+                if date == h_start:
+                    is_holiday_start = True
+                break
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
+
     # Assign points
-    points_ref = reference_points[resort][season][day_category]
-    st.session_state.debug_messages.append(f"Accessing points: reference_points['{resort}']['{season}']['{day_category}']")
+    if is_holiday and is_holiday_start:
+        points_ref = reference_points[resort]["Holiday Week"].get(holiday_name, {})
+        st.session_state.debug_messages.append(f"Applying Holiday Week points for {holiday_name} on {date_str}")
+    elif is_holiday and not is_holiday_start:
+        points_ref = {room: 0 for room in reference_points[resort]["Holiday Week"].get(holiday_name, {})}
+        st.session_state.debug_messages.append(f"Zero points for {date_str} (part of holiday week {holiday_name})")
+    else:
+        points_ref = reference_points[resort][season][day_category]
+        st.session_state.debug_messages.append(f"Applying {season} {day_category} points for {date_str}")
+
+    st.session_state.debug_messages.append(f"Accessing points: reference_points['{resort}']['{season if not is_holiday else 'Holiday Week'}']['{day_category if not is_holiday else holiday_name}']")
     st.session_state.debug_messages.append(f"Points reference: {points_ref}")
 
     for room_type, points in points_ref.items():
         entry[room_type] = points
         st.session_state.debug_messages.append(f"Assigned points for {room_type}: {points}")
 
+    if is_holiday:
+        entry["HolidayWeek"] = True
+        entry["holiday_name"] = holiday_name
+    if is_holiday_start:
+        entry["HolidayWeekStart"] = True
+
     return entry
 
-# Simplified function to adjust date range (no holiday adjustments)
+# Function to adjust date range for holiday weeks
 def adjust_date_range(resort, checkin_date, num_nights):
+    year_str = str(checkin_date.year)
+    stay_end = checkin_date + timedelta(days=num_nights - 1)
+    holiday_ranges = []
+    
+    for h_name, [start, end] in holiday_weeks[resort][year_str].items():
+        h_start = datetime.strptime(start, "%Y-%m-%d").date()
+        h_end = datetime.strptime(end, "%Y-%m-%d").date()
+        if (h_start <= stay_end) and (h_end >= checkin_date):
+            holiday_ranges.append((h_start, h_end))
+    
+    if holiday_ranges:
+        earliest_holiday_start = min(h_start for h_start, _ in holiday_ranges)
+        latest_holiday_end = max(h_end for _, h_end in holiday_ranges)
+        adjusted_start = min(checkin_date, earliest_holiday_start)
+        adjusted_end = max(stay_end, latest_holiday_end)
+        adjusted_nights = (adjusted_end - adjusted_start).days + 1
+        st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end}")
+        return adjusted_start, adjusted_nights
     return checkin_date, num_nights
 
-# Simplified Gantt chart function (optional, keeping for UI)
+# Function to create Gantt chart
 def create_gantt_chart(resort, year):
     gantt_data = []
     year_str = str(year)
@@ -386,7 +453,7 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - $0.81 per point for dates in **2025**
     - $0.86 per point for dates in **2026 and beyond**
     - Points are **rounded down** when discounts are applied.
-    - **Holiday weeks**: Disabled for debugging.
+    - **Holiday weeks**: Points are applied only on the first day; other days within the holiday week are 0 points.
     """)
 
 # Year selection for Gantt chart
@@ -414,13 +481,13 @@ if not room_types:
 room_type = st.selectbox("Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 6, 6).date())
-num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=3)
+checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 7, 3).date())
+num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=4)
 
-# Adjust date range (simplified)
+# Adjust date range for holidays
 checkin_date, adjusted_nights = adjust_date_range(resort, checkin_date, num_nights)
 if adjusted_nights != num_nights or checkin_date != st.session_state.get("last_checkin_date", checkin_date):
-    st.info(f"Date range adjusted: {checkin_date.strftime('%Y-%m-%d')} to {(checkin_date + timedelta(days=adjusted_nights-1)).strftime('%Y-%m-%d')} ({adjusted_nights} nights).")
+    st.info(f"Date range adjusted to include full holiday week: {checkin_date.strftime('%Y-%m-%d')} to {(checkin_date + timedelta(days=adjusted_nights-1)).strftime('%Y-%m-%d')} ({adjusted_nights} nights).")
 st.session_state.last_checkin_date = checkin_date
 
 # Set reference points
@@ -464,6 +531,15 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     for i in range(num_nights):
         date = checkin_date + timedelta(days=i)
         all_dates.append(date)
+    for h_start, h_end in holiday_weeks[resort][str(checkin_date.year)].values():
+        h_start = datetime.strptime(h_start, "%Y-%m-%d").date()
+        h_end = datetime.strptime(h_end, "%Y-%m-%d").date()
+        if (h_start <= checkin_date + timedelta(days=num_nights-1)) and (h_end >= checkin_date):
+            current_date = h_start
+            while current_date <= h_end:
+                if current_date not in all_dates:
+                    all_dates.append(current_date)
+                current_date += timedelta(days=1)
     all_dates = sorted(list(set(all_dates)))
     
     for room in room_types:
