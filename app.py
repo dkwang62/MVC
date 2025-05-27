@@ -196,13 +196,97 @@ reference_points = {
             }
         },
         "Holiday Week": {
-            "Presidents Day": {"Parlor GV": 1375},
-            "Easter": {"Parlor GV": 1375},
-            "Independence Day": {"Parlor GV": 1150},
-            "Thanksgiving": {"Parlor GV": 975},
-            "Thanksgiving 2": {"Parlor GV": 1375},
-            "Christmas": {"Parlor GV": 1375},
-            "New Year's Eve/Day": {"Parlor GV": 1550}
+            "Presidents Day": {
+                "Parlor GV": 1375,
+                "Parlor OV": 1600,
+                "Parlor OF": 1900,
+                "Studio GV": 1900,
+                "Studio OV": 2350,
+                "Studio OF": 2750,
+                "1BR GV": 2575,
+                "1BR OV": 3325,
+                "1BR OF": 4075,
+                "2BR OV": 5100,
+                "2BR OF": 6250
+            },
+            "Easter": {
+                "Parlor GV": 1375,
+                "Parlor OV": 1600,
+                "Parlor OF": 1900,
+                "Studio GV": 1900,
+                "Studio OV": 2350,
+                "Studio OF": 2750,
+                "1BR GV": 2575,
+                "1BR OV": 3325,
+                "1BR OF": 4075,
+                "2BR OV": 5100,
+                "2BR OF": 6250
+            },
+            "Independence Day": {
+                "Parlor GV": 1150,
+                "Parlor OV": 1550,
+                "Parlor OF": 1725,
+                "Studio GV": 1725,
+                "Studio OV": 2175,
+                "Studio OF": 2700,
+                "1BR GV": 2525,
+                "1BR OV": 3150,
+                "1BR OF": 3900,
+                "2BR OV": 4875,
+                "2BR OF": 5900
+            },
+            "Thanksgiving": {
+                "Parlor GV": 975,
+                "Parlor OV": 1525,
+                "Parlor OF": 1550,
+                "Studio GV": 1550,
+                "Studio OV": 1950,
+                "Studio OF": 2350,
+                "1BR GV": 2175,
+                "1BR OV": 2750,
+                "1BR OF": 3325,
+                "2BR OV": 4125,
+                "2BR OF": 5100
+            },
+            "Thanksgiving 2": {
+                "Parlor GV": 1375,
+                "Parlor OV": 1600,
+                "Parlor OF": 1900,
+                "Studio GV": 1900,
+                "Studio OV": 2350,
+                "Studio OF": 2750,
+                "1BR GV": 2575,
+                "1BR OV": 3325,
+                "1BR OF": 4075,
+                "2BR OV": 5100,
+                "2BR OF": 6250
+            },
+            "Christmas": {
+                "Parlor GV": 1375,
+                "Parlor OV": 1600,
+                "Parlor OF": 1900,
+                "Studio GV": 1900,
+                "Studio OV": 2350,
+                "Studio OF": 2750,
+                "1BR GV": 2575,
+                "1BR OV": 3325,
+                "1BR OF": 4075,
+                "2BR OV": 5100,
+                "2BR OF": 6250
+            },
+            "New Year's Eve/Day": {
+                "Parlor GV": 1550,
+                "Parlor OV": 1750,
+                "Parlor OF": 2125,
+                "Studio GV": 2125,
+                "Studio OV": 2575,
+                "Studio OF": 3100,
+                "1BR GV": 2950,
+                "1BR OV": 3675,
+                "1BR OF": 4475,
+                "2BR OV": 5675,
+                "2BR OF": 6825
+            }
         }
     },
     "Ko Olina Beach Club": {
@@ -275,13 +359,118 @@ reference_points = {
             }
         },
         "Holiday Week": {
-            "Presidents Day": {"Studio MA": 2160},
-            "Easter": {"Studio MA": 2160},
-            "Independence Day": {"Studio MA": 1960},
-            "Thanksgiving": {"Studio MA": 1690},
-            "Thanksgiving 2": {"Studio MA": 2160},
-            "Christmas": {"Studio MA": 2160},
-            "New Year's Eve/Day": {"Studio MA": 2365}
+            "Presidents Day": {
+                "Studio MA": 2160,
+                "Studio MK": 2300,
+                "Studio PH MA": 2160,
+                "Studio PH MK": 2800,
+                "1BR MA": 3200,
+                "1BR MK": 3500,
+                "1BR PH MA": 3200,
+                "1BR PH MK": 4000,
+                "2BR MA": 4300,
+                "2BR MK": 4700,
+                "2BR PH MA": 4300,
+                "2BR PH MK": 5000,
+                "3BR MA": 5000,
+                "3BR MK": 5500
+            },
+            "Easter": {
+                "Studio MA": 2160,
+                "Studio MK": 2300,
+                "Studio PH MA": 2160,
+                "Studio PH MK": 2800,
+                "1BR MA": 3200,
+                "1BR MK": 3500,
+                "1BR PH MA": 3200,
+                "1BR PH MK": 4000,
+                "2BR MA": 4300,
+                "2BR MK": 4700,
+                "2BR PH MA": 4300,
+                "2BR PH MK": 5000,
+                "3BR MA": 5000,
+                "3BR MK": 5500
+            },
+            "Independence Day": {
+                "Studio MA": 1960,
+                "Studio MK": 2320,
+                "Studio PH MA": 1960,
+                "Studio PH MK": 2725,
+                "1BR MA": 3325,
+                "1BR MK": 3525,
+                "1BR PH MA": 3325,
+                "1BR PH MK": 4300,
+                "2BR MA": 5025,
+                "2BR MK": 5725,
+                "2BR PH MA": 5025,
+                "2BR PH MK": 6300,
+                "3BR MA": 6875,
+                "3BR MK": 7625
+            },
+            "Thanksgiving": {
+                "Studio MA": 1690,
+                "Studio MK": 1800,
+                "Studio PH MA": 1690,
+                "Studio PH MK": 2200,
+                "1BR MA": 2400,
+                "1BR MK": 2600,
+                "1BR PH MA": 2400,
+                "1BR PH MK": 3000,
+                "2BR MA": 3400,
+                "2BR MK": 3700,
+                "2BR PH MA": 3400,
+                "2BR PH MK": 4000,
+                "3BR MA": 4000,
+                "3BR MK": 4500
+            },
+            "Thanksgiving 2": {
+                "Studio MA": 2160,
+                "Studio MK": 2300,
+                "Studio PH MA": 2160,
+                "Studio PH MK": 2800,
+                "1BR MA": 3200,
+                "1BR MK": 3500,
+                "1BR PH MA": 3200,
+                "1BR PH MK": 4000,
+                "2BR MA": 4300,
+                "2BR MK": 4700,
+                "2BR PH MA": 4300,
+                "2BR PH MK": 5000,
+                "3BR MA": 5000,
+                "3BR MK": 5500
+            },
+            "Christmas": {
+                "Studio MA": 2160,
+                "Studio MK": 2300,
+                "Studio PH MA": 2160,
+                "Studio PH MK": 2800,
+                "1BR MA": 3200,
+                "1BR MK": 3500,
+                "1BR PH MA": 3200,
+                "1BR PH MK": 4000,
+                "2BR MA": 4300,
+                "2BR MK": 4700,
+                "2BR PH MA": 4300,
+                "2BR PH MK": 5000,
+                "3BR MA": 5000,
+                "3BR MK": 5500
+            },
+            "New Year's Eve/Day": {
+                "Studio MA": 2365,
+                "Studio MK": 2500,
+                "Studio PH MA": 2365,
+                "Studio PH MK": 3000,
+                "1BR MA": 3500,
+                "1BR MK": 3800,
+                "1BR PH MA": 3500,
+                "1BR PH MK": 4300,
+                "2BR MA": 4700,
+                "2BR MK": 5100,
+                "2BR PH MA": 4700,
+                "2BR PH MK": 5400,
+                "3BR MA": 5400,
+                "3BR MK": 5900
+            }
         },
         "AP Rooms": {
             "Fri-Sat": {
@@ -314,26 +503,20 @@ reference_points = {
 
 # Helper function to map room type keys to descriptive names
 def get_display_room_type(room_key):
-    # First, check if the room_key is already in the legend (for AP rooms)
     if room_key in room_view_legend:
         return room_view_legend[room_key]
     
-    # Split the room key into parts (e.g., "Studio MA", "1BR PH MK")
     parts = room_key.split()
     if not parts:
         return room_key
 
-    # Base room type (e.g., "Studio", "1BR", "2BR")
     base = " ".join(parts[:-1]) if len(parts) > 1 else parts[0]
-    
-    # View type (e.g., "MA", "MK", "PH MA")
     view = parts[-1]
     if view in room_view_legend:
         view_display = room_view_legend[view]
     else:
-        view_display = view  # Fallback if not in legend (e.g., "GV", "OV")
+        view_display = view
 
-    # Handle cases like "PH MA" or "PH MK" where view is two parts
     if len(parts) > 2 and parts[-2] == "PH":
         base = " ".join(parts[:-2])
         view = " ".join(parts[-2:])
@@ -343,17 +526,14 @@ def get_display_room_type(room_key):
 
 # Helper function to map display name back to internal key
 def get_internal_room_key(display_name):
-    # Reverse mapping for AP rooms
     reverse_legend = {v: k for k, v in room_view_legend.items()}
     if display_name in reverse_legend:
         return reverse_legend[display_name]
 
-    # Split the display name into parts
     parts = display_name.split()
     if not parts:
         return display_name
 
-    # Base room type (e.g., "Studio", "1 Bedroom", "2 Bedroom")
     base_parts = []
     view_parts = []
     found_view = False
@@ -396,7 +576,7 @@ def generate_data(resort, date):
         ap_room_types = list(reference_points[resort]["AP Rooms"]["Fri-Sat"].keys())
         st.session_state.debug_messages.append(f"AP room types found: {ap_room_types}")
 
-    # Determine season for the specific date (for all resorts, including Ko Olina for normal rooms)
+    # Determine season for the specific date
     season = None
     try:
         for s_type in ["Low Season", "High Season"]:
@@ -419,75 +599,73 @@ def generate_data(resort, date):
     
     st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
 
-    # Check for holiday week (only for non-AP rooms)
+    # Check for holiday week
     is_holiday = False
     is_holiday_start = False
     holiday_name = None
-    if not ap_room_types or resort != "Ko Olina Beach Club":  # Skip holiday check for AP rooms
-        try:
-            for h_name, [start, end] in holiday_weeks[resort][year].items():
-                h_start = datetime.strptime(start, "%Y-%m-%d").date()
-                h_end = datetime.strptime(end, "%Y-%m-%d").date()
-                st.session_state.debug_messages.append(f"Checking holiday {h_name}: {start} to {end}")
-                if h_start <= date <= h_end:
-                    is_holiday = True
-                    holiday_name = h_name
-                    if date == h_start:
-                        is_holiday_start = True
-                    st.session_state.debug_messages.append(f"Holiday match found: {holiday_name} for {date_str}")
-                    break
-        except ValueError as e:
-            st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
+    try:
+        for h_name, [start, end] in holiday_weeks[resort][year].items():
+            h_start = datetime.strptime(start, "%Y-%m-%d").date()
+            h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            st.session_state.debug_messages.append(f"Checking holiday {h_name}: {start} to {end}")
+            if h_start <= date <= h_end:
+                is_holiday = True
+                holiday_name = h_name
+                if date == h_start:
+                    is_holiday_start = True
+                st.session_state.debug_messages.append(f"Holiday match found: {holiday_name} for {date_str}")
+                break
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
 
     # Assign points based on room type
     all_room_types = []
-    # Always include normal room types based on season and day category
-    all_room_types.extend(list(reference_points[resort][season][day_category].keys()))
-    # Add AP room types if they exist (for Ko Olina Beach Club)
+    all_display_room_types = []
+    normal_room_types = list(reference_points[resort][season][day_category].keys())
+    normal_display_room_types = [get_display_room_type(rt) for rt in normal_room_types]
+    all_room_types.extend(normal_room_types)
+    all_display_room_types.extend(normal_display_room_types)
     if ap_room_types:
         all_room_types.extend(ap_room_types)
+        all_display_room_types.extend([get_display_room_type(rt) for rt in ap_room_types])
 
-    # Create a mapping of display names to internal keys
-    display_to_internal = {}
-    for room_type in all_room_types:
-        display_name = get_display_room_type(room_type)
-        display_to_internal[display_name] = room_type
+    display_to_internal = dict(zip(all_display_room_types, all_room_types))
+
+    for display_room_type, room_type in display_to_internal.items():
         points = 0
-        if room_type in ap_room_types:
-            # AP room: Use AP day category and skip season/holiday logic
+        is_ap_room = room_type in ap_room_types
+
+        if is_ap_room:
             points_ref = reference_points[resort]["AP Rooms"][ap_day_category]
             points = points_ref.get(room_type, 0)
-            st.session_state.debug_messages.append(f"Applying AP room points for {room_type} ({display_name}) on {date_str} ({ap_day_category}): {points}")
+            st.session_state.debug_messages.append(f"Applying AP room points for {room_type} ({display_room_type}) on {date_str} ({ap_day_category}): {points}")
         else:
-            # Regular room: Use season and holiday logic
             if is_holiday and is_holiday_start:
                 points_ref = reference_points[resort]["Holiday Week"].get(holiday_name, {})
-                st.session_state.debug_messages.append(f"Applying Holiday Week points for {holiday_name} on {date_str}")
+                points = points_ref.get(room_type, 0)
+                st.session_state.debug_messages.append(f"Applying Holiday Week points for {holiday_name} on {date_str} for {display_room_type}: {points}")
             elif is_holiday and not is_holiday_start:
-                points_ref = {room: 0 for room in reference_points[resort]["Holiday Week"].get(holiday_name, {})}
-                st.session_state.debug_messages.append(f"Zero points for {date_str} (part of holiday week {holiday_name})")
+                points = 0
+                st.session_state.debug_messages.append(f"Zero points for {date_str} (part of holiday week {holiday_name}) for {display_room_type}")
             else:
                 points_ref = reference_points[resort][season][day_category]
-                st.session_state.debug_messages.append(f"Applying {season} {day_category} points for {date_str}")
+                points = points_ref.get(room_type, 0)
+                st.session_state.debug_messages.append(f"Applying {season} {day_category} points for {date_str} for {display_room_type}: {points}")
 
-            points = points_ref.get(room_type, 0)
-            st.session_state.debug_messages.append(f"Assigned points for {room_type} ({display_name}): {points}")
+        entry[display_room_type] = points
 
-        entry[display_name] = points
-
-    if is_holiday and not ap_room_types:  # Only add holiday info for non-AP rooms
+    # Add holiday info
+    if is_holiday:
         entry["HolidayWeek"] = True
         entry["holiday_name"] = holiday_name
-    if is_holiday_start and not ap_room_types:
-        entry["HolidayWeekStart"] = True
+        if is_holiday_start:
+            entry["HolidayWeekStart"] = True
 
     return entry, display_to_internal
 
 # Function to adjust date range for holiday weeks
 def adjust_date_range(resort, checkin_date, num_nights):
     year_str = str(checkin_date.year)
-    original_checkin_date = checkin_date
-    original_num_nights = num_nights
     stay_end = checkin_date + timedelta(days=num_nights - 1)
     holiday_ranges = []
     
@@ -522,7 +700,6 @@ def create_gantt_chart(resort, year):
     year_str = str(year)
     
     try:
-        # Add holiday data
         for h_name, [start, end] in holiday_weeks[resort][year_str].items():
             start_date = datetime.strptime(start, "%Y-%m-%d").date()
             end_date = datetime.strptime(end, "%Y-%m-%d").date()
@@ -534,7 +711,6 @@ def create_gantt_chart(resort, year):
             })
             st.session_state.debug_messages.append(f"Added holiday: {h_name}, Start: {start_date}, Finish: {end_date}")
 
-        # Add season data
         for season_type in ["Low Season", "High Season"]:
             for i, [start, end] in enumerate(season_blocks[resort][year_str][season_type], 1):
                 start_date = datetime.strptime(start, "%Y-%m-%d").date()
@@ -608,7 +784,7 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - $0.81 per point for dates in **2025**
     - $0.86 per point for dates in **2026 and beyond**
     - Points are **rounded down** when discounts are applied.
-    - **Holiday weeks**: Points are applied only on the first day; other days within the holiday week are 0 points (except for AP rooms, which use daily points).
+    - **Holiday weeks**: Points are applied only on the first day for normal rooms; AP rooms use the sum of daily points over 7 days.
     """)
 
 # Year selection for Gantt chart
@@ -624,7 +800,7 @@ st.subheader(f"Season and Holiday Calendar ({year_select})")
 gantt_fig = create_gantt_chart(resort, year_select)
 st.plotly_chart(gantt_fig, use_container_width=True)
 
-# Get room types
+# Get room types and AP room types
 sample_date = datetime(2025, 1, 8).date()  # Wednesday
 sample_entry, display_to_internal = generate_data(resort, sample_date)
 room_types = sorted([k for k in sample_entry if k not in ("HolidayWeek", "HolidayWeekStart", "holiday_name")])
@@ -632,6 +808,14 @@ if not room_types:
     st.error(f"No room types found for {resort}.")
     st.session_state.debug_messages.append(f"No room types for {resort}")
     st.stop()
+
+# Define AP display room types globally for the selected resort
+ap_room_types = []
+ap_display_room_types = []
+if resort == "Ko Olina Beach Club" and "AP Rooms" in reference_points[resort]:
+    ap_room_types = list(reference_points[resort]["AP Rooms"]["Fri-Sat"].keys())
+    ap_display_room_types = [get_display_room_type(rt) for rt in ap_room_types]
+    st.session_state.debug_messages.append(f"Global AP display room types: {ap_display_room_types}")
 
 room_type = st.selectbox("Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("Compare With Other Room Types", options=[r for r in room_types if r != room_type])
@@ -657,9 +841,6 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
     total_rent = 0
     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
 
-    # Convert display name back to internal key
-    internal_room_type = display_to_internal.get(room_type, room_type)
-
     for i in range(num_nights):
         date = checkin_date + timedelta(days=i)
         date_str = date.strftime("%Y-%m-%d")
@@ -673,10 +854,9 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
             "Date": date_str,
             "Day": date.strftime("%a"),
             "Points": discounted_points,
-            "Rent": rent,
+            "Rent": f"${rent}",
             "Holiday": entry.get("holiday_name", "No")
         })
-        # Add holiday marker for AP rooms
         if "HolidayWeek" in entry and entry.get("HolidayWeekStart", False):
             breakdown[-1]["HolidayMarker"] = "🏖️"
         total_points += discounted_points
@@ -684,7 +864,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
 
     return breakdown, total_points, total_rent
 
-def compare_room_types(resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent):
+def compare_room_types(resort, room_types, checkin_date, num_nights, discount_multiplier, discount_percent, ap_display_room_types):
     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
     compare_data = []
     chart_data = []
@@ -693,10 +873,15 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     for i in range(num_nights):
         date = checkin_date + timedelta(days=i)
         all_dates.append(date)
-    for h_start, h_end in holiday_weeks[resort][str(checkin_date.year)].values():
-        h_start = datetime.strptime(h_start, "%Y-%m-%d").date()
-        h_end = datetime.strptime(h_end, "%Y-%m-%d").date()
+    holiday_ranges = []
+    holiday_names = {}
+    for h_name, [start, end] in holiday_weeks[resort][str(checkin_date.year)].items():
+        h_start = datetime.strptime(start, "%Y-%m-%d").date()
+        h_end = datetime.strptime(end, "%Y-%m-%d").date()
         if (h_start <= checkin_date + timedelta(days=num_nights-1)) and (h_end >= checkin_date):
+            holiday_ranges.append((h_start, h_end))
+            for d in [h_start + timedelta(days=x) for x in range((h_end - h_start).days + 1)]:
+                holiday_names[d] = h_name
             current_date = h_start
             while current_date <= h_end:
                 if current_date not in all_dates:
@@ -705,9 +890,13 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     all_dates = sorted(list(set(all_dates)))
     
     total_points_by_room = {room: 0 for room in room_types}  # Track total points
+    holiday_totals = {room: {} for room in room_types}  # Track holiday week totals by holiday name
     
     for room in room_types:
         internal_room = display_to_internal.get(room, room)
+        is_ap_room = room in ap_display_room_types
+        current_holiday = None
+        
         for date in all_dates:
             date_str = date.strftime("%Y-%m-%d")
             day_of_week = date.strftime("%a")
@@ -716,39 +905,77 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
             points = entry.get(room, reference_points_resort.get(room, 0))
             discounted_points = math.floor(points * discount_multiplier)
             rent = math.ceil(points * rate_per_point)
+            rent_str = f"${rent}"
+            
+            # Check if this date is within a holiday week
+            is_holiday_date = any(h_start <= date <= h_end for h_start, h_end in holiday_ranges)
+            holiday_name = holiday_names.get(date, None)
+            if is_holiday_date and entry.get("HolidayWeekStart", False):
+                current_holiday = holiday_name
+                if current_holiday not in holiday_totals[room]:
+                    holiday_totals[room][current_holiday] = {"points": 0, "rent": 0}
+                if is_ap_room:
+                    # For AP rooms, use "Full Week" points for the entire week
+                    full_week_points = reference_points[resort]["AP Rooms"]["Full Week"].get(internal_room, 0)
+                    full_week_discounted = math.floor(full_week_points * discount_multiplier)
+                    holiday_totals[room][current_holiday]["points"] = full_week_discounted
+                    holiday_totals[room][current_holiday]["rent"] = math.ceil(full_week_points * rate_per_point)
+                else:
+                    # For normal rooms, use points from the first day
+                    holiday_totals[room][current_holiday]["points"] = discounted_points
+                    holiday_totals[room][current_holiday]["rent"] = rent
+            elif is_holiday_date and current_holiday:
+                if not is_ap_room:
+                    # For normal rooms, points are 0 after the first day
+                    pass
+            else:
+                current_holiday = None
+            
             compare_data.append({
                 "Date": date_str,
-                "Room Type": room,  # Use display name
-                "Estimated Rent ($)": f"${rent}",
-                "Points": discounted_points  # Add points for total calculation
+                "Room Type": room,
+                "Estimated Rent ($)": rent_str,
+                "Points": discounted_points
             })
             chart_data.append({
                 "Date": date,
                 "DateStr": date_str,
                 "Day": day_of_week,
-                "Room Type": room,  # Use display name
-                "Rent": rent,
+                "Room Type": room,
+                "Rent": rent_str,
+                "RentValue": rent,
                 "Points": discounted_points,
                 "Holiday": entry.get("holiday_name", "No")
             })
-            total_points_by_room[room] += discounted_points  # Accumulate points
+            if not is_holiday_date or (is_holiday_date and is_ap_room):
+                total_points_by_room[room] += discounted_points
     
-    # Add total points row
-    total_row = {"Date": "Total Points"}
+    # Add total points row, excluding holiday week contributions (they'll be added separately)
+    total_row = {"Date": "Total Points (Non-Holiday)"}
     for room in room_types:
         total_row[room] = total_points_by_room[room]
     compare_data.append(total_row)
     
+    # Add holiday week totals
+    for room in room_types:
+        for holiday_name, totals in holiday_totals[room].items():
+            if totals["points"] > 0:
+                compare_data.append({
+                    "Date": f"{holiday_name} Holiday Week",
+                    "Room Type": room,
+                    "Estimated Rent ($)": f"${totals['rent']}",
+                    "Points": totals["points"]
+                })
+    
     compare_df = pd.DataFrame(compare_data)
     compare_df_pivot = compare_df.pivot_table(index="Date", columns="Room Type", values=["Estimated Rent ($)", "Points"], aggfunc="first").reset_index()
-    # Flatten the pivot table columns
     compare_df_pivot.columns = ['Date'] + [f"{col[1]} {col[0]}" for col in compare_df_pivot.columns[1:]]
     chart_df = pd.DataFrame(chart_data)
     
     st.session_state.debug_messages.append(f"chart_df columns: {chart_df.columns.tolist()}")
     st.session_state.debug_messages.append(f"chart_df head: {chart_df.head().to_dict()}")
     
-    return chart_df, compare_df_pivot
+    return chart_df, compare_df_pivot, holiday_totals
 
 # Main Calculation
 if st.button("Calculate"):
@@ -777,12 +1004,11 @@ if st.button("Calculate"):
 
     if compare_rooms:
         st.subheader("Room Type Comparison")
-        st.info("Note: During holiday weeks, normal rooms apply points only on the first day, while AP rooms use daily points based on the day of the week.")
+        st.info("Note: Non-holiday weeks are compared day-by-day; holiday weeks are compared as total points for the week. Normal rooms apply points only on the first day of a holiday week; AP rooms use the sum of daily points over 7 days.")
         all_rooms = [room_type] + compare_rooms
-        chart_df, compare_df = compare_room_types(
-            resort, all_rooms, checkin_date, adjusted_nights, discount_multiplier, discount_percent
+        chart_df, compare_df, holiday_totals = compare_room_types(
+            resort, all_rooms, checkin_date, adjusted_nights, discount_multiplier, discount_percent, ap_display_room_types
         )
-        # Split the pivot table into rent and points for better display
         rent_columns = ["Date"] + [col for col in compare_df.columns if "Estimated Rent ($)" in col]
         points_columns = ["Date"] + [col for col in compare_df.columns if "Points" in col]
         st.write("### Estimated Rent ($)")
@@ -799,37 +1025,74 @@ if st.button("Calculate"):
         )
 
         if not chart_df.empty:
-            required_columns = ["Date", "DateStr", "Day", "Room Type", "Rent", "Points", "Holiday"]
+            required_columns = ["Date", "DateStr", "Day", "Room Type", "Rent", "RentValue", "Points", "Holiday"]
             if all(col in chart_df.columns for col in required_columns):
-                start_date = chart_df["Date"].min()
-                end_date = chart_df["Date"].max()
-                start_date_str = start_date.strftime("%B %-d")
-                end_date_str = end_date.strftime("%-d, %Y")
-                title = f"Rent Comparison ({start_date_str}-{end_date_str})"
-                st.subheader(title)
-                fig = px.bar(
-                    chart_df,
-                    x="Day",
-                    y="Rent",
-                    color="Room Type",
-                    barmode="group",
-                    title=title,
-                    labels={"Rent": "Estimated Rent ($)", "Day": "Day of Week"},
-                    height=500,
-                    text="Rent",
-                    text_auto=True
-                )
-                fig.update_traces(texttemplate="$%{text}", textposition="auto")
-                fig.update_xaxes(
-                    categoryorder="array",
-                    categoryarray=[d.strftime("%a") for d in sorted(chart_df["Date"].unique())]
-                )
-                fig.update_layout(
-                    legend_title_text="Room Type",
-                    bargap=0.2,
-                    bargroupgap=0.1
-                )
-                st.plotly_chart(fig, use_container_width=True)
+                # Filter for non-holiday days and holiday weeks separately
+                non_holiday_df = chart_df[chart_df["Holiday"] == "No"]
+                holiday_data = []
+                for room in all_rooms:
+                    for holiday_name, totals in holiday_totals[room].items():
+                        if totals["rent"] > 0:  # Only include rooms with holiday totals
+                            holiday_data.append({
+                                "Holiday": holiday_name,
+                                "Room Type": room,
+                                "Rent": f"${totals['rent']}",
+                                "RentValue": totals["rent"]
+                            })
+                holiday_df = pd.DataFrame(holiday_data)
+                
+                if not non_holiday_df.empty:
+                    start_date = non_holiday_df["Date"].min()
+                    end_date = non_holiday_df["Date"].max()
+                    start_date_str = start_date.strftime("%B %-d")
+                    end_date_str = end_date.strftime("%-d, %Y")
+                    title = f"Rent Comparison (Non-Holiday, {start_date_str}-{end_date_str})"
+                    st.subheader(title)
+                    fig = px.bar(
+                        non_holiday_df,
+                        x="Day",
+                        y="RentValue",
+                        color="Room Type",
+                        barmode="group",
+                        title=title,
+                        labels={"RentValue": "Estimated Rent ($)", "Day": "Day of Week"},
+                        height=500,
+                        text="Rent",
+                        text_auto=True
+                    )
+                    fig.update_traces(texttemplate="$%{text}", textposition="auto")
+                    fig.update_xaxes(
+                        categoryorder="array",
+                        categoryarray=[d.strftime("%a") for d in sorted(non_holiday_df["Date"].unique())]
+                    )
+                    fig.update_layout(
+                        legend_title_text="Room Type",
+                        bargap=0.2,
+                        bargroupgap=0.1
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                if not holiday_df.empty:
+                    st.subheader("Rent Comparison (Holiday Weeks)")
+                    fig = px.bar(
+                        holiday_df,
+                        x="Holiday",
+                        y="RentValue",
+                        color="Room Type",
+                        barmode="group",
+                        title="Rent Comparison (Holiday Weeks)",
+                        labels={"RentValue": "Estimated Rent ($)", "Holiday": "Holiday Week"},
+                        height=500,
+                        text="Rent",
+                        text_auto=True
+                    )
+                    fig.update_traces(texttemplate="$%{text}", textposition="auto")
+                    fig.update_layout(
+                        legend_title_text="Room Type",
+                        bargap=0.2,
+                        bargroupgap=0.1
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
             else:
                 st.error("Chart DataFrame missing required columns.")
                 st.session_state.debug_messages.append(f"Chart DataFrame columns: {chart_df.columns.tolist()}")
