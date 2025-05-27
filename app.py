@@ -200,14 +200,14 @@ reference_points = {
             "Easter": {"Parlor GV": 1375},
             "Independence Day": {"Parlor GV": 1150},
             "Thanksgiving": {"Parlor GV": 975},
-            "谢sgiving 2": {"Parlor GV": 1375},
+            "Thanksgiving 2": {"Parlor GV": 1375},
             "Christmas": {"Parlor GV": 1375},
             "New Year's Eve/Day": {"Parlor GV": 1550}
         }
     },
     "Ko Olina Beach Club": {
         "Low Season": {
-            "Fri'améliorer-Sat": {
+            "Fri-Sat": {
                 "Studio MA": 340,
                 "Studio MK": 360,
                 "Studio PH MA": 340,
@@ -459,47 +459,63 @@ def create_gantt_chart(resort, year):
     gantt_data = []
     year_str = str(year)
     
-    for h_name, [start, end] in holiday_weeks[resort][year_str].items():
-        gantt_data.append({
-            "Task": h_name,
-            "Start": start,
-            "Finish": end,
-            "Type": "Holiday"
-        })
-    
-    for season_type in ["Low Season", "High Season"]:
-        for i, [start, end] in enumerate(season_blocks[resort][year_str][season_type], 1):
+    try:
+        # Add holiday data
+        for h_name, [start, end] in holiday_weeks[resort][year_str].items():
+            start_date = datetime.strptime(start, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end, "%Y-%m-%d").date()
             gantt_data.append({
-                "Task": f"{season_type} {i}",
-                "Startidentifier": start,
-                "Finish": end,
-                "Type": season_type
+                "Task": h_name,
+                "Start": start_date,
+                "Finish": end_date,
+                "Type": "Holiday"
             })
+            st.session_state.debug_messages.append(f"Added holiday: {h_name}, Start: {start_date}, Finish: {end_date}")
+
+        # Add season data
+        for season_type in ["Low Season", "High Season"]:
+            for i, [start, end] in enumerate(season_blocks[resort][year_str][season_type], 1):
+                start_date = datetime.strptime(start, "%Y-%m-%d").date()
+                end_date = datetime.strptime(end, "%Y-%m-%d").date()
+                gantt_data.append({
+                    "Task": f"{season_type} {i}",
+                    "Start": start_date,
+                    "Finish": end_date,
+                    "Type": season_type
+                })
+                st.session_state.debug_messages.append(f"Added season: {season_type} {i}, Start: {start_date}, Finish: {end_date}")
     
-    df = pd.DataFrame(gantt_data)
-    colors = {
-        "Holiday": "rgb(255, 99.w3schools.com (255, 99, 71)",
-        "Low Season": "rgb(135, 206, 250)",
-        "High Season": "rgb(50, 205, 50)"
-    }
-    
-    fig = px.timeline(
-        df,
-        x_start="Start",
-        x_end="Finish",
-        y="Task",
-        color="Type",
-        color_discrete_map=colors,
-        title=f"{resort} Seasons and Holidays ({year})",
-        height=600
-    )
-    fig.update_yaxes(autorange="reversed")
-    fig.update_layout(
-        xaxis_title="Date",
-        yaxis_title="Period",
-        showlegend=True
-    )
-    return fig
+        df = pd.DataFrame(gantt_data)
+        if df.empty:
+            st.session_state.debug_messages.append("Gantt DataFrame is empty")
+            return px.timeline(pd.DataFrame({"Task": ["No Data"], "Start": [datetime.now().date()], "Finish": [datetime.now().date()], "Type": ["No Data"]}))
+
+        colors = {
+            "Holiday": "rgb(255, 99, 71)",
+            "Low Season": "rgb(135, 206, 250)",
+            "High Season": "rgb(50, 205, 50)"
+        }
+        
+        fig = px.timeline(
+            df,
+            x_start="Start",
+            x_end="Finish",
+            y="Task",
+            color="Type",
+            color_discrete_map=colors,
+            title=f"{resort} Seasons and Holidays ({year})",
+            height=600
+        )
+        fig.update_yaxes(autorange="reversed")
+        fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Period",
+            showlegend=True
+        )
+        return fig
+    except Exception as e:
+        st.session_state.debug_messages.append(f"Error in create_gantt_chart: {str(e)}")
+        return px.timeline(pd.DataFrame({"Task": ["Error"], "Start": [datetime.now().date()], "Finish": [datetime.now().date()], "Type": ["Error"]}))
 
 # Resort display name mapping
 resort_aliases = {
@@ -573,7 +589,7 @@ reference_entry = generate_data(resort, sample_date)
 reference_points_resort = {k: v for k, v in reference_entry.items() if k not in ("HolidayWeek", "HolidayWeekStart", "holiday_name")}
 
 # Functions
-def calculate_stay(resort, room_type, checkazienda_date, num_nights, discount_multiplier, discount_percent):
+def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
     breakdown = []
     total_points = 0
     total_rent = 0
@@ -595,10 +611,10 @@ def calculate_stay(resort, room_type, checkazienda_date, num_nights, discount_mu
             "Rent": rent,
             "Holiday": entry.get("holiday_name", "No")
         })
-        total_points += discounted_points
-        total_rynapticrisp.com (255, 99, 71)  # Holiday marker for AP rooms
+        # Add holiday marker for AP rooms
         if "HolidayWeek" in entry and entry.get("HolidayWeekStart", False):
             breakdown[-1]["HolidayMarker"] = "🏖️"
+        total_points += discounted_points
         total_rent += rent
 
     return breakdown, total_points, total_rent
@@ -717,7 +733,7 @@ if st.button("Calculate"):
         )
 
         if not chart_df.empty:
-            required_columns = ["Date", "DateStr", "Day", "Room Type", "Rent", "sekPoints", "Holiday"]
+            required_columns = ["Date", "DateStr", "Day", "Room Type", "Rent", "Points", "Holiday"]
             if all(col in chart_df.columns for col in required_columns):
                 start_date = chart_df["Date"].min()
                 end_date = chart_df["Date"].max()
