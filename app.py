@@ -89,13 +89,19 @@ holiday_weeks = {
             "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
         },
         "2026": {
-            "Presidents Day": ["2026-02-13", "2026-02-19"],
-            "Easter": ["2026-04-03", "2026-04-09"],
-            "Independence Day": ["2026-07-03", "2026-07-09"],
-            "Thanksgiving": ["2026-11-20", "2026-11-26"],
-            "Thanksgiving 2": ["2026-11-27", "2026-12-03"],
-            "Christmas": ["2026-12-18", "2026-12-24"],
-            "New Year's Eve/Day": ["2026-12-25", "2026-12-31"]
+            "Low Season": [
+                ["2026-01-02", "2026-01-29"],
+                ["2026-03-27", "2026-04-02"],
+                ["2026-04-10", "2026-06-04"],
+                ["2026-08-28", "2026-11-19"],
+                ["2026-12-04", "2026-12-17"]
+            ],
+            "High Season": [
+                ["2026-01-30", "2026-02-12"],
+                ["2026-02-20", "2026-03-26"],
+                ["2026-06-05", "2026-07-02"],
+                ["2026-07-10", "2026-08-27"]
+            ]
         }
     },
     "Ko Olina Beach Club": {
@@ -296,21 +302,27 @@ def generate_data(resort, date):
     entry = {}
 
     # Determine season for the specific date
-    season = "Low Season"
+    season = None  # Initialize as None to ensure we detect if no season matches
     try:
         for s_type in ["Low Season", "High Season"]:
             for [start, end] in season_blocks[resort][year][s_type]:
                 s_start = datetime.strptime(start, "%Y-%m-%d").date()
                 s_end = datetime.strptime(end, "%Y-%m-%d").date()
+                st.session_state.debug_messages.append(f"Checking season {s_type}: {start} to {end}")
                 if s_start <= date <= s_end:
                     season = s_type
+                    st.session_state.debug_messages.append(f"Season match found: {season} for {date_str}")
                     break
-            if season == s_type:
+            if season:
                 break
     except ValueError as e:
         st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
+
+    if not season:
+        season = "Low Season"  # Default to Low Season if no match found
+        st.session_state.debug_messages.append(f"No season match found for {date_str}, defaulting to {season}")
     
-    st.session_state.debug_messages.append(f"Season determined for {date_str}: {season}")
+    st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
 
     # Check for holiday week
     is_holiday = False
@@ -320,11 +332,13 @@ def generate_data(resort, date):
         for h_name, [start, end] in holiday_weeks[resort][year].items():
             h_start = datetime.strptime(start, "%Y-%m-%d").date()
             h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            st.session_state.debug_messages.append(f"Checking holiday {h_name}: {start} to {end}")
             if h_start <= date <= h_end:
                 is_holiday = True
                 holiday_name = h_name
                 if date == h_start:
                     is_holiday_start = True
+                st.session_state.debug_messages.append(f"Holiday match found: {holiday_name} for {date_str}")
                 break
     except ValueError as e:
         st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
@@ -361,12 +375,18 @@ def adjust_date_range(resort, checkin_date, num_nights):
     stay_end = checkin_date + timedelta(days=num_nights - 1)
     holiday_ranges = []
     
+    st.session_state.debug_messages.append(f"Checking holiday overlap for {checkin_date} to {stay_end}")
     try:
         for h_name, [start, end] in holiday_weeks[resort][year_str].items():
             h_start = datetime.strptime(start, "%Y-%m-%d").date()
             h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            st.session_state.debug_messages.append(f"Evaluating holiday {h_name}: {start} to {end}")
+            # Check if the stay period overlaps with the holiday period
             if (h_start <= stay_end) and (h_end >= checkin_date):
                 holiday_ranges.append((h_start, h_end))
+                st.session_state.debug_messages.append(f"Holiday overlap found with {h_name}")
+            else:
+                st.session_state.debug_messages.append(f"No overlap with {h_name}")
     except ValueError as e:
         st.session_state.debug_messages.append(f"Invalid holiday range in {resort}, {year_str}: {e}")
 
