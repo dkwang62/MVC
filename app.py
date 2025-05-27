@@ -190,99 +190,6 @@ reference_points = {
                 "2BR OV": 625,
                 "2BR OF": 750
             }
-        },
-        "Holiday Week": {
-            "Presidents Day": {
-                "Parlor GV": 1375,
-                "Parlor OV": 1600,
-                "Parlor OF": 1900,
-                "Studio GV": 1900,
-                "Studio OV": 2350,
-                "Studio OF": 2750,
-                "1BR GV": 2575,
-                "1BR OV": 3325,
-                "1BR OF": 4075,
-                "2BR OV": 5100,
-                "2BR OF": 6250
-            },
-            "Easter": {
-                "Parlor GV": 1375,
-                "Parlor OV": 1600,
-                "Parlor OF": 1900,
-                "Studio GV": 1900,
-                "Studio OV": 2350,
-                "Studio OF": 2750,
-                "1BR GV": 2575,
-                "1BR OV": 3325,
-                "1BR OF": 4075,
-                "2BR OV": 5100,
-                "2BR OF": 6250
-            },
-            "Independence Day": {
-                "Parlor GV": 1150,
-                "Parlor OV": 1550,
-                "Parlor OF": 1725,
-                "Studio GV": 1725,
-                "Studio OV": 2175,
-                "Studio OF": 2700,
-                "1BR GV": 2525,
-                "1BR OV": 3150,
-                "1BR OF": 3900,
-                "2BR OV": 4875,
-                "2BR OF": 5900
-            },
-            "Thanksgiving": {
-                "Parlor GV": 975,
-                "Parlor OV": 1325,
-                "Parlor OF": 1550,
-                "Studio GV": 1550,
-                "Studio OV": 1950,
-                "Studio OF": 2350,
-                "1BR GV": 2175,
-                "1BR OV": 2750,
-                "1BR OF": 3325,
-                "2BR OV": 4125,
-                "2BR OF": 5100
-            },
-            "Thanksgiving 2": {
-                "Parlor GV": 1375,
-                "Parlor OV": 1600,
-                "Parlor OF": 1900,
-                "Studio GV": 1900,
-                "Studio OV": 2350,
-                "Studio OF": 2750,
-                "1BR GV": 2575,
-                "1BR OV": 3325,
-                "1BR OF": 4075,
-                "2BR OV": 5100,
-                "2BR OF": 6250
-            },
-            "Christmas": {
-                "Parlor GV": 1375,
-                "Parlor OV": 1600,
-                "Parlor OF": 1900,
-                "Studio GV": 1900,
-                "Studio OV": 2350,
-                "Studio OF": 2750,
-                "1BR GV": 2575,
-                "1BR OV": 3325,
-                "1BR OF": 4075,
-                "2BR OV": 5100,
-                "2BR OF": 6250
-            },
-            "New Year's Eve/Day": {
-                "Parlor GV": 1550,
-                "Parlor OV": 1775,
-                "Parlor OF": 2125,
-                "Studio GV": 2125,
-                "Studio OV": 2575,
-                "Studio OF": 3100,
-                "1BR GV": 2925,
-                "1BR OV": 3725,
-                "1BR OF": 4475,
-                "2BR OV": 5675,
-                "2BR OF": 6825
-            }
         }
     },
     "Ko Olina Beach Club": {
@@ -353,151 +260,23 @@ reference_points = {
                 "3BR MA": 750,
                 "3BR MK": 975
             }
-        },
-        "Holiday Week": {
-            "Presidents Day": {
-                "Studio MA": 2160,
-                "Studio MK": 2475,
-                "Studio PH MA": 2160,
-                "Studio PH MK": 2880,
-                "1BR MA": 3525,
-                "1BR MK": 4300,
-                "1BR PH MA": 3525,
-                "1BR PH MK": 5275,
-                "2BR MA": 4800,
-                "2BR MK": 6025,
-                "2BR PH MA": 4800,
-                "2BR PH MK": 7225,
-                "3BR MA": 6250,
-                "3BR MK": 8025
-            },
-            "Easter": {
-                "Studio MA": 2160,
-                "Studio MK": 2475,
-                "Studio PH MA": 2160,
-                "Studio PH MK": 2880,
-                "1BR MA": 3525,
-                "1BR MK": 4300,
-                "1BR PH MA": 3525,
-                "1BR PH MK": 5275,
-                "2BR MA": 4800,
-                "2BR MK": 6025,
-                "2BR PH MA": 4800,
-                "2BR PH MK": 7225,
-                "3BR MA": 6250,
-                "3BR MK": 8025
-            },
-            "Independence Day": {
-                "Studio MA": 1960,
-                "Studio MK": 2320,
-                "Studio PH MA": 1960,
-                "Studio PH MK": 2725,
-                "1BR MA": 3325,
-                "1BR MK": 4100,
-                "1BR PH MA": 3325,
-                "1BR PH MK": 5025,
-                "2BR MA": 4575,
-                "2BR MK": 5725,
-                "2BR PH MA": 4575,
-                "2BR PH MK": 6875,
-                "3BR MA": 5900,
-                "3BR MK": 7625
-            },
-            "Thanksgiving": {
-                "Studio MA": 1690,
-                "Studio MK": 2070,
-                "Studio PH MA": 1690,
-                "Studio PH MK": 2410,
-                "1BR MA": 2950,
-                "1BR MK": 3600,
-                "1BR PH MA": 2950,
-                "1BR PH MK": 4450,
-                "2BR MA": 4050,
-                "2BR MK": 4925,
-                "2BR PH MA": 4050,
-                "2BR PH MK": 5900,
-                "3BR MA": 5100,
-                "3BR MK": 6475
-            },
-            "Thanksgiving 2": {
-                "Studio MA": 2160,
-                "Studio MK": 2475,
-                "Studio PH MA": 2160,
-                "Studio PH MK": 2880,
-                "1BR MA": 3525,
-                "1BR MK": 4300,
-                "1BR PH MA": 3525,
-                "1BR PH MK": 5275,
-                "2BR MA": 4800,
-                "2BR MK": 6025,
-                "2BR PH MA": 4800,
-                "2BR PH MK": 7225,
-                "3BR MA": 6250,
-                "3BR MK": 8025
-            },
-            "Christmas": {
-                "Studio MA": 2160,
-                "Studio MK": 2475,
-                "Studio PH MA": 2160,
-                "Studio PH MK": 2880,
-                "1BR MA": 3525,
-                "1BR MK": 4300,
-                "1BR PH MA": 3525,
-                "1BR PH MK": 5275,
-                "2BR MA": 4800,
-                "2BR MK": 6025,
-                "2BR PH MA": 4800,
-                "2BR PH MK": 7225,
-                "3BR MA": 6250,
-                "3BR MK": 8025
-            },
-            "New Year's Eve/Day": {
-                "Studio MA": 2365,
-                "Studio MK": 2835,
-                "Studio PH MA": 2365,
-                "Studio PH MK": 3330,
-                "1BR MA": 4075,
-                "1BR MK": 4975,
-                "1BR PH MA": 4075,
-                "1BR PH MK": 6100,
-                "2BR MA": 5550,
-                "2BR MK": 6875,
-                "2BR PH MA": 5550,
-                "2BR PH MK": 8250,
-                "3BR MA": 7100,
-                "3BR MK": 9175
-            }
         }
     }
 }
 
-# Function to generate data structure
-@st.cache_data
+# Simplified function to generate data structure (no caching)
 def generate_data(resort, date):
     date_str = date.strftime("%Y-%m-%d")
     year = date.strftime("%Y")
     day_of_week = date.strftime("%a")
-    is_fri_sat = day_of_week in ["Friday", "Saturday"]
+    
+    # Explicitly check day of week
+    st.session_state.debug_messages.append(f"Processing date: {date_str}, Day of week: {day_of_week}")
+    is_fri_sat = day_of_week in ["Fri", "Sat"]
     day_category = "Fri-Sat" if is_fri_sat else "Sun-Thu"
-    entry = {}
+    st.session_state.debug_messages.append(f"Day category determined: {day_category} (is_fri_sat: {is_fri_sat})")
 
-    # Temporarily disable holiday week logic to isolate Fri-Sat issue
-    is_holiday = False
-    is_holiday_start = False
-    holiday_name = None
-    # Uncomment to reintroduce holiday logic later
-    # try:
-    #     for h_name, [start, end] in holiday_weeks[resort][year].items():
-    #         h_start = datetime.strptime(start, "%Y-%m-%d").date()
-    #         h_end = datetime.strptime(end, "%Y-%m-%d").date()
-    #         if h_start <= date <= h_end:
-    #             is_holiday = True
-    #             holiday_name = h_name
-    #             if date == h_start:
-    #                 is_holiday_start = True
-    #             break
-    # except ValueError as e:
-    #     st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
+    entry = {}
 
     # Determine season
     season = "Low Season"
@@ -513,60 +292,29 @@ def generate_data(resort, date):
                 break
     except ValueError as e:
         st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
+    
+    st.session_state.debug_messages.append(f"Season determined: {season}")
 
     # Assign points
-    if is_holiday and is_holiday_start:
-        points_ref = reference_points[resort]["Holiday Week"].get(holiday_name, {})
-        st.session_state.debug_messages.append(f"Applying Holiday Week points for {holiday_name} on {date_str}")
-    elif is_holiday and not is_holiday_start:
-        points_ref = {room: 0 for room in reference_points[resort]["Holiday Week"].get(holiday_name, {})}
-        st.session_state.debug_messages.append(f"Zero points for {date_str} (part of holiday week {holiday_name})")
-    else:
-        points_ref = reference_points[resort][season][day_category]
-        st.session_state.debug_messages.append(f"Applying {season} {day_category} points for {date_str} (Day: {day_of_week})")
-    
+    points_ref = reference_points[resort][season][day_category]
+    st.session_state.debug_messages.append(f"Accessing points: reference_points['{resort}']['{season}']['{day_category}']")
+    st.session_state.debug_messages.append(f"Points reference: {points_ref}")
+
     for room_type, points in points_ref.items():
         entry[room_type] = points
-        st.session_state.debug_messages.append(f"Date: {date_str}, Day: {day_of_week}, Room: {room_type}, Points: {points}, Category: {day_category}, Season: {season}")
-
-    # Add flags (commented out since holiday logic is disabled)
-    # if is_holiday:
-    #     entry["HolidayWeek"] = True
-    #     entry["holiday_name"] = holiday_name
-    # if is_holiday_start:
-    #     entry["HolidayWeekStart"] = True
+        st.session_state.debug_messages.append(f"Assigned points for {room_type}: {points}")
 
     return entry
 
-# Function to adjust date range for holiday weeks (simplified for now)
+# Simplified function to adjust date range (no holiday adjustments)
 def adjust_date_range(resort, checkin_date, num_nights):
-    # Temporarily bypass holiday adjustments
     return checkin_date, num_nights
-    # Uncomment to reintroduce holiday logic
-    # year_str = str(checkin_date.year)
-    # stay_end = checkin_date + timedelta(days=num_nights - 1)
-    # holiday_ranges = []
-    # for h_name, [start, end] in holiday_weeks[resort][year_str].items():
-    #     h_start = datetime.strptime(start, "%Y-%m-%d").date()
-    #     h_end = datetime.strptime(end, "%Y-%m-%d").date()
-    #     if (h_start <= stay_end) and (h_end >= checkin_date):
-    #         holiday_ranges.append((h_start, h_end))
-    # if holiday_ranges:
-    #     earliest_holiday_start = min(h_start for h_start, _ in holiday_ranges)
-    #     latest_holiday_end = max(h_end for _, h_end in holiday_ranges)
-    #     adjusted_start = min(checkin_date, earliest_holiday_start)
-    #     adjusted_end = max(stay_end, latest_holiday_end)
-    #     adjusted_nights = (adjusted_end - adjusted_start).days + 1
-    #     st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end}")
-    #     return adjusted_start, adjusted_nights
-    # return checkin_date, num_nights
 
-# Function to create Gantt chart
+# Simplified Gantt chart function (optional, keeping for UI)
 def create_gantt_chart(resort, year):
     gantt_data = []
     year_str = str(year)
     
-    # Add holiday weeks
     for h_name, [start, end] in holiday_weeks[resort][year_str].items():
         gantt_data.append({
             "Task": h_name,
@@ -575,7 +323,6 @@ def create_gantt_chart(resort, year):
             "Type": "Holiday"
         })
     
-    # Add season blocks
     for season_type in ["Low Season", "High Season"]:
         for i, [start, end] in enumerate(season_blocks[resort][year_str][season_type], 1):
             gantt_data.append({
@@ -639,12 +386,12 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - $0.81 per point for dates in **2025**
     - $0.86 per point for dates in **2026 and beyond**
     - Points are **rounded down** when discounts are applied.
-    - **Holiday weeks**: Temporarily disabled for debugging.
+    - **Holiday weeks**: Disabled for debugging.
     """)
 
 # Year selection for Gantt chart
 year_options = ["2025", "2026"]
-default_year = str(checkin_date.year) if "checkin_date" in locals() else "2025"
+default_year = "2025"
 year_select = st.selectbox("Select Year for Calendar", options=year_options, index=year_options.index(default_year))
 
 # Display Gantt chart
@@ -667,10 +414,10 @@ if not room_types:
 room_type = st.selectbox("Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 7, 3).date())
+checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 6, 6).date())
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=3)
 
-# Adjust date range for holidays (simplified)
+# Adjust date range (simplified)
 checkin_date, adjusted_nights = adjust_date_range(resort, checkin_date, num_nights)
 if adjusted_nights != num_nights or checkin_date != st.session_state.get("last_checkin_date", checkin_date):
     st.info(f"Date range adjusted: {checkin_date.strftime('%Y-%m-%d')} to {(checkin_date + timedelta(days=adjusted_nights-1)).strftime('%Y-%m-%d')} ({adjusted_nights} nights).")
@@ -693,8 +440,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
         entry = generate_data(resort, date)
         
         points = entry.get(room_type, reference_points_resort.get(room_type, 0))
-        if points == 0 and not entry.get("HolidayWeek", False):
-            st.session_state.debug_messages.append(f"No points for {room_type} on {date_str}, using reference: {points}")
+        st.session_state.debug_messages.append(f"Calculating for {date_str}: Points for {room_type} = {points}")
         discounted_points = math.floor(points * discount_multiplier)
         rent = math.ceil(points * rate_per_point)
         breakdown.append({
@@ -714,7 +460,6 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     compare_data = []
     chart_data = []
     
-    # Simplified: no holiday weeks for now
     all_dates = []
     for i in range(num_nights):
         date = checkin_date + timedelta(days=i)
@@ -728,8 +473,6 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
             entry = generate_data(resort, date)
             
             points = entry.get(room, reference_points_resort.get(room, 0))
-            if points == 0 and not entry.get("HolidayWeek", False):
-                st.session_state.debug_messages.append(f"No points for {room} on {date_str}, using reference: {points}")
             discounted_points = math.floor(points * discount_multiplier)
             rent = math.ceil(points * rate_per_point)
             compare_data.append({
@@ -797,7 +540,6 @@ if st.button("Calculate"):
             mime="text/csv"
         )
 
-        # Bar Chart
         if not chart_df.empty:
             required_columns = ["Date", "DateStr", "Day", "Room Type", "Rent", "Points", "Holiday"]
             if all(col in chart_df.columns for col in required_columns):
