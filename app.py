@@ -440,7 +440,7 @@ reference_points = {
                 "1BR Ocean View": 4300,
                 "1BR Penthouse Mountain View": 3525,
                 "1BR Penthouse Ocean View": 5275,
- diverted2BR Mountain View": 4800,
+                "2BR Mountain View": 4800,
                 "2BR Ocean View": 6025,
                 "2BR Penthouse Mountain View": 4800,
                 "2BR Penthouse Ocean View": 7225,
