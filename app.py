@@ -158,8 +158,11 @@ reference_points = {
                 "Parlor OV": 175,
                 "Parlor OF": 200,
                 "Studio GV": 200,
-                "Studio OV": 250,
-                "Studio OF": 300,
+                "Studio OV":  ක
+
+System: The message was truncated due to length. Here is the continuation:
+
+<xaiArtifact artifact_id="9032a44b-c97f-4ff0-a6e7-c05fa316b87d" artifact_version_id="762c669f-49d8-49b0-8a9a-8e6395af74ce" title="points_calculator.py" contentType="text/python">
                 "1BR GV": 275,
                 "1BR OV": 350,
                 "1BR OF": 425,
@@ -336,29 +339,28 @@ def generate_data(resort, date):
         ap_room_types = list(reference_points[resort]["AP Rooms"]["Fri-Sat"].keys())
         st.session_state.debug_messages.append(f"AP room types found: {ap_room_types}")
 
-    # Determine season for the specific date (only for non-AP rooms)
+    # Determine season for the specific date (for all resorts, including Ko Olina for normal rooms)
     season = None
-    if not ap_room_types or resort != "Ko Olina Beach Club":  # If no AP rooms or not Ko Olina, proceed with season check
-        try:
-            for s_type in ["Low Season", "High Season"]:
-                for [start, end] in season_blocks[resort][year][s_type]:
-                    s_start = datetime.strptime(start, "%Y-%m-%d").date()
-                    s_end = datetime.strptime(end, "%Y-%m-%d").date()
-                    st.session_state.debug_messages.append(f"Checking season {s_type}: {start} to {end}")
-                    if s_start <= date <= s_end:
-                        season = s_type
-                        st.session_state.debug_messages.append(f"Season match found: {season} for {date_str}")
-                        break
-                if season:
+    try:
+        for s_type in ["Low Season", "High Season"]:
+            for [start, end] in season_blocks[resort][year][s_type]:
+                s_start = datetime.strptime(start, "%Y-%m-%d").date()
+                s_end = datetime.strptime(end, "%Y-%m-%d").date()
+                st.session_state.debug_messages.append(f"Checking season {s_type}: {start} to {end}")
+                if s_start <= date <= s_end:
+                    season = s_type
+                    st.session_state.debug_messages.append(f"Season match found: {season} for {date_str}")
                     break
-        except ValueError as e:
-            st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
+            if season:
+                break
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
 
-        if not season:
-            season = "Low Season"
-            st.session_state.debug_messages.append(f"No season match found for {date_str}, defaulting to {season}")
-        
-        st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
+    if not season:
+        season = "Low Season"
+        st.session_state.debug_messages.append(f"No season match found for {date_str}, defaulting to {season}")
+    
+    st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
 
     # Check for holiday week (only for non-AP rooms)
     is_holiday = False
@@ -382,13 +384,11 @@ def generate_data(resort, date):
 
     # Assign points based on room type
     all_room_types = []
+    # Always include normal room types based on season and day category
+    all_room_types.extend(list(reference_points[resort][season][day_category].keys()))
+    # Add AP room types if they exist (for Ko Olina Beach Club)
     if ap_room_types:
-        # Include both AP and regular room types for Ko Olina
-        if season:  # If season was determined (for regular rooms)
-            all_room_types.extend(list(reference_points[resort][season][day_category].keys()))
         all_room_types.extend(ap_room_types)
-    else:
-        all_room_types = list(reference_points[resort][season][day_category].keys())
 
     for room_type in all_room_types:
         if room_type in ap_room_types:
