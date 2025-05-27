@@ -158,11 +158,8 @@ reference_points = {
                 "Parlor OV": 175,
                 "Parlor OF": 200,
                 "Studio GV": 200,
-                "Studio OV":  ක
-
-System: The message was truncated due to length. Here is the continuation:
-
-<xaiArtifact artifact_id="9032a44b-c97f-4ff0-a6e7-c05fa316b87d" artifact_version_id="762c669f-49d8-49b0-8a9a-8e6395af74ce" title="points_calculator.py" contentType="text/python">
+                "Studio OV": 250,
+                "Studio OF": 300,
                 "1BR GV": 275,
                 "1BR OV": 350,
                 "1BR OF": 425,
