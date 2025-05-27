@@ -556,7 +556,7 @@ def calculate_formula_based(resort, room_type, checkin_date, num_nights, discoun
                 "Season": "Unknown",
                 "Holiday": "-",
                 "Points": 0,
-                "Rent ($)": 0
+                "Rent": 0
             })
             continue
         discount_pts = math.floor(points * discount_multiplier)
@@ -567,7 +567,7 @@ def calculate_formula_based(resort, room_type, checkin_date, num_nights, discoun
             "Season": tag["season"],
             "Holiday": tag["holiday"] or "-",
             "Points": discount_pts,
-            "Rent ($)": rent
+            "Rent": rent
         })
         total_points += discount_pts
         total_rent += rent
@@ -594,7 +594,7 @@ def calculate_json_based(data, resort, room_type, checkin_date, num_nights, disc
             "Date": date_str,
             "Day": date.strftime("%a"),
             "Points": discounted_points,
-            "Rent ($)": rent,
+            "Rent": rent,  # Changed to numeric value
             "Holiday": "Yes" if entry.get("HolidayWeek", False) else "No"
         })
         total_points += discounted_points
@@ -626,7 +626,7 @@ def summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, r
                     "Holiday Week Start": start_str,
                     "Holiday Week End": end_str,
                     "Points": discounted_points,
-                    "Rent ($)": rent
+                    "Rent": rent
                 })
         current += timedelta(days=1)
     return summaries
@@ -693,10 +693,16 @@ if st.button("\U0001F4CA Calculate"):
         breakdown, total_points, total_rent = calculate_json_based(data, resort, room_type, checkin_date, num_nights, discount_multiplier)
         holiday_weeks = summarize_holiday_weeks(data, resort, room_type, checkin_date, num_nights, reference_points_json, discount_multiplier)
 
+    # Log breakdown for debugging
+    st.session_state.debug_messages.append(f"Breakdown: {breakdown}")
+
     # Display Results
     st.subheader("\U0001F4CB Stay Breakdown")
     if breakdown:
         df_breakdown = pd.DataFrame(breakdown)
+        # Ensure numeric types
+        df_breakdown["Points"] = pd.to_numeric(df_breakdown["Points"], errors="coerce")
+        df_breakdown["Rent"] = pd.to_numeric(df_breakdown["Rent"], errors="coerce")
         st.dataframe(df_breakdown, use_container_width=True)
         csv_data = df_breakdown.to_csv(index=False).encode('utf-8')
         st.download_button(
@@ -707,6 +713,7 @@ if st.button("\U0001F4CA Calculate"):
         )
     else:
         st.info("No data available for the selected period.")
+        st.session_state.debug_messages.append("Breakdown is empty.")
 
     st.success(f"Total Points Used: {total_points}")
     st.success(f"Estimated Total Rent: ${total_rent}")
@@ -714,24 +721,41 @@ if st.button("\U0001F4CA Calculate"):
     if holiday_weeks:
         st.subheader("\U0001F389 Holiday Weeks Summary")
         df_holidays = pd.DataFrame(holiday_weeks)
+        df_holidays["Points"] = pd.to_numeric(df_holidays["Points"], errors="coerce")
+        df_holidays["Rent"] = pd.to_numeric(df_holidays["Rent"], errors="coerce")
         st.dataframe(df_holidays, use_container_width=True)
 
     # Rent Breakdown Chart
     if breakdown:
         st.subheader("📊 Rent Breakdown by Day")
         chart_df = pd.DataFrame(breakdown)
-        fig = px.bar(
-            chart_df,
-            x="Day",
-            y="Rent ($)",
-            color="Holiday" if calculation_method == "JSON-Based" else "Season",
-            barmode="group",
-            text="Rent ($)",
-            labels={"Rent ($)": "Estimated Rent ($)", "Day": "Day of Week"},
-            height=400
-        )
-        fig.update_traces(texttemplate="$%{text}", textposition="outside")
-        st.plotly_chart(fig, use_container_width=True)
+        # Log chart_df for debugging
+        st.session_state.debug_messages.append(f"Chart DataFrame: {chart_df.to_dict()}")
+        
+        # Ensure Rent column is numeric
+        chart_df["Rent"] = pd.to_numeric(chart_df["Rent"], errors="coerce")
+        
+        # Check if chart_df is not empty and has required columns
+        if not chart_df.empty and all(col in chart_df.columns for col in ["Day", "Rent", "Holiday" if calculation_method == "JSON-Based" else "Season"]):
+            try:
+                fig = px.bar(
+                    chart_df,
+                    x="Day",
+                    y="Rent",
+                    color="Holiday" if calculation_method == "JSON-Based" else "Season",
+                    barmode="group",
+                    text="Rent",
+                    labels={"Rent": "Estimated Rent ($)", "Day": "Day of Week"},
+                    height=400
+                )
+                fig.update_traces(texttemplate="$%{text}", textposition="outside")
+                st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                st.error(f"Error creating chart: {str(e)}")
+                st.session_state.debug_messages.append(f"Chart creation error: {str(e)}")
+        else:
+            st.warning("Cannot create chart: No valid data available.")
+            st.session_state.debug_messages.append(f"Chart DataFrame empty or missing columns: {chart_df.columns.tolist()}")
 
     # Season and Holiday Timeline (only for formula-based)
     if calculation_method == "Formula-Based":
