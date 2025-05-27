@@ -543,12 +543,14 @@ def adjust_date_range(resort, checkin_date, num_nights):
             holiday_ranges.append((h_start, h_end))
     
     if holiday_ranges:
-        # Extend to include the latest holiday end date
+        # Extend to include the earliest holiday start and latest holiday end
+        earliest_holiday_start = min(h_start for h_start, _ in holiday_ranges)
         latest_holiday_end = max(h_end for _, h_end in holiday_ranges)
+        adjusted_start = min(checkin_date, earliest_holiday_start)
         adjusted_end = max(stay_end, latest_holiday_end)
-        adjusted_nights = (adjusted_end - checkin_date).days + 1
-        st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {checkin_date} to {adjusted_end}")
-        return checkin_date, adjusted_nights
+        adjusted_nights = (adjusted_end - adjusted_start).days + 1
+        st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end}")
+        return adjusted_start, adjusted_nights
     return checkin_date, num_nights
 
 # Function to create Gantt chart
@@ -657,13 +659,14 @@ if not room_types:
 room_type = st.selectbox("Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 7, 1).date())
-num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
+checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 7, 10).date())
+num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=8)
 
 # Adjust date range for holidays
 checkin_date, adjusted_nights = adjust_date_range(resort, checkin_date, num_nights)
-if adjusted_nights != num_nights:
-    st.info(f"Date range adjusted to include full holiday week: {num_nights} nights extended to {adjusted_nights} nights.")
+if adjusted_nights != num_nights or checkin_date != st.session_state.get("last_checkin_date", checkin_date):
+    st.info(f"Date range adjusted to include full holiday week: {checkin_date.strftime('%Y-%m-%d')} to {(checkin_date + timedelta(days=adjusted_nights-1)).strftime('%Y-%m-%d')} ({adjusted_nights} nights).")
+st.session_state.last_checkin_date = checkin_date
 
 # Set reference points
 reference_entry = generate_data(resort, sample_date)
@@ -682,7 +685,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
         entry = generate_data(resort, date)
         
         points = entry.get(room_type, reference_points_resort.get(room_type, 0))
-        if points == 0:
+        if points == 0 and not entry.get("HolidayWeek", False):
             st.session_state.debug_messages.append(f"No points for {room_type} on {date_str}, using reference: {points}")
         discounted_points = math.floor(points * discount_multiplier)
         rent = math.ceil(points * rate_per_point)
@@ -734,7 +737,7 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
             entry = generate_data(resort, date)
             
             points = entry.get(room, reference_points_resort.get(room, 0))
-            if points == 0:
+            if points == 0 and not entry.get("HolidayWeek", False):
                 st.session_state.debug_messages.append(f"No points for {room} on {date_str}, using reference: {points}")
             discounted_points = math.floor(points * discount_multiplier)
             rent = math.ceil(points * rate_per_point)
