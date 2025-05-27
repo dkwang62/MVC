@@ -84,7 +84,7 @@ holiday_weeks = {
             "Independence Day": ["2025-07-04", "2025-07-10"],
             "Thanksgiving": ["2025-11-21", "2025-11-27"],
             "Thanksgiving 2": ["2025-11-28", "2025-12-04"],
-            "Christmas": ["2025-12-19", "2025-12-24"],
+            "Christmas": ["2025-12-19", "2025-12-25"],  # Fixed to 7 days
             "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
         },
         "2026": {
@@ -104,7 +104,7 @@ holiday_weeks = {
             "Independence Day": ["2025-07-04", "2025-07-10"],
             "Thanksgiving": ["2025-11-21", "2025-11-27"],
             "Thanksgiving 2": ["2025-11-28", "2025-12-04"],
-            "Christmas": ["2025-12-19", "2025-12-24"],
+            "Christmas": ["2025-12-19", "2025-12-25"],  # Fixed to 7 days
             "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
         },
         "2026": {
@@ -464,6 +464,7 @@ reference_points = {
 }
 
 # Function to generate data structure
+@st.cache_data
 def generate_data(resort, date):
     date_str = date.strftime("%Y-%m-%d")
     year = date.strftime("%Y")
@@ -476,27 +477,33 @@ def generate_data(resort, date):
     is_holiday = False
     is_holiday_start = False
     holiday_name = None
-    for h_name, [start, end] in holiday_weeks[resort][year].items():
-        h_start = datetime.strptime(start, "%Y-%m-%d").date()
-        h_end = datetime.strptime(end, "%Y-%m-%d").date()
-        if h_start <= date <= h_end:
-            is_holiday = True
-            holiday_name = h_name
-            if date == h_start:
-                is_holiday_start = True
-            break
+    try:
+        for h_name, [start, end] in holiday_weeks[resort][year].items():
+            h_start = datetime.strptime(start, "%Y-%m-%d").date()
+            h_end = datetime.strptime(end, "%Y-%m-%d").date()
+            if h_start <= date <= h_end:
+                is_holiday = True
+                holiday_name = h_name
+                if date == h_start:
+                    is_holiday_start = True
+                break
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid holiday date in {resort}, {year}, {h_name}: {e}")
 
     # Determine season
     season = "Low Season"
-    for s_type in ["Low Season", "High Season"]:
-        for [start, end] in season_blocks[resort][year][s_type]:
-            s_start = datetime.strptime(start, "%Y-%m-%d").date()
-            s_end = datetime.strptime(end, "%Y-%m-%d").date()
-            if s_start <= date <= s_end:
-                season = s_type
+    try:
+        for s_type in ["Low Season", "High Season"]:
+            for [start, end] in season_blocks[resort][year][s_type]:
+                s_start = datetime.strptime(start, "%Y-%m-%d").date()
+                s_end = datetime.strptime(end, "%Y-%m-%d").date()
+                if s_start <= date <= s_end:
+                    season = s_type
+                    break
+            if season == s_type:
                 break
-        if season == s_type:
-            break
+    except ValueError as e:
+        st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
 
     # Assign points
     if is_holiday:
@@ -551,7 +558,7 @@ resort = reverse_aliases.get(resort_display, resort_display)
 st.session_state.debug_messages.append(f"Selected resort: {resort}")
 
 # Get room types
-sample_date = datetime(2025, 1, 3).date()  # Ensure date type
+sample_date = datetime(2025, 1, 3).date()
 sample_entry = generate_data(resort, sample_date)
 room_types = [k for k in sample_entry if k not in ("HolidayWeek", "HolidayWeekStart")]
 if not room_types:
