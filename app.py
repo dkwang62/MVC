@@ -8,7 +8,7 @@ import plotly.express as px
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
 
-# Hardcoded data from provided input
+# Hardcoded data
 season_blocks = {
     "Kauai Beach Club": {
         "2025": {
@@ -477,8 +477,8 @@ def generate_data(resort, date):
     is_holiday_start = False
     holiday_name = None
     for h_name, [start, end] in holiday_weeks[resort][year].items():
-        h_start = datetime.strptime(start, "%Y-%m-%d")
-        h_end = datetime.strptime(end, "%Y-%m-%d")
+        h_start = datetime.strptime(start, "%Y-%m-%d").date()
+        h_end = datetime.strptime(end, "%Y-%m-%d").date()
         if h_start <= date <= h_end:
             is_holiday = True
             holiday_name = h_name
@@ -490,8 +490,8 @@ def generate_data(resort, date):
     season = "Low Season"
     for s_type in ["Low Season", "High Season"]:
         for [start, end] in season_blocks[resort][year][s_type]:
-            s_start = datetime.strptime(start, "%Y-%m-%d")
-            s_end = datetime.strptime(end, "%Y-%m-%d")
+            s_start = datetime.strptime(start, "%Y-%m-%d").date()
+            s_end = datetime.strptime(end, "%Y-%m-%d").date()
             if s_start <= date <= s_end:
                 season = s_type
                 break
