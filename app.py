@@ -523,6 +523,7 @@ def generate_data(resort, date):
     
     for room_type, points in points_ref.items():
         entry[room_type] = points
+        st.session_state.debug_messages.append(f"Date: {date_str}, Day: {day_of_week}, Room: {room_type}, Points: {points}, Category: {day_category}")
 
     # Add flags
     if is_holiday:
@@ -652,7 +653,7 @@ gantt_fig = create_gantt_chart(resort, year_select)
 st.plotly_chart(gantt_fig, use_container_width=True)
 
 # Get room types
-sample_date = datetime(2025, 1, 3).date()
+sample_date = datetime(2025, 1, 8).date()  # Wednesday to ensure weekday rate
 sample_entry = generate_data(resort, sample_date)
 room_types = [k for k in sample_entry if k not in ("HolidayWeek", "HolidayWeekStart", "holiday_name")]
 if not room_types:
