@@ -9,7 +9,7 @@ import plotly.figure_factory as ff
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
 
-# Hardcoded data
+# Hardcoded data (unchanged)
 season_blocks = {
     "Kauai Beach Club": {
         "2025": {
@@ -552,6 +552,47 @@ def get_internal_room_key(display_name):
 
     return f"{base} {view}"
 
+# Function to determine resort and year from check-in date
+def determine_resort_and_year(checkin_date):
+    year = str(checkin_date.year)
+    checkin_date_str = checkin_date.strftime("%Y-%m-%d")
+    matched_resort = None
+    
+    for resort in season_blocks:
+        try:
+            # Check season blocks
+            for season_type in ["Low Season", "High Season"]:
+                for [start, end] in season_blocks[resort][year][season_type]:
+                    s_start = datetime.strptime(start, "%Y-%m-%d").date()
+                    s_end = datetime.strptime(end, "%Y-%m-%d").date()
+                    if s_start <= checkin_date <= s_end:
+                        matched_resort = resort
+                        st.session_state.debug_messages.append(f"Matched resort {resort} for {checkin_date_str} in {season_type}: {start} to {end}")
+                        break
+                if matched_resort:
+                    break
+            if matched_resort:
+                break
+            
+            # Check holiday weeks
+            for h_name, [start, end] in holiday_weeks[resort][year].items():
+                h_start = datetime.strptime(start, "%Y-%m-%d").date()
+                h_end = datetime.strptime(end, "%Y-%m-%d").date()
+                if h_start <= checkin_date <= h_end:
+                    matched_resort = resort
+                    st.session_state.debug_messages.append(f"Matched resort {resort} for {checkin_date_str} in holiday {h_name}: {start} to {end}")
+                    break
+            if matched_resort:
+                break
+        except ValueError as e:
+            st.session_state.debug_messages.append(f"Error checking dates for {resort}, {year}: {e}")
+    
+    if not matched_resort:
+        matched_resort = list(season_blocks.keys())[0]  # Default to first resort
+        st.session_state.debug_messages.append(f"No resort match for {checkin_date_str}, defaulting to {matched_resort}")
+    
+    return matched_resort, year
+
 # Function to generate data structure
 def generate_data(resort, date):
     date_str = date.strftime("%Y-%m-%d")
@@ -738,10 +779,10 @@ def create_gantt_chart(resort, year):
             df,
             x_start="Start",
             x_end="Finish",
-            y="Task",
+            y="Task Domestic,
             color="Type",
             color_discrete_map=colors,
-            title=f"{resort} Seasons and Holidays ({year})",
+            title=f"{resort_aliases.get(resort, resort)} Seasons and Holidays ({year})",
             height=600
         )
         fig.update_yaxes(autorange="reversed")
@@ -787,21 +828,17 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - **Holiday weeks**: Points are applied only on the first day for normal rooms; AP rooms use the sum of daily points over 7 days.
     """)
 
-# Year selection for Gantt chart
-year_options = ["2025", "2026"]
-default_year = "2025"
-year_select = st.selectbox("Select Year for Calendar", options=year_options, index=year_options.index(default_year))
+# User input for check-in date and number of nights
+checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 3, 25).date())
+num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=10)
 
-# Display Gantt chart
-resort_display = st.selectbox("Select Resort", options=display_resorts, key="resort_select")
-resort = reverse_aliases.get(resort_display, resort_display)
-st.session_state.debug_messages.append(f"Selected resort: {resort}")
-st.subheader(f"Season and Holiday Calendar ({year_select})")
-gantt_fig = create_gantt_chart(resort, year_select)
-st.plotly_chart(gantt_fig, use_container_width=True)
+# Determine resort and year from check-in date
+resort, year_select = determine_resort_and_year(checkin_date)
+resort_display = resort_aliases.get(resort, resort)
+st.session_state.debug_messages.append(f"Derived resort: {resort}, year: {year_select}")
 
 # Get room types and AP room types
-sample_date = datetime(2025, 1, 8).date()  # Wednesday
+sample_date = checkin_date  # Use check-in date for room types
 sample_entry, display_to_internal = generate_data(resort, sample_date)
 room_types = sorted([k for k in sample_entry if k not in ("HolidayWeek", "HolidayWeekStart", "holiday_name")])
 if not room_types:
@@ -820,9 +857,6 @@ if resort == "Ko Olina Beach Club" and "AP Rooms" in reference_points[resort]:
 room_type = st.selectbox("Select Room Type", options=room_types, key="room_type_select")
 compare_rooms = st.multiselect("Compare With Other Room Types", options=[r for r in room_types if r != room_type])
 
-checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 3, 25).date())
-num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=10)
-
 # Adjust date range for holidays
 original_checkin_date = checkin_date
 checkin_date, adjusted_nights, was_adjusted = adjust_date_range(resort, checkin_date, num_nights)
@@ -834,7 +868,7 @@ st.session_state.last_checkin_date = checkin_date
 reference_entry, _ = generate_data(resort, sample_date)
 reference_points_resort = {k: v for k, v in reference_entry.items() if k not in ("HolidayWeek", "HolidayWeekStart", "holiday_name")}
 
-# Functions
+# Functions (unchanged)
 def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
     breakdown = []
     total_points = 0
@@ -1099,6 +1133,11 @@ if st.button("Calculate"):
         else:
             st.info("No data available for comparison.")
             st.session_state.debug_messages.append("chart_df is empty.")
+    
+    # Display Gantt chart after calculations
+    st.subheader(f"Season and Holiday Calendar ({year_select})")
+    gantt_fig = create_gantt_chart(resort, year_select)
+    st.plotly_chart(gantt_fig, use_container_width=True)
 
 # Debug Information
 with st.expander("Debug Information"):
