@@ -779,7 +779,7 @@ def create_gantt_chart(resort, year):
             df,
             x_start="Start",
             x_end="Finish",
-            y="Task Domestic,
+            y="Task Domestic",
             color="Type",
             color_discrete_map=colors,
             title=f"{resort_aliases.get(resort, resort)} Seasons and Holidays ({year})",
