@@ -820,8 +820,8 @@ resort_display = st.selectbox("Select Resort", options=display_resorts, key="res
 resort = reverse_aliases.get(resort_display, resort_display)
 st.session_state.debug_messages.append(f"Selected resort: {resort}")
 
-checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 3, 25).date())
-num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=10)
+checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2026, 7, 10).date())
+num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
 
 # Derive year from check-in date
 year_select = str(checkin_date.year)
@@ -924,10 +924,7 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     chart_data = []
     
     # Collect all relevant dates, including holiday weeks
-    all_dates = []
-    for i in range(num_nights):
-        date = checkin_date + timedelta(days=i)
-        all_dates.append(date)
+    all_dates = [checkin_date + timedelta(days=i) for i in range(num_nights)]
     holiday_ranges = []
     holiday_names = {}
     for h_name, [start, end] in holiday_weeks[resort][str(checkin_date.year)].items():
@@ -936,13 +933,8 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
         if (h_start <= checkin_date + timedelta(days=num_nights - 1)) and (h_end >= checkin_date):
             holiday_ranges.append((h_start, h_end))
             for d in [h_start + timedelta(days=x) for x in range((h_end - h_start).days + 1)]:
-                holiday_names[d] = h_name
-            current_date = h_start
-            while current_date <= h_end:
-                if current_date not in all_dates:
-                    all_dates.append(current_date)
-                current_date += timedelta(days=1)
-    all_dates = sorted(list(set(all_dates)))
+                if d in all_dates:
+                    holiday_names[d] = h_name
     
     total_rent_by_room = {room: 0 for room in room_types}  # Track total rent for non-holiday days
     holiday_totals = {room: {} for room in room_types}  # Track holiday week totals
@@ -1116,6 +1108,8 @@ if st.button("Calculate"):
                     end_date_str = end_date.strftime("%b %d, %Y")
                     title = f"Rent Comparison (Non-Holiday, {start_date_str} - {end_date_str})"
                     st.subheader(title)
+                    # Ensure correct day order starting from July 10, 2026 (Friday)
+                    day_order = ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"]
                     fig = px.bar(
                         non_holiday_df,
                         x="Day",
@@ -1126,11 +1120,12 @@ if st.button("Calculate"):
                         labels={"RentValue": "Estimated Rent ($)", "Day": "Day of Week"},
                         height=600,
                         text="Rent",
-                        text_auto=True
+                        text_auto=True,
+                        category_orders={"Day": day_order}
                     )
                     fig.update_traces(texttemplate="$%{text}", textposition="auto")
                     fig.update_xaxes(
-                        ticktext=["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                        ticktext=day_order,
                         tickvals=[0, 1, 2, 3, 4, 5, 6],
                         tickmode="array"
                     )
@@ -1142,24 +1137,25 @@ if st.button("Calculate"):
                     st.plotly_chart(fig, use_container_width=True)
                 
                 if not holiday_df.empty:
-                    st.subheader("Rent Comparison (Holiday Weeks)")
+                    start_date = holiday_df["Start"].min()
+                    end_date = holiday_df["End"].max()
+                    start_date_str = start_date.strftime("%b %d")
+                    end_date_str = end_date.strftime("%b %d, %Y")
+                    title = f"Rent Comparison (Holiday Weeks, {start_date_str} - {end_date_str})"
+                    st.subheader(title)
                     fig = px.bar(
                         holiday_df,
                         x="Holiday",
                         y="RentValue",
                         color="Room Type",
                         barmode="group",
-                        title="Rent Comparison (Holiday Weeks)",
+                        title=title,
                         labels={"RentValue": "Estimated Rent ($)", "Holiday": "Holiday Week"},
                         height=600,
                         text="Rent",
                         text_auto=True
                     )
                     fig.update_traces(texttemplate="$%{text}", textposition="auto")
-                    for i, row in holiday_df.iterrows():
-                        start_str = row["Start"].strftime("%b %d")
-                        end_str = row["End"].strftime("%b %d, %Y")
-                        fig.data[i].name = f"{row['Room Type']} ({start_str} - {end_str})"
                     fig.update_layout(
                         legend_title_text="Room Type",
                         bargap=0.2,
