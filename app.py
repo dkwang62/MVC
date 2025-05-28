@@ -131,10 +131,10 @@ room_view_legend = {
     "MK": "Ocean View",
     "PH MA": "Penthouse Mountain View",
     "PH MK": "Penthouse Ocean View",
-    "AP Studio MA": "Asia Pacific Studio Mountain View",
-    "AP 1 BDRM MA": "Asia Pacific 1 Bedroom Mountain View",
-    "AP 2 BDRM MA": "Asia Pacific 2 Bedroom Mountain View",
-    "AP 2 BDRM MK": "Asia Pacific 2 Bedroom Ocean View"
+    "AP Studio MA": "AP Studio Mountain View",
+    "AP 1 BDRM MA": "AP 1BR Mountain View",
+    "AP 2 BDRM MA": "AP 2BR Mountain View",
+    "AP 2 BDRM MK": "AP 2BR Ocean View"
 }
 
 reference_points = {
@@ -1004,7 +1004,7 @@ if st.button("Calculate"):
 
     if compare_rooms:
         st.subheader("Room Type Comparison")
-        st.info("Note: Non-holiday weeks are compared day-by-day; holiday weeks are compared as total points for the week. Normal rooms apply points only on the first day of a holiday week; AP rooms use the sum of daily points over 7 days.")
+        st.info("Note: Non-holiday weeks are compared day-by-day; holiday weeks are compared as total points for the week.")
         all_rooms = [room_type] + compare_rooms
         chart_df, compare_df, holiday_totals = compare_room_types(
             resort, all_rooms, checkin_date, adjusted_nights, discount_multiplier, discount_percent, ap_display_room_types
