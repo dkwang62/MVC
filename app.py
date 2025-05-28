@@ -503,42 +503,7 @@ reference_points = {
 
 # Helper function to map room type keys to descriptive names
 def get_display_room_type(room_key):
-    if room_key in room_view_legend:
-        return room_view_legend[room_key]
-    
-    parts = room_key.split()
-    if not parts:
-        return room_key
-
-    base = " ".join(parts[:-1]) if len(parts) > 1 else parts[0]
-    view = parts[-1]
-    if view in room_view_legend:
-        view_display = room_view_legend[view]
-    else:
-        view_display = view
-
-    if len(parts) > 2 and parts[-2] == "PH":
-        base = " ".join(parts[:-2])
-        view = " ".join(parts[-2:])
-        view_display = room_view_legend.get(view, view)
-
-    return f"{base} {view_display}"
-
-# Helper function to map display name back to internal key
-def get_internal_room_key(display_name):
-    reverse_legend = {v: k for k, v in room_view_legend.items()}
-    if display_name in reverse_legend:
-        return reverse_legend[display_name]
-
-    parts = display_name.split()
-    if not parts:
-        return display_name
-
-    base_parts = []
-    view_parts = []
-    found_view = False
-    for part in parts:
-        if part in ["Mountain", "Ocean", "Penthouse", "Garden", "Front"] and not found_view:
+    if room_key질, "Penthouse", "Garden", "Front"] and not found_view:
             found_view = True
             view_parts.append(part)
         elif found_view:
@@ -551,47 +516,6 @@ def get_internal_room_key(display_name):
     view = reverse_legend.get(view_display, view_display)
 
     return f"{base} {view}"
-
-# Function to determine resort and year from check-in date
-def determine_resort_and_year(checkin_date):
-    year = str(checkin_date.year)
-    checkin_date_str = checkin_date.strftime("%Y-%m-%d")
-    matched_resort = None
-    
-    for resort in season_blocks:
-        try:
-            # Check season blocks
-            for season_type in ["Low Season", "High Season"]:
-                for [start, end] in season_blocks[resort][year][season_type]:
-                    s_start = datetime.strptime(start, "%Y-%m-%d").date()
-                    s_end = datetime.strptime(end, "%Y-%m-%d").date()
-                    if s_start <= checkin_date <= s_end:
-                        matched_resort = resort
-                        st.session_state.debug_messages.append(f"Matched resort {resort} for {checkin_date_str} in {season_type}: {start} to {end}")
-                        break
-                if matched_resort:
-                    break
-            if matched_resort:
-                break
-            
-            # Check holiday weeks
-            for h_name, [start, end] in holiday_weeks[resort][year].items():
-                h_start = datetime.strptime(start, "%Y-%m-%d").date()
-                h_end = datetime.strptime(end, "%Y-%m-%d").date()
-                if h_start <= checkin_date <= h_end:
-                    matched_resort = resort
-                    st.session_state.debug_messages.append(f"Matched resort {resort} for {checkin_date_str} in holiday {h_name}: {start} to {end}")
-                    break
-            if matched_resort:
-                break
-        except ValueError as e:
-            st.session_state.debug_messages.append(f"Error checking dates for {resort}, {year}: {e}")
-    
-    if not matched_resort:
-        matched_resort = list(season_blocks.keys())[0]  # Default to first resort
-        st.session_state.debug_messages.append(f"No resort match for {checkin_date_str}, defaulting to {matched_resort}")
-    
-    return matched_resort, year
 
 # Function to generate data structure
 def generate_data(resort, date):
@@ -767,19 +691,27 @@ def create_gantt_chart(resort, year):
         df = pd.DataFrame(gantt_data)
         if df.empty:
             st.session_state.debug_messages.append("Gantt DataFrame is empty")
-            return px.timeline(pd.DataFrame({"Task": ["No Data"], "Start": [datetime.now().date()], "Finish": [datetime.now().date()], "Type": ["No Data"]}))
+            # Create a valid fallback DataFrame for px.timeline
+            current_date = datetime.now().date()
+            df = pd.DataFrame({
+                "Task": ["No Data"],
+                "Start": [current_date],
+                "Finish": [current_date + timedelta(days=1)],
+                "Type": ["No Data"]
+            })
 
         colors = {
             "Holiday": "rgb(255, 99, 71)",
             "Low Season": "rgb(135, 206, 250)",
-            "High Season": "rgb(50, 205, 50)"
+            "High Season": "rgb(50, 205, 50)",
+            "No Data": "rgb(128, 128, 128)"
         }
         
         fig = px.timeline(
             df,
             x_start="Start",
             x_end="Finish",
-            y="Task Domestic",
+            y="Task",
             color="Type",
             color_discrete_map=colors,
             title=f"{resort_aliases.get(resort, resort)} Seasons and Holidays ({year})",
@@ -794,7 +726,27 @@ def create_gantt_chart(resort, year):
         return fig
     except Exception as e:
         st.session_state.debug_messages.append(f"Error in create_gantt_chart: {str(e)}")
-        return px.timeline(pd.DataFrame({"Task": ["Error"], "Start": [datetime.now().date()], "Finish": [datetime.now().date()], "Type": ["Error"]}))
+        # Create a valid fallback DataFrame for px.timeline
+        current_date = datetime.now().date()
+        df = pd.DataFrame({
+            "Task": ["Error"],
+            "Start": [current_date],
+            "Finish": [current_date + timedelta(days=1)],
+            "Type": ["Error"]
+        })
+        colors = {"Error": "rgb(128, 128, 128)"}
+        fig = px.timeline(
+            df,
+            x_start="Start",
+            x_end="Finish",
+            y="Task",
+            color="Type",
+            color_discrete_map=colors,
+            title="Error Generating Gantt Chart",
+            height=600
+        )
+        fig.update_yaxes(autorange="reversed")
+        return fig
 
 # Resort display name mapping
 resort_aliases = {
@@ -828,14 +780,17 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     - **Holiday weeks**: Points are applied only on the first day for normal rooms; AP rooms use the sum of daily points over 7 days.
     """)
 
-# User input for check-in date and number of nights
+# User input for resort, room type, check-in date, and number of nights
+resort_display = st.selectbox("Select Resort", options=display_resorts, key="resort_select")
+resort = reverse_aliases.get(resort_display, resort_display)
+st.session_state.debug_messages.append(f"Selected resort: {resort}")
+
 checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2025, 3, 25).date())
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=10)
 
-# Determine resort and year from check-in date
-resort, year_select = determine_resort_and_year(checkin_date)
-resort_display = resort_aliases.get(resort, resort)
-st.session_state.debug_messages.append(f"Derived resort: {resort}, year: {year_select}")
+# Derive year from check-in date
+year_select = str(checkin_date.year)
+st.session_state.debug_messages.append(f"Derived year from check-in date: {year_select}")
 
 # Get room types and AP room types
 sample_date = checkin_date  # Use check-in date for room types
@@ -868,7 +823,7 @@ st.session_state.last_checkin_date = checkin_date
 reference_entry, _ = generate_data(resort, sample_date)
 reference_points_resort = {k: v for k, v in reference_entry.items() if k not in ("HolidayWeek", "HolidayWeekStart", "holiday_name")}
 
-# Functions (unchanged)
+# Functions (unchanged except for create_gantt_chart)
 def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multiplier, discount_percent):
     breakdown = []
     total_points = 0
