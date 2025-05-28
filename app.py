@@ -630,6 +630,7 @@ def generate_data(resort, date):
         all_display_room_types.extend([get_display_room_type(rt) for rt in ap_room_types])
 
     display_to_internal = dict(zip(all_display_room_types, all_room_types))
+    st.session_state.debug_messages.append(f"Room type mappings: {display_to_internal}")
 
     for display_room_type, room_type in display_to_internal.items():
         points = 0
@@ -923,24 +924,30 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
     compare_data = []
     chart_data = []
     
-    # Collect all relevant dates, including holiday weeks
+    # Collect all relevant dates
     all_dates = [checkin_date + timedelta(days=i) for i in range(num_nights)]
+    stay_start = checkin_date
+    stay_end = checkin_date + timedelta(days=num_nights - 1)
+    
+    # Identify holidays that overlap with the stay
     holiday_ranges = []
     holiday_names = {}
     for h_name, [start, end] in holiday_weeks[resort][str(checkin_date.year)].items():
         h_start = datetime.strptime(start, "%Y-%m-%d").date()
         h_end = datetime.strptime(end, "%Y-%m-%d").date()
-        if (h_start <= checkin_date + timedelta(days=num_nights - 1)) and (h_end >= checkin_date):
+        if (h_start <= stay_end) and (h_end >= stay_start):
             holiday_ranges.append((h_start, h_end))
             for d in [h_start + timedelta(days=x) for x in range((h_end - h_start).days + 1)]:
                 if d in all_dates:
                     holiday_names[d] = h_name
+                    st.session_state.debug_messages.append(f"Date {d} overlaps with holiday {h_name} ({h_start} to {h_end})")
     
     total_rent_by_room = {room: 0 for room in room_types}  # Track total rent for non-holiday days
     holiday_totals = {room: {} for room in room_types}  # Track holiday week totals
     
     for room in room_types:
         internal_room = display_to_internal.get(room, room)
+        st.session_state.debug_messages.append(f"Mapping for room {room}: Internal key = {internal_room}")
         is_ap_room = room in ap_display_room_types
         current_holiday = None
         
@@ -950,6 +957,7 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
             entry, _ = generate_data(resort, date)
             
             points = entry.get(room, reference_points_resort.get(room, 0))
+            st.session_state.debug_messages.append(f"Points for {room} on {date_str} ({day_of_week}): {points}")
             discounted_points = math.floor(points * discount_multiplier)
             rent = math.ceil(points * rate_per_point)
             rent_str = f"${rent}"
@@ -960,6 +968,8 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
             if is_holiday_date and entry.get("HolidayWeekStart", False):
                 current_holiday = holiday_name
                 if current_holiday not in holiday_totals[room]:
+                    h_start = min(h for h, _ in holiday_ranges if holiday_names.get(date) == current_holiday)
+                    h_end = max(e for _, e in holiday_ranges if holiday_names.get(date) == current_holiday)
                     holiday_totals[room][current_holiday] = {"points": 0, "rent": 0, "start": h_start, "end": h_end}
                 if is_ap_room:
                     # Use full-week points for AP rooms during holiday weeks
@@ -967,10 +977,12 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
                     full_week_discounted = math.floor(full_week_points * discount_multiplier)
                     holiday_totals[room][current_holiday]["points"] = full_week_discounted
                     holiday_totals[room][current_holiday]["rent"] = math.ceil(full_week_points * rate_per_point)
+                    st.session_state.debug_messages.append(f"AP Room {room} on {date_str}: Using full week points {full_week_points}, rent = ${holiday_totals[room][current_holiday]['rent']}")
                 else:
                     # For normal rooms, use first-day points
                     holiday_totals[room][current_holiday]["points"] = discounted_points
                     holiday_totals[room][current_holiday]["rent"] = rent
+                    st.session_state.debug_messages.append(f"Normal Room {room} on {date_str}: Using first-day points {points}, rent = ${rent}")
             elif is_holiday_date and current_holiday and not is_ap_room:
                 # Skip adding to compare_data for normal rooms after holiday week start
                 continue
@@ -1137,6 +1149,7 @@ if st.button("Calculate"):
                     st.plotly_chart(fig, use_container_width=True)
                 
                 if not holiday_df.empty:
+                    # Calculate the overall date range for holidays
                     start_date = holiday_df["Start"].min()
                     end_date = holiday_df["End"].max()
                     start_date_str = start_date.strftime("%b %d")
@@ -1162,6 +1175,8 @@ if st.button("Calculate"):
                         bargroupgap=0.1
                     )
                     st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.session_state.debug_messages.append("No holiday data to display for this period.")
             else:
                 st.error("Chart DataFrame missing required columns.")
                 st.session_state.debug_messages.append(f"Chart DataFrame columns: {chart_df.columns.tolist()}")
