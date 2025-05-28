@@ -503,7 +503,7 @@ reference_points = {
 
 # Helper function to map room type keys to descriptive names
 def get_display_room_type(room_key):
-    if room_key, ["Penthouse", "Garden", "Front"] and not found_view:
+    if part in ["Mountain", "Ocean", "Penthouse", "Garden", "Front"] and not found_view:
             found_view = True
             view_parts.append(part)
         elif found_view:
