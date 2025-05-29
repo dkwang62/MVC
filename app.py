@@ -809,7 +809,7 @@ st.title("Marriott Vacation Club Rent Calculator")
 
 with st.expander("ℹ️ How Rent Is Calculated"):
     st.markdown("""
-    - **Rent is based on FULL (non-discounted) points only.**
+    - **Rent is based on FULL (un-discounted) points only.**
     - $0.81 per FULL point for dates in **2025**
     - $0.86 per FULL point for dates in **2026 and beyond**
     - **Holiday weeks**: For days within a holiday week, please contact me for quotes.
@@ -818,14 +818,14 @@ with st.expander("ℹ️ How Rent Is Calculated"):
 # User input for resort, room type, check-in date, and number of nights
 resort_display = st.selectbox("Select Resort", options=display_resorts, key="resort_select")
 resort = reverse_aliases.get(resort_display, resort_display)
-st.session_state.debug_messages.append(f"Selected resort: {resort}")
+# st.session_state.debug_messages.append(f"Selected resort: {resort}")
 
 checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2026, 7, 10).date())
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
 
 # Derive year from check-in date
 year_select = str(checkin_date.year)
-st.session_state.debug_messages.append(f"Derived year from check-in date: {year_select}")
+# st.session_state.debug_messages.append(f"Derived year from check-in date: {year_select}")
 
 # Get room types and AP room types
 sample_date = checkin_date  # Use check-in date for room types
