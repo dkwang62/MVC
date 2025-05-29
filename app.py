@@ -593,6 +593,10 @@ reference_points = {
 def get_display_room_type(room_key):
     if room_key in room_view_legend:
         return room_view_legend[room_key]
+
+    # Special case to avoid duplication like "2BR 2BR"
+    if room_key in ["2BR", "1BR", "3BR"]:
+        return room_key
     
     parts = room_key.split()
     if not parts:
