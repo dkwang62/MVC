@@ -108,6 +108,18 @@ season_blocks = {
 }
 
 holiday_weeks = {
+    "Newport Coast Villas": {
+        "2025": {
+            "Independence Day": ["2025-07-04", "2025-07-10"],
+            "Christmas": ["2025-12-19", "2025-12-25"],
+            "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
+        },
+        "2026": {
+            "Independence Day": ["2026-07-03", "2026-07-09"],
+            "Christmas": ["2026-12-18", "2026-12-24"],
+            "New Year's Eve/Day": ["2026-12-25", "2026-12-31"]
+        }
+    },
     "Kauai Beach Club": {
         "2025": {
             "Presidents Day": ["2025-02-14", "2025-02-20"],
@@ -168,6 +180,52 @@ room_view_legend = {
 }
 
 reference_points = {
+    "Newport Coast Villas": {
+        "Low Season": {
+            "Fri-Sat": {
+                "2BR": 700
+            },
+            "Sun-Thu": {
+                "2BR": 300
+            },
+            "Full Week": {
+                "2BR": 2900
+            }
+        },
+        "High Season": {
+            "Fri-Sat": {
+                "2BR": 1050
+            },
+            "Sun-Thu": {
+                "2BR": 425
+            },
+            "Full Week": {
+                "2BR": 4225
+            }
+        },
+        "Peak Season": {
+            "Fri-Sat": {
+                "2BR": 1175
+            },
+            "Sun-Thu": {
+                "2BR": 475
+            },
+            "Full Week": {
+                "2BR": 4725
+            }
+        },
+        "Holiday Week": {
+            "Independence Day": {
+                "2BR": 5675
+            },
+            "Christmas": {
+                "2BR": 4725
+            },
+            "New Year's Eve/Day": {
+                "2BR": 4950
+            }
+        }
+    },
     "Kauai Beach Club": {
         "Low Season": {
             "Fri-Sat": {
