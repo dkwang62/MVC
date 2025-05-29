@@ -816,7 +816,8 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     """)
 
 # User input for resort, room type, check-in date, and number of nights
-resort_display = st.selectbox("Select Resort", options=display_resorts, key="resort_select")
+# resort_display = st.selectbox("Select Resort", options=display_resorts, key="resort_select")
+resort_display = st.selectbox("Select Resort", options=display_resorts, index=display_resorts.index("Ko Olina Beach Club"), key="resort_select")
 resort = reverse_aliases.get(resort_display, resort_display)
 # st.session_state.debug_messages.append(f"Selected resort: {resort}")
 
