@@ -11,6 +11,36 @@ if "debug_messages" not in st.session_state:
 
 # Hardcoded data (unchanged)
 season_blocks = {
+    "Newport Coast Villas": {
+        "2025": {
+            "Low Season": [
+                ["2025-01-03", "2025-06-05"],
+                ["2025-09-19", "2025-12-18"]
+            ],
+            "High Season": [
+                ["2025-06-06", "2025-06-26"],
+                ["2025-08-15", "2025-09-18"]
+            ],
+            "Peak Season": [
+                ["2025-06-27", "2025-07-03"],
+                ["2025-07-11", "2025-08-14"]
+            ]
+        },
+        "2026": {
+            "Low Season": [
+                ["2026-01-02", "2026-06-04"],
+                ["2026-09-18", "2026-12-17"]
+            ],
+            "High Season": [
+                ["2026-06-05", "2026-06-25"],
+                ["2026-08-14", "2026-09-17"]
+            ],
+            "Peak Season": [
+                ["2026-06-26", "2026-07-02"],
+                ["2026-07-10", "2026-08-13"]
+            ]
+        }
+    },
     "Kauai Beach Club": {
         "2025": {
             "Low Season": [
@@ -787,7 +817,8 @@ def create_gantt_chart(resort, year):
 # Resort display name mapping
 resort_aliases = {
     "Kauai Beach Club": "Kauai Beach Club",
-    "Ko Olina Beach Club": "Ko Olina Beach Club"
+    "Ko Olina Beach Club": "Ko Olina Beach Club",
+    "Newport Coast Villas": "Newport Coast Villas"
 }
 reverse_aliases = {v: k for k, v in resort_aliases.items()}
 display_resorts = list(resort_aliases.values())
