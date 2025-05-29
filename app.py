@@ -800,12 +800,12 @@ with st.sidebar:
         index=0,
         format_func=lambda x: f"{x}%" if x else "No Discount"
     )
-    st.caption("Discount applies only to points. Rent is based on original points.")
+    st.caption("Discount is for my use only. Rent is based on FULL undiscounted points.")
 
 discount_multiplier = 1 - (discount_percent / 100)
 
 # Title and user input
-st.title("Marriott Vacation Club Points Calculator")
+st.title("Marriott Vacation Club Rent Calculator")
 
 with st.expander("ℹ️ How Rent Is Calculated"):
     st.markdown("""
