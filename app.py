@@ -12,7 +12,7 @@ if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
 
 # Load data
-with open("MVC_2025.json", "r") as f:
+with open("Marriott_2025.json", "r") as f:
     mvc_data = json.load(f)
 
 season_blocks = mvc_data["season_blocks"]
