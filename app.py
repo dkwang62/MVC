@@ -809,11 +809,10 @@ st.title("Marriott Vacation Club Points Calculator")
 
 with st.expander("ℹ️ How Rent Is Calculated"):
     st.markdown("""
-    - **Rent is estimated based on original points only.**
-    - $0.81 per point for dates in **2025**
-    - $0.86 per point for dates in **2026 and beyond**
-    - Points are **rounded down** when discounts are applied.
-    - **Holiday weeks**: Points are applied only on the first day for normal rooms; AP rooms use the sum of daily points over 7 days.
+    - **Rent is based on FULL (non-discounted) points only.**
+    - $0.81 per FULL point for dates in **2025**
+    - $0.86 per FULL point for dates in **2026 and beyond**
+    - **Holiday weeks**: For days within a holiday week, please contact me for quotes.
     """)
 
 # User input for resort, room type, check-in date, and number of nights
