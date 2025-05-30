@@ -399,7 +399,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
         
         points = entry.get(room_type, reference_points_resort.get(room_type, 0))
         st.session_state.debug_messages.append(f"Calculating for {date_str}: Points for {room_type} = {points}")
-        discounted_points = math.floor(points * discount_multiplier)
+        discounted_points = math    math.floor(points * discount_multiplier)
         rent = math.ceil(points * rate_per_point)
         breakdown.append({
             "Date": date_str,
@@ -409,7 +409,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
             "Holiday": entry.get("holiday_name", "No")
         })
         if "HolidayWeek" in entry and entry.get("HolidayWeekStart", False):
-            breakdown[-1]["HolidayMarker"] = "ð���ï¸�"
+            breakdown[-1]["HolidayMarker"] = "\U0001F386"  # Correct Unicode for 🎆
         total_points += discounted_points
         total_rent += rent
 
