@@ -301,7 +301,9 @@ def create_gantt_chart(resort, year):
 resort_aliases = {
     "Kauai Beach Club": "Kauai Beach Club",
     "Ko Olina Beach Club": "Ko Olina Beach Club",
-    "Newport Coast Villas": "Newport Coast Villas"
+    "Newport Coast Villas": "Newport Coast Villas",
+    "Crystal Shores": "Crystal Shores",
+    "Desert Springs Villas II": "Desert Springs Villas II"
 }
 reverse_aliases = {v: k for k, v in resort_aliases.items()}
 display_resorts = list(resort_aliases.values())
