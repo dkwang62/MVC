@@ -92,7 +92,10 @@ def generate_data(resort, date):
     # Determine season for the specific date
     season = None
     try:
-        for s_type in ["Low Season", "High Season"]:
+        # Dynamically get season types for the resort and year
+        season_types = list(season_blocks[resort][year].keys())
+        st.session_state.debug_messages.append(f"Available season types for {resort} in {year}: {season_types}")
+        for s_type in season_types:
             for [start, end] in season_blocks[resort][year][s_type]:
                 s_start = datetime.strptime(start, "%Y-%m-%d").date()
                 s_end = datetime.strptime(end, "%Y-%m-%d").date()
@@ -105,9 +108,13 @@ def generate_data(resort, date):
                 break
     except ValueError as e:
         st.session_state.debug_messages.append(f"Invalid season date in {resort}, {year}, {s_type}: {e}")
+    except KeyError as e:
+        st.session_state.debug_messages.append(f"KeyError in season_blocks for {resort}, {year}: {e}")
+        raise
 
     if not season:
-        season = "Low Season"
+        # Default to the first available season type if none match
+        season = next(iter(season_blocks[resort][year].keys()), "Low Season")
         st.session_state.debug_messages.append(f"No season match found for {date_str}, defaulting to {season}")
     
     st.session_state.debug_messages.append(f"Final season determined for {date_str}: {season}")
@@ -214,6 +221,7 @@ def create_gantt_chart(resort, year):
     year_str = str(year)
     
     try:
+        # Add holidays
         for h_name, [start, end] in holiday_weeks[resort][year_str].items():
             start_date = datetime.strptime(start, "%Y-%m-%d").date()
             end_date = datetime.strptime(end, "%Y-%m-%d").date()
@@ -225,7 +233,12 @@ def create_gantt_chart(resort, year):
             })
             st.session_state.debug_messages.append(f"Added holiday: {h_name}, Start: {start_date}, Finish: {end_date}")
 
-        for season_type in ["Low Season", "High Season"]:
+        # Dynamically get season types for the resort and year
+        season_types = list(season_blocks[resort][year_str].keys())
+        st.session_state.debug_messages.append(f"Available season types for Gantt chart in {resort}, {year}: {season_types}")
+        
+        # Add seasons
+        for season_type in season_types:
             for i, [start, end] in enumerate(season_blocks[resort][year_str][season_type], 1):
                 start_date = datetime.strptime(start, "%Y-%m-%d").date()
                 end_date = datetime.strptime(end, "%Y-%m-%d").date()
@@ -249,12 +262,24 @@ def create_gantt_chart(resort, year):
                 "Type": ["No Data"]
             })
 
-        colors = {
-            "Holiday": "rgb(255, 99, 71)",
-            "Low Season": "rgb(135, 206, 250)",
-            "High Season": "rgb(50, 205, 50)",
-            "No Data": "rgb(128, 128, 128)"
+        # Define a color palette for different season types
+        color_palette = {
+            "Holiday": "rgb(255, 99, 71)",  # Tomato for holidays
+            "Low Season": "rgb(135, 206, 250)",  # SkyBlue for Low Season
+            "High Season": "rgb(50, 205, 50)",  # LimeGreen for High Season
+            "Peak Season": "rgb(255, 215, 0)",  # Gold for Peak Season
+            "Shoulder": "rgb(147, 112, 219)",  # MediumPurple for Shoulder
+            "Peak": "rgb(255, 165, 0)",  # Orange for Peak
+            "Summer": "rgb(255, 69, 0)",  # RedOrange for Summer
+            "Low": "rgb(70, 130, 180)",  # SteelBlue for Low
+            "Mid Season": "rgb(60, 179, 113)",  # MediumSeaGreen for Mid Season
+            "No Data": "rgb(128, 128, 128)",  # Grey for No Data
+            "Error": "rgb(128, 128, 128)"  # Grey for Error
         }
+        
+        # Create a color map based on the types present in the data
+        types_present = df["Type"].unique()
+        colors = {t: color_palette.get(t, "rgb(169, 169, 169)") for t in types_present}  # Default to DarkGrey if type not in palette
         
         fig = px.timeline(
             df,
