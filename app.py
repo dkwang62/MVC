@@ -15,27 +15,22 @@ def get_display_room_type(room_key):
     if room_key in room_view_legend:
         return room_view_legend[room_key]
 
-    # Special case to avoid duplication like "2BR 2BR"
-    if room_key in ["2BR", "1BR", "3BR"]:
-        return room_key
-    
+    # Handle compound keys like "Studio IV", "1BR OF", etc.
     parts = room_key.split()
     if not parts:
         return room_key
 
-    base = " ".join(parts[:-1]) if len(parts) > 1 else parts[0]
-    view = parts[-1]
-    if view in room_view_legend:
+    base = parts[0]  # e.g., "Studio", "1BR"
+    view = parts[-1]  # e.g., "IV", "OF"
+    if len(parts) > 1 and view in room_view_legend:
         view_display = room_view_legend[view]
-    else:
-        view_display = view
-
-    if len(parts) > 2 and parts[-2] == "PH":
-        base = " ".join(parts[:-2])
-        view = " ".join(parts[-2:])
-        view_display = room_view_legend.get(view, view)
-
-    return f"{base} {view_display}"
+        return f"{base} {view_display}"
+    
+    # Fallback for simple keys like "2BR"
+    if room_key in ["2BR", "1BR", "3BR"]:
+        return room_key
+    
+    return room_key  # Default to original key if no match
 
 # Helper function to map display name back to internal key
 def get_internal_room_key(display_name):
@@ -376,7 +371,7 @@ if not room_types:
     st.session_state.debug_messages.append(f"No room types for {resort}")
     st.stop()
 
-# Define AP display room types globally for the selected resort
+# Reset AP room types for non-Ko Olina resorts
 ap_room_types = []
 ap_display_room_types = []
 if resort == "Ko Olina Beach Club" and "AP Rooms" in reference_points[resort]:
