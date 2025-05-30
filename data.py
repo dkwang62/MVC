@@ -1,3 +1,4 @@
+# Unchanged sections: season_blocks, holiday_weeks, room_view_legend remain the same
 season_blocks = {
     "Kauai Beach Club": {
         "2025": {
@@ -501,8 +502,8 @@ reference_points = {
                 "2BR PH OF": 950,
             },
             "Sun": {
-                "2BR OF": 0,
-                "2BR PH OF": 0,
+                "2BR OF": 450,  # Updated to match Mon-Thu
+                "2BR PH OF": 500,  # Updated to match Mon-Thu
             },
             "Mon-Thu": {
                 "2BR OF": 450,
@@ -761,53 +762,7 @@ reference_points = {
                 "3BR PH PS": 3550,
             },
         },
-        "Low": {
-            "Fri-Sat": {
-                "2BR S": 0,
-                "2BR IS": 0,
-                "2BR PS": 0,
-                "2BR PIS": 0,
-                "3BR S": 0,
-                "3BR IS": 0,
-                "3BR PS": 0,
-                "3BR PIS": 0,
-                "2BR": 0,
-                "2BR PH S": 0,
-                "2BR PH IS": 0,
-                "2BR PH PS": 0,
-                "3BR PH PS": 0,
-            },
-            "Sun-Thu": {
-                "2BR S": 0,
-                "2BR IS": 0,
-                "2BR PS": 0,
-                "2BR PIS": 0,
-                "3BR S": 0,
-                "3BR IS": 0,
-                "3BR PS": 0,
-                "3BR PIS": 0,
-                "2BR": 0,
-                "2BR PH S": 0,
-                "2BR PH IS": 0,
-                "2BR PH PS": 0,
-                "3BR PH PS": 0,
-            },
-            "Full Week": {
-                "2BR S": 0,
-                "2BR IS": 0,
-                "2BR PS": 0,
-                "2BR PIS": 0,
-                "3BR S": 0,
-                "3BR IS": 0,
-                "3BR PS": 0,
-                "3BR PIS": 0,
-                "2BR": 0,
-                "2BR PH S": 0,
-                "2BR PH IS": 0,
-                "2BR PH PS": 0,
-                "3BR PH PS": 0,
-            },
-        },
+        # Removed "Low" season since it has no date ranges in season_blocks
         "Holiday Week": {
             "Presidents Day": {
                 "2BR S": 2500,
