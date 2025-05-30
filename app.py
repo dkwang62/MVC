@@ -1,10 +1,10 @@
+from data import season_blocks, holiday_weeks, room_view_legend, reference_points
 import streamlit as st
 import math
 from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 import plotly.figure_factory as ff
-from data import season_blocks, holiday_weeks, room_view_legend, reference_points
 
 # Initialize session state for debug messages
 if "debug_messages" not in st.session_state:
