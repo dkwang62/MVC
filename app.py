@@ -321,7 +321,7 @@ discount_multiplier = 1 - (discount_percent / 100)
 # Title and user input
 st.title("Marriott Vacation Club Rent Calculator")
 
-with st.expander("â�¹ï¸� How Rent Is Calculated"):
+with st.expander("\U0001F334 How Rent Is Calculated"):
     st.markdown("""
     - **Rent is based on FULL (un-discounted) points only.**
     - $0.81 per FULL point for dates in **2025**
@@ -399,7 +399,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
         
         points = entry.get(room_type, reference_points_resort.get(room_type, 0))
         st.session_state.debug_messages.append(f"Calculating for {date_str}: Points for {room_type} = {points}")
-        discounted_points = math.floor(points * discount_multiplier)  # Corrected line
+        discounted_points = math.floor(points * discount_multiplier)
         rent = math.ceil(points * rate_per_point)
         breakdown.append({
             "Date": date_str,
