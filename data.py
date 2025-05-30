@@ -97,16 +97,16 @@ season_blocks = {
     },
     "Crystal Shores": {
         "2025": {
-            "High Season": [["2025-01-31", "2025-02-13"], ["2025-02-21", "2025-04-10"]],
-            "Shoulder Season": [["2025-01-03", "2025-01-30"], ["2025-04-11", "2025-05-01"]],
+            "Shoulder": [["2025-01-03", "2025-01-30"], ["2025-04-11", "2025-05-01"]],
+            "Peak": [["2025-01-31", "2025-02-13"], ["2025-02-21", "2025-04-10"]],
             "Summer": [["2025-05-02", "2025-07-03"], ["2025-07-11", "2025-08-21"], ["2025-10-24", "2025-12-04"]],
-            "Low Season": [["2025-08-22", "2025-10-23"], ["2025-12-05", "2025-12-18"]]
+            "Low": [["2025-08-22", "2025-10-23"], ["2025-12-05", "2025-12-18"]]
         },
         "2026": {
-            "High Season": [["2026-01-30", "2026-02-12"], ["2026-02-20", "2026-04-09"]],
-            "Shoulder Season": [["2026-01-02", "2026-01-29"], ["2026-04-10", "2026-04-30"]],
+            "Shoulder": [["2026-01-02", "2026-01-29"], ["2026-04-10", "2026-04-30"]],
+            "Peak": [["2026-01-30", "2026-02-12"], ["2026-02-20", "2026-04-09"]],
             "Summer": [["2026-05-01", "2026-07-02"], ["2026-07-10", "2026-08-20"], ["2026-10-23", "2026-12-03"]],
-            "Low Season": [["2026-08-21", "2026-10-22"], ["2026-12-04", "2026-12-17"]]
+            "Low": [["2026-08-21", "2026-10-22"], ["2026-12-04", "2026-12-17"]]
         }
     },
     "Desert Springs Villas II": {
@@ -226,7 +226,15 @@ room_view_legend = {
     "AP Studio MA": "AP Studio Mountain View",
     "AP 1 BDRM MA": "AP 1BR Mountain View",
     "AP 2 BDRM MA": "AP 2BR Mountain View",
-    "AP 2 BDRM MK": "AP 2BR Ocean View"
+    "AP 2 BDRM MK": "AP 2BR Ocean View",
+    "S": "Standard",
+    "IS": "Island Side",
+    "PS": "Poolside",
+    "UV": "Gulfview",
+    "PSH": "Poolside Floors 6-15",
+    "US": "Gulf Side",
+    "UF": "Gulf Front",
+    "PH UF": "Penthouse Gulf Front"
 }
 
 reference_points = {
@@ -660,94 +668,78 @@ reference_points = {
         }
     },
     "Crystal Shores": {
-        "Low Season": {
+        "Shoulder": {
             "Fri-Sat": {
-                "Studio": 300,
-                "1BR": 400,
-                "2BR": 600
+                "2BR S": 928, "2BR IS": 1025, "2BR PS": 1200, "2BR UV": 1250, "2BR PSH": 1350, "2BR US": 1350, "2BR UF": 1600,
+                "3BR S": 1250, "3BR IS": 1300, "3BR PS": 1525, "3BR PSH": 1900, "3BR PH UF": 2200
             },
             "Sun-Thu": {
-                "Studio": 150,
-                "1BR": 200,
-                "2BR": 300
+                "2BR S": 375, "2BR IS": 425, "2BR PS": 475, "2BR UV": 500, "2BR PSH": 550, "2BR US": 550, "2BR UF": 650,
+                "3BR S": 500, "3BR IS": 525, "3BR PS": 600, "3BR PSH": 750, "3BR PH UF": 900
             },
             "Full Week": {
-                "Studio": 1350,
-                "1BR": 1800,
-                "2BR": 2700
+                "2BR S": 3725, "2BR IS": 4175, "2BR PS": 4775, "2BR UV": 5000, "2BR PSH": 5450, "2BR US": 5450, "2BR UF": 6450,
+                "3BR S": 5000, "3BR IS": 5225, "3BR PS": 6050, "3BR PSH": 7550, "3BR PH UF": 8950
             }
         },
-        "Shoulder Season": {
+        "Peak": {
             "Fri-Sat": {
-                "Studio": 350,
-                "1BR": 500,
-                "2BR": 750
+                "2BR S": 975, "2BR IS": 1125, "2BR PS": 1275, "2BR UV": 1300, "2BR PSH": 1450, "2BR US": 1450, "2BR UF": 1800,
+                "3BR S": 1375, "3BR IS": 1650, "3BR PS": 2000, "3BR PSH": 2350
             },
             "Sun-Thu": {
-                "Studio": 175,
-                "1BR": 250,
-                "2BR": 375
+                "2BR S": 400, "2BR IS": 450, "2BR PS": 525, "2BR UV": 550, "2BR PSH": 600, "2BR US": 600, "2BR UF": 750,
+                "3BR S": 550, "3BR IS": 575, "3BR PS": 700, "3BR PSH": 800, "3BR PH UF": 950
             },
             "Full Week": {
-                "Studio": 1575,
-                "1BR": 2250,
-                "2BR": 3375
-            }
-        },
-        "High Season": {
-            "Fri-Sat": {
-                "Studio": 450,
-                "1BR": 600,
-                "2BR": 900
-            },
-            "Sun-Thu": {
-                "Studio": 225,
-                "1BR": 300,
-                "2BR": 450
-            },
-            "Full Week": {
-                "Studio": 2025,
-                "1BR": 2700,
-                "2BR": 4050
+                "2BR S": 3950, "2BR IS": 4500, "2BR PS": 5175, "2BR UV": 5500, "2BR PSH": 5900, "2BR US": 5900, "2BR UF": 7350,
+                "3BR S": 5500, "3BR IS": 5625, "3BR PS": 6800, "3BR PSH": 8000, "3BR PH UF": 9450
             }
         },
         "Summer": {
             "Fri-Sat": {
-                "Studio": 400,
-                "1BR": 550,
-                "2BR": 825
+                "2BR S": 550, "2BR IS": 625, "2BR PS": 725, "2BR UV": 750, "2BR PSH": 850, "2BR US": 850, "2BR UF": 1000,
+                "3BR S": 750, "3BR IS": 800, "3BR PS": 925, "3BR PSH": 1075, "3BR PH UF": 1300
             },
             "Sun-Thu": {
-                "Studio": 200,
-                "1BR": 275,
-                "2BR": 412
+                "2BR S": 225, "2BR IS": 250, "2BR PS": 275, "2BR UV": 300, "2BR PSH": 350, "2BR US": 350, "2BR UF": 450,
+                "3BR S": 300, "3BR IS": 325, "3BR PS": 400, "3BR PSH": 475, "3BR PH UF": 650
             },
             "Full Week": {
-                "Studio": 1800,
-                "1BR": 2475,
-                "2BR": 3712
+                "2BR S": 2225, "2BR IS": 2500, "2BR PS": 2825, "2BR UV": 3000, "2BR PSH": 3450, "2BR US": 3450, "2BR UF": 4250,
+                "3BR S": 3000, "3BR IS": 3225, "3BR PS": 3850, "3BR PSH": 4525, "3BR PH UF": 5350
+            }
+        },
+        "Low": {
+            "Fri-Sat": {
+                "2BR S": 375, "2BR IS": 425, "2BR PS": 475, "2BR UV": 500, "2BR PSH": 650, "2BR US": 650, "2BR UF": 800,
+                "3BR S": 500, "3BR IS": 575, "3BR PS": 725, "3BR PSH": 825, "3BR PH UF": 900
+            },
+            "Sun-Thu": {
+                "2BR S": 125, "2BR IS": 150, "2BR PS": 175, "2BR UV": 200, "2BR PSH": 225, "2BR US": 225, "2BR UF": 275,
+                "3BR S": 200, "3BR IS": 225, "3BR PS": 275, "3BR PSH": 300, "3BR PH UF": 300
+            },
+            "Full Week": {
+                "2BR S": 1375, "2BR IS": 1600, "2BR PS": 1825, "2BR UV": 2000, "2BR PSH": 2425, "2BR US": 2425, "2BR UF": 2975,
+                "3BR S": 2000, "3BR IS": 2275, "3BR PS": 2700, "3BR PSH": 3025, "3BR PH UF": 3300
             }
         },
         "Holiday Week": {
             "Presidents Day": {
-                "Studio": 2250,
-                "1BR": 3000,
-                "2BR": 4500
+                "2BR S": 5100, "2BR IS": 5700, "2BR PS": 6525, "2BR UV": 6900, "2BR PSH": 7550, "2BR US": 7550, "2BR UF": 9450,
+                "3BR S": 6900, "3BR IS": 7175, "3BR PS": 8800, "3BR PSH": 10525, "3BR PH UF": 12150
             },
             "Independence Day": {
-                "Studio": 2100,
-                "1BR": 2800,
-                "2BR": 4200
+                "2BR S": 2225, "2BR IS": 2600, "2BR PS": 2825, "2BR UV": 3000, "2BR PSH": 3450, "2BR US": 3450, "2BR UF": 4250,
+                "3BR S": 3225, "3BR IS": 3850, "3BR PS": 4525, "3BR PSH": 525, "3BR PH UF": 5350
             },
             "Christmas": {
-                "Studio": 2250,
-                "1BR": 3000,
-                "2BR": 4500
+                "2BR S": 3950, "2BR IS": 4500, "2BR PS": 5175, "2BR UV": 5500, "2BR PSH": 5900, "2BR US": 5900, "2BR UF": 7350,
+                "3BR S": 5500, "3BR IS": 5625, "3BR PS": 6800, "3BR PSH": 8000, "3BR PH UF": 9450
             },
             "New Year's Eve/Day": {
-                "Studio": 2400,
-                "1BR": 3200,
-                "2BR": 4800
+                "2BR S": 4375, "2BR IS": 4875, "2BR PS": 5550, "2BR UV": 5900, "2BR PSH": 6450, "2BR US": 6450, "2BR UF": 7900,
+                "3BR S": 5900, "3BR IS": 6075, "3BR PS": 7400, "3BR PSH": 8850, "3BR PH UF": 10450
             }
         }
     }
