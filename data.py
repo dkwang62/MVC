@@ -318,13 +318,13 @@ room_view_legend = {
     "GV": "Garden View",
     "OV": "Ocean View",
     "OF": "Ocean Front",
-    "S": "Gulf Side",
+    "S": "Standard",
     "IS": "Island Side",
-    "PS": "Penthouse Gulf Side",
-    "PIS": "Penthouse Island Side",
+    "PS": "Poolside Low Floors",
+    "PSH": "Poolside High Floors",
     "PH GV": "Penthouse Garden View",
     "PH OV": "Penthouse Ocean View",
-    "PH OF": "Penthouse Ocean Front",
+    "PH UF": "Penthouse Gulf Front",
     "IV": "Island View",
     "MG": "Mountain Garden"
 }
@@ -751,7 +751,8 @@ reference_points = {
                 "3BR PSH": 0,
                 "2BR PH UF": 0,
             },
-             "Low": {
+        },
+        "Low": {
             "Fri-Sat": {
                "2BR S": 0,
                 "2BR IS": 0,
