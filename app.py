@@ -578,6 +578,10 @@ def compare_room_types(resort, room_types, checkin_date, num_nights, discount_mu
 
 # Main Calculation
 if st.button("Calculate"):
+    # Clear debug messages before starting a new calculation
+    st.session_state.debug_messages = []
+    st.session_state.debug_messages.append("Starting new calculation...")
+
     # Calculate stay details
     breakdown, total_points, total_rent = calculate_stay(
         resort, room_type, checkin_date, adjusted_nights, discount_multiplier, discount_percent
@@ -725,6 +729,11 @@ if st.button("Calculate"):
 
 # Debug Information
 with st.expander("Debug Information"):
+    # Add a button to manually clear debug messages
+    if st.button("Clear Debug Messages"):
+        st.session_state.debug_messages = []
+        st.session_state.debug_messages.append("Debug messages cleared.")
+    
     if st.session_state.debug_messages:
         for msg in st.session_state.debug_messages:
             st.write(msg)
