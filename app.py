@@ -4,22 +4,11 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 import plotly.figure_factory as ff
-import json
-import io
+from data import season_blocks, holiday_weeks, room_view_legend, reference_points
 
 # Initialize session state for debug messages
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
-
-# Load data
-with open("MVC_2025.json", "r") as f:
-    mvc_data = json.load(f)
-
-season_blocks = mvc_data["season_blocks"]
-holiday_weeks = mvc_data["holiday_weeks"]
-reference_points = mvc_data["reference_points"]
-room_view_legend = mvc_data["room_view_legend"]
-
 
 # Helper function to map room type keys to descriptive names
 def get_display_room_type(room_key):
@@ -332,7 +321,7 @@ discount_multiplier = 1 - (discount_percent / 100)
 # Title and user input
 st.title("Marriott Vacation Club Rent Calculator")
 
-with st.expander("ℹ️ How Rent Is Calculated"):
+with st.expander("â�¹ï¸� How Rent Is Calculated"):
     st.markdown("""
     - **Rent is based on FULL (un-discounted) points only.**
     - $0.81 per FULL point for dates in **2025**
@@ -341,17 +330,14 @@ with st.expander("ℹ️ How Rent Is Calculated"):
     """)
 
 # User input for resort, room type, check-in date, and number of nights
-# resort_display = st.selectbox("Select Resort", options=display_resorts, key="resort_select")
 resort_display = st.selectbox("Select Resort", options=display_resorts, index=display_resorts.index("Ko Olina Beach Club"), key="resort_select")
 resort = reverse_aliases.get(resort_display, resort_display)
-# st.session_state.debug_messages.append(f"Selected resort: {resort}")
 
 checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2026, 7, 10).date())
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
 
 # Derive year from check-in date
 year_select = str(checkin_date.year)
-# st.session_state.debug_messages.append(f"Derived year from check-in date: {year_select}")
 
 # Get room types and AP room types
 sample_date = checkin_date  # Use check-in date for room types
@@ -423,7 +409,7 @@ def calculate_stay(resort, room_type, checkin_date, num_nights, discount_multipl
             "Holiday": entry.get("holiday_name", "No")
         })
         if "HolidayWeek" in entry and entry.get("HolidayWeekStart", False):
-            breakdown[-1]["HolidayMarker"] = "🏖️"
+            breakdown[-1]["HolidayMarker"] = "ð���ï¸�"
         total_points += discounted_points
         total_rent += rent
 
