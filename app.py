@@ -321,6 +321,7 @@ def create_gantt_chart(resort, year):
 resort_aliases = {
     "Kauai Beach Club": "Kauai Beach Club",
     "Ko Olina Beach Club": "Ko Olina Beach Club",
+    "Grande Vista": "Grande Vista"
     "Newport Coast Villas": "Newport Coast Villas",
     "Crystal Shores": "Crystal Shores",
     "Maui Ocean Club": "Maui Ocean Club",
