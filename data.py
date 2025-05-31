@@ -240,20 +240,12 @@ holiday_weeks = {
     },
     "Newport Coast Villas": {
         "2025": {
-            "Presidents Day": ["2025-02-14", "2025-02-20"],
-            "Easter": ["2025-04-18", "2025-04-24"],
             "Independence Day": ["2025-07-04", "2025-07-10"],
-            "Thanksgiving": ["2025-11-21", "2025-11-27"],
-            "Thanksgiving 2": ["2025-11-28", "2025-12-04"],
             "Christmas": ["2025-12-19", "2025-12-25"],
             "New Year's Eve/Day": ["2025-12-26", "2026-01-01"]
         },
         "2026": {
-            "Presidents Day": ["2026-02-13", "2026-02-19"],
-            "Easter": ["2026-04-03", "2026-04-09"],
             "Independence Day": ["2026-07-03", "2026-07-09"],
-            "Thanksgiving": ["2026-11-20", "2026-11-26"],
-            "Thanksgiving 2": ["2026-11-27", "2026-12-03"],
             "Christmas": ["2026-12-18", "2026-12-24"],
             "New Year's Eve/Day": ["2026-12-25", "2026-12-31"]
         }
@@ -579,47 +571,45 @@ reference_points = {
     "Newport Coast Villas": {
         "Low Season": {
             "Fri-Sat": {
-                "2BR": 1000,
+                "2BR": 700,
             },
             "Sun-Thu": {
                 "2BR": 300,
             },
             "Full Week": {
-                "2BR": 3500,
+                "2BR": 2900,
             },
         },
-        "High Season": {
+        "Mid Season": {
             "Fri-Sat": {
-                "2BR": 1200,
+                "2BR": 1060,
             },
             "Sun-Thu": {
-                "2BR": 450,
+                "2BR": 425,
             },
             "Full Week": {
-                "2BR": 4500,
+                "2BR": 4725,
+            },
+        },"High Season": {
+            "Fri-Sat": {
+                "2BR": 1175,
+            },
+            "Sun-Thu": {
+                "2BR": 475,
+            },
+            "Full Week": {
+                "2BR": 4725,
             },
         },
-        "Holiday Week": {
-            "Presidents Day": {
-                "2BR": 4500,
-            },
-            "Easter": {
-                "2BR": 4500,
-            },
+        Holiday Week": {
             "Independence Day": {
-                "2BR": 4500,
-            },
-            "Thanksgiving": {
-                "2BR": 4500,
-            },
-            "Thanksgiving 2": {
-                "2BR": 4500,
+                "2BR": 5675,
             },
             "Christmas": {
-                "2BR": 4500,
+                "2BR": 4725,
             },
             "New Year's Eve/Day": {
-                "2BR": 4500,
+                "2BR": 4950,
             },
         },
     },
