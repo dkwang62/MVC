@@ -579,47 +579,47 @@ reference_points = {
     "Newport Coast Villas": {
         "Low Season": {
             "Fri-Sat": {
-                "2BR": 350,
+                "2BR": 1000,
             },
             "Sun-Thu": {
-                "2BR": 200,
+                "2BR": 300,
             },
             "Full Week": {
-                "2BR": 1700,
+                "2BR": 3500,
             },
         },
         "High Season": {
             "Fri-Sat": {
-                "2BR": 400,
+                "2BR": 1200,
             },
             "Sun-Thu": {
-                "2BR": 250,
+                "2BR": 450,
             },
             "Full Week": {
-                "2BR": 2050,
+                "2BR": 4500,
             },
         },
         "Holiday Week": {
             "Presidents Day": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
             "Easter": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
             "Independence Day": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
             "Thanksgiving": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
             "Thanksgiving 2": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
             "Christmas": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
             "New Year's Eve/Day": {
-                "2BR": 2500,
+                "2BR": 4500,
             },
         },
     },
