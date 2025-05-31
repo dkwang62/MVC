@@ -446,6 +446,10 @@ room_view_legend = {
     "PHMA": "Penthouse Mountain View",
     "PHMK": "Penthouse Ocean View",
     "PHUF": "Penthouse Gulf Front",
+    "AP_Studio_MA": "Studio AP Mountain View",
+    "AP_1BR_MA": "1BR AP Mountain View",
+    "AP_2BR_MA": "2BR AP Mountain View",
+    "AP_2BR_MK": "2BR AP Ocean",
 }
 
 reference_points = {
@@ -729,28 +733,28 @@ reference_points = {
         },
         "AP Rooms": {
             "Fri-Sat": {
-                "AP Studio MA": 440,
-                "AP 1 BDRM MA": 630,
-                "AP 2 BDRM MA": 960,
-                "AP 2 BDRM MK": 1160,
+                "AP_Studio_MA": 440,
+                "AP_1BR_MA": 630,
+                "AP_2BR_MA": 960,
+                "AP_2BR_MK": 1160,
             },
             "Sun": {
-                "AP Studio MA": 350,
-                "AP 1 BDRM MA": 510,
-                "AP 2 BDRM MA": 770,
-                "AP 2 BDRM MK": 910,
+                "AP_Studio_MA": 350,
+                "AP_1BR_MA": 510,
+                "AP_2BR_MA": 770,
+                "AP_2BR_MK": 910,
             },
             "Mon-Thu": {
-                "AP Studio MA": 250,
-                "AP 1 BDRM MA": 360,
-                "AP 2 BDRM MA": 550,
-                "AP 2 BDRM MK": 660,
+                "AP_Studio MA": 250,
+                "AP_1BR_MA": 360,
+                "AP_2BR_MA": 550,
+                "AP_2BR_MK": 660,
             },
             "Full Week": {
-                "AP Studio MA": 2220,
-                "AP 1 BDRM MA": 3210,
-                "AP 2 BDRM MA": 4890,
-                "AP 2 BDRM MK": 5870,
+                "AP_Studio_MA": 2220,
+                "AP_1BR_MA": 3210,
+                "AP_2BR_MA": 4890,
+                "AP_2BR_MK": 5870,
             },
         },
         "Holiday Week": {
