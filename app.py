@@ -324,6 +324,7 @@ resort_aliases = {
     "Newport Coast Villas": "Newport Coast Villas",
     "Crystal Shores": "Crystal Shores",
     "Maui Ocean Club": "Maui Ocean Club",
+    "Shadow Ridge": "Shadow Ridge",
     "Desert Springs Villas II": "Desert Springs Villas II"
 }
 reverse_aliases = {v: k for k, v in resort_aliases.items()}
