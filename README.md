@@ -1,122 +1,92 @@
-🔍 Overview of the App
+Marriott Points Calculator – Code Overview
+==========================================
 
-This project is a Streamlit web application designed to help users calculate and explore Marriott Vacation Club (MVC) point values across different room types, seasons, and resorts (specifically for years like 2025 and 2026).
+This application is a Streamlit-based web tool for calculating and visualizing Marriott Vacation Club (MVC) point requirements across different resorts, room types, and seasons.
 
-The app is structured in two main Python files:
-app.py — the Streamlit user interface and logic controller.
-data.py — the reference data store, which contains point charts, season definitions, and holiday logic in a structured dictionary format.
+File Structure
+--------------
 
-📂 File: app.py — The Main App Interface
+1. app.py     – The main Streamlit app and logic controller
+2. data.py    – Hardcoded reference data including seasons, point values, room legends, and view codes
 
-This is the file you run (streamlit run app.py). It does the following:
+----------------------------------------------------------
+app.py – User Interface and Point Calculation Logic
+----------------------------------------------------------
 
-🔧 1. App Configuration
+This file handles user interaction and core functionality.
 
-Sets the page title and layout.
-Imports required libraries: streamlit, datetime, calendar, pandas, and from data the resort-specific data.
+Main Components:
 
-🧠 2. Core Functions
+1. App Configuration:
+   - Sets Streamlit layout and page title
+   - Imports libraries and resort data from `data.py`
 
-These functions power the logic of how point calculations work.
+2. Core Functions:
+   - get_season(date, resort_data)
+     - Determines if a date is within a defined season or holiday week
+   - calculate_points(start_date, end_date, room_type, resort_data, discount)
+     - Loops over date range to compute total and per-day point values
+     - Applies different point rules based on weekday/weekend and season
+   - display_timeline(daily_data)
+     - Creates a bar chart timeline of points across selected dates
+   - prepare_download(daily_data)
+     - Exports the per-day breakdown to CSV
 
-get_season(date, resort_data)
-Determines whether a given date falls under: 
-a holiday week or one of the defined seasons (low, high, etc.).
-Looks up based on the ranges and holidays provided in data.py.
+3. Streamlit UI Layout:
+   - Resort and room type dropdowns
+   - Date range selectors
+   - Discount checkbox
+   - Output: point total, breakdown table, chart, and CSV download
 
-calculate_points(start_date, end_date, room_type, resort_data, discount)
-Loops through each day between the two dates.
-Calculates the total number of points based on:
-room type
-season
-whether it’s a weekend
-any discount (like 25% off for owner preview weeks)
-Returns a daily breakdown + total points.
+Modify app.py to:
+   - Change point logic: edit `calculate_points()`
+   - Customize season rules: edit `get_season()`
+   - Alter UI layout: modify Streamlit section near the bottom
 
-display_timeline(daily_data)
-Generates a timeline bar chart showing how points are distributed day-by-day over the selected period.
+----------------------------------------------------------
+data.py – Reference Data and Metadata
+----------------------------------------------------------
 
-prepare_download(daily_data)
-Prepares a CSV download of the daily breakdown.
+This file defines all resort-specific data for point calculation.
 
-🖼️ 3. Streamlit UI Components
+Main Components:
 
-These sections create the user-facing interface.
-Resort selector (st.selectbox)
-Date pickers (st.date_input)
-Room type dropdown, discount checkbox, calculate button
+1. resorts (dict)
+   - Top-level keys: Resort names (e.g., "Ko Olina", "Kauai Beach Club")
+   - Sub-keys per year (e.g., "2025", "2026")
+     - seasons: dict of season names to date ranges
+     - holidays: list of high-demand week start dates
+     - points: nested dict
+         room_type → season → weekday/weekend → point value
 
-Outputs:
-Point summary
-Breakdown table
-Timeline chart
-Downloadable CSV
+2. room_type_legend (dict)
+   - Maps short room codes to descriptive names
+     e.g., "2BR OV" → "2-Bedroom Ocean View"
 
-🔁 How to Modify app.py
+3. view_codes (dict)
+   - Maps abbreviated view codes from charts to full descriptions
+     e.g., "MA" → "Mountain View"
 
-Want to...	Go to this section
+4. room_categories (optional)
+   - Groups room types by size/class (e.g., Studio, 1BR, 2BR)
 
-Add a new resort	data.py → Add to resorts dictionary
-Change how points are calculated	calculate_points() in app.py
+Modify data.py to:
+   - Add new resorts or years: expand the `resorts` dictionary
+   - Change room types or point values: update `points` blocks
+   - Adjust season or holiday weeks: edit `seasons` and `holidays`
+   - Add new legends or clarify labels: update `room_type_legend` and `view_codes`
 
-Modify season or holiday rules	get_season() and data.py definitions
+Interaction Summary
+--------------------
 
-Change UI layout	Streamlit layout area (bottom of app.py)
-Add new features like multi-room	Modify the UI + calculate_points() logic
+| Task                                   | Modify in...         |
+|----------------------------------------|------------------------|
+| Add a new resort                      | data.py → resorts      |
+| Adjust season/holiday dates           | data.py → seasons      |
+| Add/change point values               | data.py → points       |
+| Change dropdown room labels           | data.py → room_type_legend |
+| Update view abbreviations             | data.py → view_codes   |
+| Tweak calculation rules               | app.py → calculate_points() |
+| Redesign UI layout                    | app.py (Streamlit UI)  |
 
-📂 File: data.py — The Point Chart and Season Definitions
-This file contains all hardcoded reference values for resorts.
-
-🏨 resorts dictionary
-Each key is a resort (e.g., "Ko Olina", "Kauai Beach Club"), and the value is another dictionary with:
-"2025", "2026", etc. — Years of operation.
-Inside each year:
-"seasons": Dictionary with season names and date ranges.
-"holidays": List of holiday week start dates.
-"points": Nested dict mapping room types → season → weekday/weekend → point values.
-
-Example Structure:
-python
-Copy
-Edit
-resorts = {
-    "Ko Olina": {
-        "2025": {
-            "seasons": {
-                "High": [("2025-06-01", "2025-08-31")],
-                "Low": [("2025-01-01", "2025-05-31")]
-            },
-            "holidays": ["2025-12-25", "2025-11-23"],
-            "points": {
-                "2BR OV": {
-                    "High": {"weekday": 500, "weekend": 700},
-                    "Low": {"weekday": 300, "weekend": 500},
-                    "Holiday": {"weekday": 800, "weekend": 1000}
-                }
-            }
-        }
-    }
-}
-
-🔁 How to Modify data.py
-Want to...	Do this...
-
-Add a new resort	Copy existing structure, add new resort key and values
-Add/adjust room types or point values	Update "points" dictionary under the right year and season
-
-Add a new season or change dates	Edit the "seasons" dictionary under the desired resort/year
-Change holiday weeks	Modify the "holidays" list with new date strings
-Add more years like 2027	Duplicate a year block (e.g., "2025") and adjust the values
-
-✅ Summary
-This app is modular and highly extensible. Here's where to go:
-
-🛠 Logic & Interface: app.py
-Date handling, calculations, timeline chart, CSV download
-
-📊 Reference Data: data.py
-All point values, season ranges, holidays
-
-If you're expanding or modifying, you’ll typically:
-Update data.py with new resorts/seasons/values.
-Tweak app.py if you need new UI features or logic changes.
+This structure ensures the app is easily maintainable and extensible. For new resorts or years, just follow the format and extend `data.py`.
