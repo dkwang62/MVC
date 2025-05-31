@@ -862,6 +862,120 @@ reference_points = {
             },
         },
     },
+    "Grande Vista": {
+        "Shoulder": {
+            "Fri-Sat": {
+                "Studio": 300,
+                "1-BDRM": 400,
+                "2-BDRM": 700,
+                "3-BDRM": 950
+            },
+            "Sun-Thu": {
+                "Studio": 135,
+                "1-BDRM": 185,
+                "2-BDRM": 300,
+                "3-BDRM": 400
+            },
+            "Full Week": {
+                "Studio": 1275,
+                "1-BDRM": 1725,
+                "2-BDRM": 2900,
+                "3-BDRM": 3900
+            }
+        },
+        "Peak Season": {
+            "Fri-Sat": {
+                "Studio": 325,
+                "1-BDRM": 450,
+                "2-BDRM": 775,
+                "3-BDRM": 1050
+            },
+            "Sun-Thu": {
+                "Studio": 160,
+                "1-BDRM": 210,
+                "2-BDRM": 325,
+                "3-BDRM": 425
+            },
+            "Full Week": {
+                "Studio": 1450,
+                "1-BDRM": 1950,
+                "2-BDRM": 3175,
+                "3-BDRM": 4225
+            }
+        },
+        "Summer": {
+            "Fri-Sat": {
+                "Studio": 200,
+                "1-BDRM": 275,
+                "2-BDRM": 450,
+                "3-BDRM": 625
+            },
+            "Sun-Thu": {
+                "Studio": 85,
+                "1-BDRM": 125,
+                "2-BDRM": 200,
+                "3-BDRM": 250
+            },
+            "Full Week": {
+                "Studio": 825,
+                "1-BDRM": 1175,
+                "2-BDRM": 1900,
+                "3-BDRM": 2500
+            }
+        },
+        "Low": {
+            "Fri-Sat": {
+                "Studio": 250,
+                "1-BDRM": 375,
+                "2-BDRM": 625,
+                "3-BDRM": 825
+            },
+            "Sun-Thu": {
+                "Studio": 110,
+                "1-BDRM": 160,
+                "2-BDRM": 250,
+                "3-BDRM": 350
+            },
+            "Full Week": {
+                "Studio": 1050,
+                "1-BDRM": 1550,
+                "2-BDRM": 2500,
+                "3-BDRM": 3400
+            }
+        },
+        "Presidents Day": {
+            "Full Week": {
+                "Studio": 1800,
+                "1-BDRM": 2400,
+                "2-BDRM": 3500,
+                "3-BDRM": 4775
+            }
+        },
+        "Independence Day": {
+            "Full Week": {
+                "Studio": 1200,
+                "1-BDRM": 1900,
+                "2-BDRM": 2900,
+                "3-BDRM": 3900
+            }
+        },
+        "Christmas": {
+            "Full Week": {
+                "Studio": 1450,
+                "1-BDRM": 2175,
+                "2-BDRM": 3175,
+                "3-BDRM": 4225
+            }
+        },
+        "New Year's Eve": {
+            "Full Week": {
+                "Studio": 1800,
+                "1-BDRM": 2400,
+                "2-BDRM": 3500,
+                "3-BDRM": 4775
+            }
+        }
+    }   
     "Crystal Shores": {
         "Shoulder": {
             "Fri-Sat": {
