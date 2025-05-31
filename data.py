@@ -325,7 +325,7 @@ room_view_legend = {
     "UF": "Gulf Front",
     "UV": "Gulf View",
     "US": "Gulf Side",
-    "PH UF": "Penthouse Gulf Front",
+    "PH": "Penthouse",
     "PH GV": "Penthouse Garden View",
     "PH OV": "Penthouse Ocean View",
     "PH OF": "Penthouse Ocean Front",
