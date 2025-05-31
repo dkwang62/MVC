@@ -1,8 +1,5 @@
 Marriott Points Calculator – Code Overview
 ==========================================
-
-Marriott Points Calculator – Code Overview
-==========================================
 This application is a Streamlit-based web tool for calculating and visualizing Marriott Vacation Club (MVC) point requirements across different resorts, room types, and seasons.
 File Structure
 --------------
