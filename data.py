@@ -344,7 +344,7 @@ holiday_weeks = {
             "New Year's Eve/Day": ["2026-12-25", "2026-12-31"],
         },
     },
-        "Grande Vista": {
+    "Grande Vista": {
         "2025": {
             "Presidents Day": ["2025-02-14", "2025-02-20"],
             "Independence Day": ["2025-07-04", "2025-07-10"],
