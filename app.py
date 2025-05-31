@@ -1,10 +1,19 @@
-from data import season_blocks, holiday_weeks, room_view_legend, reference_points
+# from data import season_blocks, holiday_weeks, room_view_legend, reference_points
 import streamlit as st
 import math
 from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 import plotly.figure_factory as ff
+import json
+
+with open("data.json", "r") as f:
+    data = json.load(f)
+
+season_blocks = data["season_blocks"]
+holiday_weeks = data["holiday_weeks"]
+room_view_legend = data["room_view_legend"]
+reference_points = data["reference_points"]
 
 # Initialize session state for debug messages
 if "debug_messages" not in st.session_state:
