@@ -259,7 +259,7 @@ def create_gantt_chart(resort, year):
 
         # Define a color palette for different season types
         color_palette = {
-            "Holiday": "rgb(255, 69, 0)",  # RedOrange for Holiday
+            "Holiday": "rgb(255, 99, 71)",  # Tomato for Holiday
             "Low Season": "rgb(135, 206, 250)",  # SkyBlue for Low Season
             "High Season": "rgb(255, 69, 0)",  # RedOrange High Season
             "Peak Season": "rgb(255, 215, 0)",  # Gold for Peak Season
