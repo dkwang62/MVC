@@ -998,9 +998,7 @@ reference_points = {
             }
         },
         "Holiday Week": {
-
-        "Presidents Day": {
-            "Full Week": {
+            "Presidents Day": {
                 "Studio": 1800,
                 "1-BDRM": 2400,
                 "2-BDRM": 3500,
