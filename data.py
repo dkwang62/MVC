@@ -603,7 +603,7 @@ reference_points = {
                 "2BR": 4725,
             },
         },
-        Holiday Week": {
+        "Holiday Week": {
             "Independence Day": {
                 "2BR": 5675,
             },
