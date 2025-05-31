@@ -388,6 +388,11 @@ room_view_legend = {
     "PH OF": "Penthouse Ocean Front",
     "IV": "Island View",
     "MG": "Mountain Garden",
+    "MA": "Mountain View",
+    "MK": "Ocean View",
+    "PH MA": "Penthouse Mountain View",
+    "PH MK": "Penthouse Ocean View",
+    "PH UF": "Penthouse Gulf Front",
 }
 
 reference_points = {
