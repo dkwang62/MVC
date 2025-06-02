@@ -2475,12 +2475,12 @@
     },
     "Sheraton Kauai": {
       "Low Season": {
-        "Fri\u2013Sat": {
+        "Fri-Sat": {
           "Studio": 225,
           "1-BDRM": 350,
           "2-BDRM": 550
         },
-        "Sun\u2013Thu": {
+        "Sun-Thu": {
           "Studio": 175,
           "1-BDRM": 250,
           "2-BDRM": 375
@@ -2492,12 +2492,12 @@
         }
       },
       "High Season": {
-        "Fri\u2013Sat": {
+        "Fri-Sat": {
           "Studio": 275,
           "1-BDRM": 400,
           "2-BDRM": 625
         },
-        "Sun\u2013Thu": {
+        "Sun-Thu": {
           "Studio": 200,
           "1-BDRM": 275,
           "2-BDRM": 450
@@ -2506,57 +2506,43 @@
           "Studio": 1550,
           "1-BDRM": 2175,
           "2-BDRM": 3500
-        }
+        }  
       },
       "Holiday Week": {
         "Presidents Day": {
-          "Full Week": {
             "Studio": 1600,
             "1-BDRM": 2350,
             "2-BDRM": 3675
-          }
         },
         "Easter": {
-          "Full Week": {
             "Studio": 1600,
             "1-BDRM": 2350,
             "2-BDRM": 3675
-          }
         },
         "Independence Day": {
-          "Full Week": {
             "Studio": 1550,
             "1-BDRM": 2175,
             "2-BDRM": 3500
-          }
         },
         "Thanksgiving": {
-          "Full Week": {
             "Studio": 1325,
             "1-BDRM": 1950,
             "2-BDRM": 2975
-          }
         },
         "Thanksgiving 2": {
-          "Full Week": {
             "Studio": 1600,
             "1-BDRM": 2350,
             "2-BDRM": 3675
-          }
         },
         "Christmas": {
-          "Full Week": {
             "Studio": 1600,
             "1-BDRM": 2350,
             "2-BDRM": 3675
-          }
         },
         "New Year's Eve/Day": {
-          "Full Week": {
             "Studio": 1775,
             "1-BDRM": 2575,
             "2-BDRM": 4100
-          }
         }
       }
     }
