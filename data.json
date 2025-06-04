@@ -704,7 +704,7 @@
         ]
       }
     },
-    "Sheraton Kauai": {
+    "The Westin Ka'anapali Ocean Resort Villas": {
       "2025": {
         "Low Season": [
           [
@@ -786,6 +786,264 @@
           [
             "2026-07-10",
             "2026-08-27"
+          ]
+        ]
+      }
+    },
+    "Marriott's Phuket Beach Club": {
+      "2025": {
+        "High Season": [
+          [
+            "2025-01-03",
+            "2025-01-23"
+          ],
+          [
+            "2025-01-31",
+            "2025-05-22"
+          ],
+          [
+            "2025-07-04",
+            "2025-08-14"
+          ],
+          [
+            "2025-09-26",
+            "2025-12-18"
+          ]
+        ],
+        "Low Season": [
+          [
+            "2025-05-23",
+            "2025-07-03"
+          ],
+          [
+            "2025-08-15",
+            "2025-09-25"
+          ]
+        ]
+      },
+      "2026": {
+        "High Season": [
+          [
+            "2026-01-02",
+            "2026-02-12"
+          ],
+          [
+            "2026-02-20",
+            "2026-05-21"
+          ],
+          [
+            "2026-07-03",
+            "2026-08-13"
+          ],
+          [
+            "2026-09-25",
+            "2026-12-17"
+          ]
+        ],
+        "Low Season": [
+          [
+            "2026-05-22",
+            "2026-07-02"
+          ],
+          [
+            "2026-08-14",
+            "2026-09-24"
+          ]
+        ]
+      }
+    },
+    "Marriott's Bali Nusa Dua Gardens": {
+      "2025": {
+        "Shoulder": [
+          [
+            "2025-01-03",
+            "2025-01-09"
+          ],
+          [
+            "2025-02-07",
+            "2025-03-06"
+          ],
+          [
+            "2025-05-09",
+            "2025-07-03"
+          ],
+          [
+            "2025-09-05",
+            "2025-12-04"
+          ]
+        ],
+        "High Season": [
+          [
+            "2025-07-04",
+            "2025-09-04"
+          ]
+        ],
+        "Low Season": [
+          [
+            "2025-01-10",
+            "2025-01-23"
+          ],
+          [
+            "2025-01-31",
+            "2025-02-06"
+          ],
+          [
+            "2025-03-07",
+            "2025-04-17"
+          ],
+          [
+            "2025-04-25",
+            "2025-05-08"
+          ],
+          [
+            "2025-12-05",
+            "2025-12-18"
+          ]
+        ]
+      },
+      "2026": {
+        "Shoulder": [
+          [
+            "2026-01-02",
+            "2026-01-08"
+          ],
+          [
+            "2026-02-06",
+            "2026-02-12"
+          ],
+          [
+            "2026-02-20",
+            "2026-03-12"
+          ],
+          [
+            "2026-05-15",
+            "2026-07-02"
+          ],
+          [
+            "2026-09-04",
+            "2026-12-10"
+          ]
+        ],
+        "High Season": [
+          [
+            "2026-07-03",
+            "2026-09-03"
+          ]
+        ],
+        "Low Season": [
+          [
+            "2026-01-09",
+            "2026-02-05"
+          ],
+          [
+            "2026-03-13",
+            "2026-04-02"
+          ],
+          [
+            "2026-04-10",
+            "2026-05-14"
+          ],
+          [
+            "2026-12-11",
+            "2026-12-17"
+          ]
+        ]
+      }
+    },
+    "Marriott's Bali Nusa Dua Terrace": {
+      "2025": {
+        "Shoulder": [
+          [
+            "2025-01-03",
+            "2025-01-09"
+          ],
+          [
+            "2025-02-07",
+            "2025-03-06"
+          ],
+          [
+            "2025-05-09",
+            "2025-07-03"
+          ],
+          [
+            "2025-09-05",
+            "2025-12-04"
+          ]
+        ],
+        "High Season": [
+          [
+            "2025-07-04",
+            "2025-09-04"
+          ]
+        ],
+        "Low Season": [
+          [
+            "2025-01-10",
+            "2025-01-23"
+          ],
+          [
+            "2025-01-31",
+            "2025-02-06"
+          ],
+          [
+            "2025-03-07",
+            "2025-04-17"
+          ],
+          [
+            "2025-04-25",
+            "2025-05-08"
+          ],
+          [
+            "2025-12-05",
+            "2025-12-18"
+          ]
+        ]
+      },
+      "2026": {
+        "Shoulder": [
+          [
+            "2026-01-02",
+            "2026-01-08"
+          ],
+          [
+            "2026-02-06",
+            "2026-02-12"
+          ],
+          [
+            "2026-02-20",
+            "2026-03-12"
+          ],
+          [
+            "2026-05-15",
+            "2026-07-02"
+          ],
+          [
+            "2026-09-04",
+            "2026-12-10"
+          ]
+        ],
+        "High Season": [
+          [
+            "2026-07-03",
+            "2026-09-03"
+          ]
+        ],
+        "Low Season": [
+          [
+            "2026-01-09",
+            "2026-02-05"
+          ],
+          [
+            "2026-03-13",
+            "2026-04-02"
+          ],
+          [
+            "2026-04-10",
+            "2026-05-14"
+          ],
+          [
+            "2026-12-11",
+            "2026-12-17"
           ]
         ]
       }
@@ -1176,7 +1434,7 @@
         ]
       }
     },
-    "Sheraton Kauai": {
+    "The Westin Ka'anapali Ocean Resort Villas": {
       "2025": {
         "Presidents Day": [
           "2025-02-14",
@@ -1237,6 +1495,112 @@
           "2026-12-31"
         ]
       }
+    },
+    "Marriott's Phuket Beach Club": {
+      "2025": {
+        "Chinese New Year": [
+          "2025-01-24",
+          "2025-01-30"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
+      },
+      "2026": {
+        "Chinese New Year": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
+      }
+    },
+    "Marriott's Bali Nusa Dua Gardens": {
+      "2025": {
+        "Chinese New Year": [
+          "2025-01-24",
+          "2025-01-30"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
+      },
+      "2026": {
+        "Chinese New Year": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
+      }
+    },
+    "Marriott's Bali Nusa Dua Terrace": {
+      "2025": {
+        "Chinese New Year": [
+          "2025-01-24",
+          "2025-01-30"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
+      },
+      "2026": {
+        "Chinese New Year": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
+      }
     }
   },
   "room_view_legend": {
@@ -1264,7 +1628,11 @@
     "AP_Studio_MA": "AP Studio Mountain",
     "AP_1BR_MA": "AP 1BR Mountain",
     "AP_2BR_MA": "AP 2BR Mountain",
-    "AP_2BR_MK": "AP 2BR Ocean"
+    "AP_2BR_MK": "AP 2BR Ocean",
+    "IV": "Islandview",
+    "OV": "Oceanview",
+    "OF": "Oceanfront",
+    "LO": "Lock-Off"
   },
   "reference_points": {
     "Kauai Beach Club": {
@@ -1832,7 +2200,7 @@
           "2-BDRM": 3175,
           "3-BDRM": 4225
         },
-        "New Year's Eve": {
+        "New Year's Eve/Day": {
           "Studio": 1800,
           "1-BDRM": 2400,
           "2-BDRM": 3500,
@@ -2473,76 +2841,309 @@
         }
       }
     },
-    "Sheraton Kauai": {
+    "The Westin Ka'anapali Ocean Resort Villas": {
       "Low Season": {
         "Fri-Sat": {
-          "Studio": 225,
-          "1-BDRM": 350,
-          "2-BDRM": 550
+          "Studio IV": 450,
+          "Studio OV": 450,
+          "Studio OF": 650,
+          "1-BDRM IV": 700,
+          "1-BDRM OV": 700,
+          "1-BDRM OF": 1000,
+          "2-BDRM LO IV": 1100,
+          "2-BDRM LO OV": 1100,
+          "2-BDRM LO OF": 1475
         },
         "Sun-Thu": {
-          "Studio": 175,
-          "1-BDRM": 250,
-          "2-BDRM": 375
+          "Studio IV": 325,
+          "Studio OV": 325,
+          "Studio OF": 450,
+          "1-BDRM IV": 500,
+          "1-BDRM OV": 500,
+          "1-BDRM OF": 700,
+          "2-BDRM LO IV": 775,
+          "2-BDRM LO OV": 775,
+          "2-BDRM LO OF": 1050
         },
         "Full Week": {
-          "Studio": 1325,
-          "1-BDRM": 1950,
-          "2-BDRM": 2975
+          "Studio IV": 2525,
+          "Studio OV": 2525,
+          "Studio OF": 3550,
+          "1-BDRM IV": 3900,
+          "1-BDRM OV": 3900,
+          "1-BDRM OF": 5500,
+          "2-BDRM LO IV": 6075,
+          "2-BDRM LO OV": 6075,
+          "2-BDRM LO OF": 8200
         }
       },
       "High Season": {
         "Fri-Sat": {
-          "Studio": 275,
-          "1-BDRM": 400,
-          "2-BDRM": 625
+          "Studio IV": 525,
+          "Studio OV": 525,
+          "Studio OF": 750,
+          "1-BDRM IV": 800,
+          "1-BDRM OV": 800,
+          "1-BDRM OF": 1150,
+          "2-BDRM LO IV": 1275,
+          "2-BDRM LO OV": 1275,
+          "2-BDRM LO OF": 1725
         },
         "Sun-Thu": {
-          "Studio": 200,
-          "1-BDRM": 275,
-          "2-BDRM": 450
+          "Studio IV": 375,
+          "Studio OV": 375,
+          "Studio OF": 525,
+          "1-BDRM IV": 575,
+          "1-BDRM OV": 575,
+          "1-BDRM OF": 825,
+          "2-BDRM LO IV": 900,
+          "2-BDRM LO OV": 900,
+          "2-BDRM LO OF": 1200
         },
         "Full Week": {
-          "Studio": 1550,
-          "1-BDRM": 2175,
-          "2-BDRM": 3500
-        }  
+          "Studio IV": 2925,
+          "Studio OV": 2925,
+          "Studio OF": 4125,
+          "1-BDRM IV": 4475,
+          "1-BDRM OV": 4475,
+          "1-BDRM OF": 6425,
+          "2-BDRM LO IV": 7050,
+          "2-BDRM LO OV": 7050,
+          "2-BDRM LO OF": 9450
+        }
       },
       "Holiday Week": {
         "Presidents Day": {
-            "Studio": 1600,
-            "1-BDRM": 2350,
-            "2-BDRM": 3675
+          "Studio IV": 3100,
+          "Studio OV": 3100,
+          "Studio OF": 4350,
+          "1-BDRM IV": 4765,
+          "1-BDRM OV": 4765,
+          "1-BDRM OF": 6700,
+          "2-BDRM LO IV": 7400,
+          "2-BDRM LO OV": 7400,
+          "2-BDRM LO OF": 9975
         },
         "Easter": {
-            "Studio": 1600,
-            "1-BDRM": 2350,
-            "2-BDRM": 3675
+          "Studio IV": 3100,
+          "Studio OV": 3100,
+          "Studio OF": 4350,
+          "1-BDRM IV": 4765,
+          "1-BDRM OV": 4765,
+          "1-BDRM OF": 6700,
+          "2-BDRM LO IV": 7400,
+          "2-BDRM LO OV": 7400,
+          "2-BDRM LO OF": 9975
         },
         "Independence Day": {
-            "Studio": 1550,
-            "1-BDRM": 2175,
-            "2-BDRM": 3500
+          "Studio IV": 2925,
+          "Studio OV": 2925,
+          "Studio OF": 4125,
+          "1-BDRM IV": 4540,
+          "1-BDRM OV": 4540,
+          "1-BDRM OF": 6425,
+          "2-BDRM LO IV": 7050,
+          "2-BDRM LO OV": 7050,
+          "2-BDRM LO OF": 9450
         },
         "Thanksgiving": {
-            "Studio": 1325,
-            "1-BDRM": 1950,
-            "2-BDRM": 2975
+          "Studio IV": 2525,
+          "Studio OV": 2525,
+          "Studio OF": 3550,
+          "1-BDRM IV": 3965,
+          "1-BDRM OV": 3965,
+          "1-BDRM OF": 5500,
+          "2-BDRM LO IV": 6075,
+          "2-BDRM LO OV": 6075,
+          "2-BDRM LO OF": 8200
         },
         "Thanksgiving 2": {
-            "Studio": 1600,
-            "1-BDRM": 2350,
-            "2-BDRM": 3675
+          "Studio IV": 3100,
+          "Studio OV": 3100,
+          "Studio OF": 4350,
+          "1-BDRM IV": 4765,
+          "1-BDRM OV": 4765,
+          "1-BDRM OF": 6700,
+          "2-BDRM LO IV": 7400,
+          "2-BDRM LO OV": 7400,
+          "2-BDRM LO OF": 9975
         },
         "Christmas": {
-            "Studio": 1600,
-            "1-BDRM": 2350,
-            "2-BDRM": 3675
+          "Studio IV": 3100,
+          "Studio OV": 3100,
+          "Studio OF": 4350,
+          "1-BDRM IV": 4765,
+          "1-BDRM OV": 4765,
+          "1-BDRM OF": 6700,
+          "2-BDRM LO IV": 7400,
+          "2-BDRM LO OV": 7400,
+          "2-BDRM LO OF": 9975
         },
         "New Year's Eve/Day": {
-            "Studio": 1775,
-            "1-BDRM": 2575,
-            "2-BDRM": 4100
+          "Studio IV": 3500,
+          "Studio OV": 3500,
+          "Studio OF": 5100,
+          "1-BDRM IV": 5340,
+          "1-BDRM OV": 5340,
+          "1-BDRM OF": 7675,
+          "2-BDRM LO IV": 8500,
+          "2-BDRM LO OV": 8500,
+          "2-BDRM LO OF": 11475
+        }
+      }
+    },
+    "Marriott's Phuket Beach Club": {
+      "Low Season": {
+        "Mon-Thu": {
+          "2 Bedroom": 230
+        },
+        "Sun": {
+          "2 Bedroom": 330
+        },
+        "Fri-Sat": {
+          "2 Bedroom": 410
+        }
+      },
+      "High Season": {
+        "Mon-Thu": {
+          "2 Bedroom": 370
+        },
+        "Sun": {
+          "2 Bedroom": 510
+        },
+        "Fri-Sat": {
+          "2 Bedroom": 640
+        }
+      },
+      "Holiday Week": {
+        "Chinese New Year": {
+          "2 Bedroom": 6030
+        },
+        "Christmas": {
+          "2 Bedroom": 6030
+        },
+        "New Year's Eve/Day": {
+          "2 Bedroom": 6030
+        }
+      }
+    },
+    "Marriott's Bali Nusa Dua Gardens": {
+      "Low Season": {
+        "Sun-Thu": {
+          "Guestroom": 110,
+          "1 Bedroom": 150,
+          "2 Bedroom": 250
+        },
+        "Fri-Sat": {
+          "Guestroom": 175,
+          "1 Bedroom": 275,
+          "2 Bedroom": 425
+        }
+      },
+      "Shoulder": {
+        "Sun-Thu": {
+          "Guestroom": 160,
+          "1 Bedroom": 230,
+          "2 Bedroom": 370
+        },
+        "Fri-Sat": {
+          "Guestroom": 275,
+          "1 Bedroom": 400,
+          "2 Bedroom": 650
+        }
+      },
+      "High Season": {
+        "Sun-Thu": {
+          "Guestroom": 185,
+          "1 Bedroom": 275,
+          "2 Bedroom": 430
+        },
+        "Fri-Sat": {
+          "Guestroom": 325,
+          "1 Bedroom": 450,
+          "2 Bedroom": 750
+        }
+      },
+      "Holiday Week": {
+        "Chinese New Year": {
+          "Guestroom": 2070,
+          "1 Bedroom": 2920,
+          "2 Bedroom": 4700
+        },
+        "Easter": {
+          "Guestroom": 2070,
+          "1 Bedroom": 2920,
+          "2 Bedroom": 4700
+        },
+        "Christmas": {
+          "Guestroom": 2070,
+          "1 Bedroom": 2920,
+          "2 Bedroom": 4700
+        },
+        "New Year's Eve/Day": {
+          "Guestroom": 2070,
+          "1 Bedroom": 2920,
+          "2 Bedroom": 4700
+        }
+      }
+    },
+    "Marriott's Bali Nusa Dua Terrace": {
+      "Shoulder": {
+        "Sun-Thu": {
+          "1 Bedroom": 270,
+          "2 Bedroom": 440,
+          "3 Bedroom": 710
+        },
+        "Fri-Sat": {
+          "1 Bedroom": 450,
+          "2 Bedroom": 775,
+          "3 Bedroom": 1225
+        }
+      },
+      "Low Season": {
+        "Sun-Thu": {
+          "1 Bedroom": 170,
+          "2 Bedroom": 300,
+          "3 Bedroom": 470
+        },
+        "Fri-Sat": {
+          "1 Bedroom": 325,
+          "2 Bedroom": 500,
+          "3 Bedroom": 825
+        }
+      },
+      "High Season": {
+        "Sun-Thu": {
+          "1 Bedroom": 340,
+          "2 Bedroom": 530,
+          "3 Bedroom": 870
+        },
+        "Fri-Sat": {
+          "1 Bedroom": 525,
+          "2 Bedroom": 925,
+          "3 Bedroom": 1450
+        }
+      },
+      "Holiday Week": {
+        "Chinese New Year": {
+          "1 Bedroom": 3500,
+          "2 Bedroom": 5750,
+          "3 Bedroom": 9250
+        },
+        "Easter": {
+          "1 Bedroom": 3500,
+          "2 Bedroom": 5750,
+          "3 Bedroom": 9250
+        },
+        "Christmas": {
+          "1 Bedroom": 3500,
+          "2 Bedroom": 5750,
+          "3 Bedroom": 9250
+        },
+        "New Year's Eve/Day": {
+          "1 Bedroom": 3500,
+          "2 Bedroom": 5750,
+          "3 Bedroom": 9250
         }
       }
     }
