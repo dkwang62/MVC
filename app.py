@@ -354,11 +354,12 @@ st.title("Marriott Vacation Club Rent Calculator")
 
 with st.expander("\U0001F334 How Rent Is Calculated"):
     st.markdown("""
-    - **Rent is based on FULL (un-discounted) points only.**
-    - $0.81 per FULL point for dates in **2025**
-    - $0.86 per FULL point for dates in **2026 and beyond**
-    - **Holiday weeks**: For days within a holiday week, please contact me for quotes.
-    """)
+    - **Rent is based on the MVC Abound annual maintenance fees per point**  
+    - **2025 (Actual):** $0.81 per point  
+    - **2026 (Estimated):** $0.86 per point  
+    - **$0.86 per full point applies to all dates in 2026 and beyond.**
+    - **Holiday Weeks:** For stays during holiday weeks, please contact me directly for a custom quote.
+""")
 
 # User input for resort, room type, check-in date, and number of nights
 resort = st.selectbox("Select Resort", options=display_resorts, index=display_resorts.index("Ko Olina Beach Club"), key="resort_select")
