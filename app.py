@@ -15,6 +15,14 @@ holiday_weeks = data["holiday_weeks"]
 room_view_legend = data["room_view_legend"]
 reference_points = data["reference_points"]
 
+# Automatically get resorts with complete data
+season_resorts = set(season_blocks.keys())
+holiday_resorts = set(holiday_weeks.keys())
+reference_resorts = set(reference_points.keys())
+display_resorts = sorted(season_resorts & holiday_resorts & reference_resorts)  # intersection = complete data
+
+
+
 # Initialize session state for debug messages
 if "debug_messages" not in st.session_state:
     st.session_state.debug_messages = []
@@ -326,32 +334,8 @@ def create_gantt_chart(resort, year):
         fig.update_yaxes(autorange="reversed")
         return fig
 
-# Resort display name mapping
-resort_aliases = {
-    "Aruba Ocean Club": "Aruba Ocean Club",		
-    "Aruba Surf Club": "Aruba Surf Club",		
-    "Bali Nusa Dua Gardens": "Bali Nusa Dua Gardens",		
-    "Bali Nusa Dua Terrace": "Bali Nusa Dua Terrace",		
-    "Beachplace Towers": "Beachplace Towers",		
-    "Crystal Shores": "Crystal Shores",		
-    "Desert Springs Villas II": "Desert Springs Villas II",		
-    "Grande Vista": "Grande Vista",		
-    "Kauai Beach Club": "Kauai Beach Club",		
-    "Ko Olina Beach Club": "Ko Olina Beach Club",		
-    "Marbella Beach": "Marbella Beach",		
-    "Maui Ocean Club": "Maui Ocean Club",		
-    "Newport Coast Villas": "Newport Coast Villas",		
-    "Phuket Beach Club": "Phuket Beach Club",		
-    "Playa Andaluza": "Playa Andaluza",		
-    "Shadow Ridge": "Shadow Ridge",		
-    "Sheraton Kauai": "Sheraton Kauai",		
-    "Surfers Paradise": "Surfers Paradise",		
-    "Village Paris": "Village Paris",		
-    "Waikoloa Ocean Club": "Waikoloa Ocean Club",		
-    "Westin Ka'anapali": "Westin Ka'anapali"		
-}
-reverse_aliases = {v: k for k, v in resort_aliases.items()}
-display_resorts = list(resort_aliases.values())
+
+
 
 # Sidebar for discount
 with st.sidebar:
@@ -377,8 +361,7 @@ with st.expander("\U0001F334 How Rent Is Calculated"):
     """)
 
 # User input for resort, room type, check-in date, and number of nights
-resort_display = st.selectbox("Select Resort", options=display_resorts, index=display_resorts.index("Ko Olina Beach Club"), key="resort_select")
-resort = reverse_aliases.get(resort_display, resort_display)
+resort = st.selectbox("Select Resort", options=display_resorts, index=display_resorts.index("Ko Olina Beach Club"), key="resort_select")
 
 checkin_date = st.date_input("Check-in Date", min_value=datetime(2024, 12, 27).date(), max_value=datetime(2026, 12, 31).date(), value=datetime(2026, 7, 10).date())
 num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
