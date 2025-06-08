@@ -357,7 +357,7 @@ with st.expander("\U0001F334 How Rent Is Calculated"):
     - **Rent is based on the MVC Abound annual maintenance fees per point**  
     - **2025 (Actual):** $0.81 per point  
     - **2026 (Estimated):** $0.86 per point  
-    - **Holiday Weeks:** For stays during holiday weeks, please contact me directly for a custom quote.
+    - **Holiday Weeks:** For stays during holiday weeks, please contact https://www.facebook.com/dkwang62
 """)
 
 # User input for resort, room type, check-in date, and number of nights
