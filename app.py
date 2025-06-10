@@ -42,7 +42,7 @@ room_view_legend = {
     "PV": "Pool",
     "OS": "Oceanside",
     "K": "King",
-    "DB": "Double Bed"
+    "DB": "Double Bed",
     "OV": "Ocean",
     "IV": "Island",
     "MV": "Mountain",
