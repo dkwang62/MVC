@@ -204,46 +204,24 @@ def adjust_date_range(resort, checkin_date, num_nights):
     
     st.session_state.debug_messages.append(f"Checking holiday overlap for {checkin_date} to {stay_end}")
     try:
-        for h_name, [start, end] in holiday_weeks[resort][year_str].items():
-            h_start = datetime.strptime(start, "%Y-%m-%d").date()
-            h_end = datetime.strptime(end, "%Y-%m-%d").date()
-            st.session_state.debug_messages.append(f"Evaluating holiday {h_name}: {h_start} to {h_end}")
-            if (h_start <= stay_end) and (h_end >= checkin_date):
-                holiday_ranges.append((h_start, h_end))
-                st.session_state.debug_messages.append(f"Holiday overlap found with {h_name}")
-            else:
-                st.session_state.debug_messages.append(f"No overlap with {h_name}")
-    except ValueError as e:
-        st.session_state.debug_messages.append(f"Invalid holiday range in {resort}, {year_str}: {e}")
-
-    if holiday_ranges:
-        earliest_holiday_start = min(h_start for h_start, _ in holiday_ranges)
-        latest_holiday_end = max(h_end for _, h_end in holiday_ranges)
-        adjusted_start = min(checkin_date, earliest_holiday_start)
-        adjusted_end = max(stay_end, latest_holiday_end)
-        adjusted_nights = (adjusted_end - adjusted_start).days + 1
-        st.session_state.debug_messages.append(f"Adjusted date range to include holiday week: {adjusted_start} to {adjusted_end} ({adjusted_nights} nights)")
-        return adjusted_start, adjusted_nights, True
-    st.session_state.debug_messages.append(f"No holiday week adjustment needed for {checkin_date} to {stay_end}")
-    return checkin_date, num_nights, False
-
-# Function to create Gantt chart
-def create_gantt_chart(resort, year):
-    gantt_data = []
-    year_str = str(year)
-    
-    try:
-        # Add holidays
-        for h_name, [start, end] in holiday_weeks[resort][year_str].items():
-            start_date = datetime.strptime(start, "%Y-%m-%d").date()
-            end_date = datetime.strptime(end, "%Y-%m-%d").date()
-            gantt_data.append({
-                "Task": h_name,
-                "Start": start_date,
-                "Finish": end_date,
-                "Type": "Holiday"
-            })
-            st.session_state.debug_messages.append(f"Added holiday: {h_name}, Start: {start_date}, Finish: {end_date}")
+        for h_name, date_range in holiday_weeks[resort][year_str].items():
+    if isinstance(date_range, list) and len(date_range) >= 2:
+        start = date_range[0]
+        end = date_range[-1]
+    else:
+        st.session_state.debug_messages.append(
+            f"Invalid holiday format for {h_name}: {date_range}"
+        )
+        continue
+    start_date = datetime.strptime(start, "%Y-%m-%d").date()
+    end_date = datetime.strptime(end, "%Y-%m-%d").date()
+    gantt_data.append({
+        "Task": h_name,
+        "Start": start_date,
+        "Finish": end_date,
+        "Type": "Holiday"
+    })
+    st.session_state.debug_messages.append(f"Added holiday: {h_name}, Start: {start_date}, Finish: {end_date}")
 
         # Dynamically get season types for the resort and year
         season_types = list(season_blocks[resort][year_str].keys())
