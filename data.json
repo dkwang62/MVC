@@ -2352,420 +2352,1206 @@
   "holiday_weeks": {
     "Kauai Beach Club": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Ko Olina Beach Club": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Newport Coast Villas": {
       "2025": {
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Grande Vista": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Crystal Shores": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Desert Shoulders Villas II": {
       "2025": {
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Shadow Ridge": {
       "2025": {
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Maui Ocean Club": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Westin Ka'anapali": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Phuket Beach Club": {
       "2025": {
-        "Chinese New Year": "global:Chinese New Year",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Chinese New Year": [
+          "2025-01-24",
+          "2025-01-30"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Chinese New Year": "global:Chinese New Year",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Chinese New Year": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Bali Nusa Dua Gardens": {
       "2025": {
-        "Chinese New Year": "global:Chinese New Year",
-        "Easter": "global:Easter",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Chinese New Year": [
+          "2025-01-24",
+          "2025-01-30"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Chinese New Year": "global:Chinese New Year",
-        "Easter": "global:Easter",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Chinese New Year": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Bali Nusa Dua Terrace": {
       "2025": {
-        "Chinese New Year": "global:Chinese New Year",
-        "Easter": "global:Easter",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Chinese New Year": [
+          "2025-01-24",
+          "2025-01-30"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Chinese New Year": "global:Chinese New Year",
-        "Easter": "global:Easter",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Chinese New Year": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Playa Andaluza": {
       "2025": {
-        "Christmas": "global:Christmas",
-        "New Year\u2019s Eve/Day": "global:New Year's Eve/Day",
-        "Easter1": "global:Easter1",
-        "Easter2": "global:Easter"
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year\u2019s Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ],
+        "Easter1": [
+          "2025-04-11",
+          "2025-04-17"
+        ],
+        "Easter2": [
+          "2025-04-18",
+          "2025-04-24"
+        ]
       },
       "2026": {
-        "Christmas": "global:Christmas",
-        "New Year\u2019s Eve/Day": "global:New Year's Eve/Day",
-        "Easter1": "global:Easter1",
-        "Easter2": "global:Easter"
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year\u2019s Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ],
+        "Easter1": [
+          "2026-03-27",
+          "2026-04-02"
+        ],
+        "Easter2": [
+          "2026-04-03",
+          "2026-04-09"
+        ]
       }
     },
     "Village Paris": {
       "2025": {
-        "Week 1": "global:Week 1",
-        "Easter1": "global:Easter1",
-        "Easter2": "global:Easter",
-        "Mid\u2013Term": "global:Mid\u2013Term",
-        "Christmas": "global:Christmas",
-        "New Year\u2019s Eve/Day": "global:New Year's Eve/Day"
+        "Week 1": [
+          "2025-01-03",
+          "2025-01-09"
+        ],
+        "Easter1": [
+          "2025-04-11",
+          "2025-04-17"
+        ],
+        "Easter2": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Mid\u2013Term": [
+          "2025-05-16",
+          "2025-05-29"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year\u2019s Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Week 1": "global:Week 1",
-        "Easter1": "global:Easter1",
-        "Easter2": "global:Easter",
-        "Mid\u2013Term": "global:Mid\u2013Term",
-        "Christmas": "global:Christmas",
-        "New Year\u2019s Eve/Day": "global:New Year's Eve/Day"
+        "Week 1": [
+          "2026-01-02",
+          "2026-01-08"
+        ],
+        "Easter1": [
+          "2026-03-27",
+          "2026-04-02"
+        ],
+        "Easter2": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Mid\u2013Term": [
+          "2026-05-15",
+          "2026-05-28"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year\u2019s Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Marbella Beach": {
       "2025": {
-        "Christmas": "global:Christmas",
-        "New Year\u2019s Eve/Day": "global:New Year's Eve/Day",
-        "Easter1": "global:Easter1",
-        "Easter2": "global:Easter"
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year\u2019s Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ],
+        "Easter1": [
+          "2025-04-11",
+          "2025-04-17"
+        ],
+        "Easter2": [
+          "2025-04-18",
+          "2025-04-24"
+        ]
       },
       "2026": {
-        "Christmas": "global:Christmas",
-        "New Year\u2019s Eve/Day": "global:New Year's Eve/Day",
-        "Easter1": "global:Easter1",
-        "Easter2": "global:Easter"
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year\u2019s Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ],
+        "Easter1": [
+          "2026-03-27",
+          "2026-04-02"
+        ],
+        "Easter2": [
+          "2026-04-03",
+          "2026-04-09"
+        ]
       }
     },
     "Sheraton Kauai": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Beachplace Towers": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Surfers Paradise": {
       "2025": {
-        "Easter": "global:Easter",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Easter": "global:Easter",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Waikoloa Ocean Club": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving 2": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving 2": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving 2": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Aruba Surf Club": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Aruba Ocean Club": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Easter": [
+          "2025-04-18",
+          "2025-04-24"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Easter": [
+          "2026-04-03",
+          "2026-04-09"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Mayflower Washington": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Memorial Day": "global:Memorial Day",
-        "Independence Day": "global:Independence Day",
-        "Labor Day": "global:Labor Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving Alt": "global:Thanksgiving",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Memorial Day": [
+          "2025-05-23",
+          "2025-05-29"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Labor Day": [
+          "2025-08-29",
+          "2025-09-04"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving Alt": [
+          "2025-11-28",
+          "2025-12-03"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Memorial Day": "global:Memorial Day",
-        "Independence Day": "global:Independence Day",
-        "Labor Day": "global:Labor Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving Alt": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Memorial Day": [
+          "2026-05-22",
+          "2026-05-28"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Labor Day": [
+          "2026-09-04",
+          "2026-09-10"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving Alt": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Grand Chateau Las Vegas": {
       "2025": {
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Mountainside Utah": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving Weekend": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving Weekend": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving Weekend": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving Weekend": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Canyon Villas Arizona": {
       "2025": {
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving Weekend": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Thanksgiving": [
+          "2025-11-21",
+          "2025-11-27"
+        ],
+        "Thanksgiving Weekend": [
+          "2025-11-28",
+          "2025-12-04"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Independence Day": "global:Independence Day",
-        "Thanksgiving": "global:Thanksgiving",
-        "Thanksgiving Weekend": "global:Thanksgiving 2",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Thanksgiving": [
+          "2026-11-20",
+          "2026-11-26"
+        ],
+        "Thanksgiving Weekend": [
+          "2026-11-27",
+          "2026-12-03"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     },
     "Ocean Pointe": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2025-02-14",
+          "2025-02-20"
+        ],
+        "Independence Day": [
+          "2025-07-04",
+          "2025-07-10"
+        ],
+        "Christmas": [
+          "2025-12-19",
+          "2025-12-25"
+        ],
+        "New Year's Eve/Day": [
+          "2025-12-26",
+          "2026-01-01"
+        ]
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Independence Day": "global:Independence Day",
-        "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "Presidents Day": [
+          "2026-02-13",
+          "2026-02-19"
+        ],
+        "Independence Day": [
+          "2026-07-03",
+          "2026-07-09"
+        ],
+        "Christmas": [
+          "2026-12-18",
+          "2026-12-24"
+        ],
+        "New Year's Eve/Day": [
+          "2026-12-25",
+          "2026-12-31"
+        ]
       }
     }
   },
@@ -6021,19 +6807,15 @@
     "Bali Nusa Dua Gardens",
     "Bali Nusa Dua Terrace",
     "Beachplace Towers",
-    "Canyon Villas Arizona",
     "Crystal Shores",
     "Desert Shoulders Villas II",
-    "Grand Chateau Las Vegas",
     "Grande Vista",
     "Kauai Beach Club",
     "Ko Olina Beach Club",
     "Marbella Beach",
     "Maui Ocean Club",
     "Mayflower Washington",
-    "Mountainside Utah",
     "Newport Coast Villas",
-    "Ocean Pointe",
     "Phuket Beach Club",
     "Playa Andaluza",
     "Shadow Ridge",
@@ -6042,115 +6824,5 @@
     "Village Paris",
     "Waikoloa Ocean Club",
     "Westin Ka'anapali"
-  ],
-  "global_dates": {
-    "2025": {
-      "Presidents Day": [
-        "2025-02-14",
-        "2025-02-20"
-      ],
-      "Easter": [
-        "2025-04-18",
-        "2025-04-24"
-      ],
-      "Independence Day": [
-        "2025-07-04",
-        "2025-07-10"
-      ],
-      "Thanksgiving": [
-        "2025-11-21",
-        "2025-11-27"
-      ],
-      "Thanksgiving 2": [
-        "2025-11-28",
-        "2025-12-04"
-      ],
-      "Christmas": [
-        "2025-12-19",
-        "2025-12-25"
-      ],
-      "New Year's Eve/Day": [
-        "2025-12-26",
-        "2026-01-01"
-      ],
-      "Chinese New Year": [
-        "2025-01-24",
-        "2025-01-30"
-      ],
-      "Easter1": [
-        "2025-04-11",
-        "2025-04-17"
-      ],
-      "Week 1": [
-        "2025-01-03",
-        "2025-01-09"
-      ],
-      "Mid\u2013Term": [
-        "2025-05-16",
-        "2025-05-29"
-      ],
-      "Memorial Day": [
-        "2025-05-23",
-        "2025-05-29"
-      ],
-      "Labor Day": [
-        "2025-08-29",
-        "2025-09-04"
-      ]
-    },
-    "2026": {
-      "Presidents Day": [
-        "2026-02-13",
-        "2026-02-19"
-      ],
-      "Easter": [
-        "2026-04-03",
-        "2026-04-09"
-      ],
-      "Independence Day": [
-        "2026-07-03",
-        "2026-07-09"
-      ],
-      "Thanksgiving": [
-        "2026-11-20",
-        "2026-11-26"
-      ],
-      "Thanksgiving 2": [
-        "2026-11-27",
-        "2026-12-03"
-      ],
-      "Christmas": [
-        "2026-12-18",
-        "2026-12-24"
-      ],
-      "New Year's Eve/Day": [
-        "2026-12-25",
-        "2026-12-31"
-      ],
-      "Chinese New Year": [
-        "2026-02-13",
-        "2026-02-19"
-      ],
-      "Easter1": [
-        "2026-03-27",
-        "2026-04-02"
-      ],
-      "Week 1": [
-        "2026-01-02",
-        "2026-01-08"
-      ],
-      "Mid\u2013Term": [
-        "2026-05-15",
-        "2026-05-28"
-      ],
-      "Memorial Day": [
-        "2026-05-22",
-        "2026-05-28"
-      ],
-      "Labor Day": [
-        "2026-09-04",
-        "2026-09-10"
-      ]
-    }
-  }
+  ]
 }
