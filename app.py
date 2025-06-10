@@ -18,6 +18,8 @@ room_view_legend = {
     "MV": "Mountain",
     "PH": "Penthouse",
     "GV": "Garden",
+    "MA": "Mountain",
+    "MK": "Ocean",
     "OF": "Front"
 }
 season_blocks = data.get("season_blocks", {})
