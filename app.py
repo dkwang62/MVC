@@ -485,8 +485,6 @@ def calculate_stay_owner(resort, room_type, checkin_date, num_nights, discount_p
     current_holiday = None
     holiday_end = None
 
-    depreciation_cost_per_point = (capital_cost_per_point - salvage_value) / useful_life
-
     for i in range(num_nights):
         date = checkin_date + timedelta(days=i)
         date_str = date.strftime("%Y-%m-%d")
@@ -494,6 +492,9 @@ def calculate_stay_owner(resort, room_type, checkin_date, num_nights, discount_p
             entry, _ = generate_data(resort, date)
             points = entry.get(room_type, 0)
             discounted_points = math.floor(points * discount_multiplier)
+
+        # Dynamically calculate depreciation cost per point
+            depreciation_cost_per_point = (capital_cost_per_point - salvage_value) / useful_life
 
             if entry.get("HolidayWeek", False):
                 if entry.get("HolidayWeekStart", False):
@@ -704,7 +705,6 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
     total_points_by_room = {room: 0 for room in room_types}
     total_cost_by_room = {room: 0 for room in room_types}
     holiday_totals = {room: defaultdict(dict) for room in room_types}
-    depreciation_cost_per_point = (capital_cost_per_point - salvage_value) / useful_life
 
     for date in all_dates:
         date_str = date.strftime("%Y-%m-%d")
@@ -714,6 +714,8 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
             is_holiday_date = any(h_start <= date <= h_end for h_start, h_end in holiday_ranges)
             holiday_name = holiday_names.get(date)
             is_holiday_start = entry.get("HolidayWeekStart", False)
+            # Dynamically calculate depreciation cost per point
+            depreciation_cost_per_point = (capital_cost_per_point - salvage_value) / useful_life
 
             for room in room_types:
                 internal_room = get_internal_room_key(room)
@@ -834,17 +836,11 @@ try:
             - Rent = (Points × Discount Multiplier) × Rate per Point
             """)
         else:
+            depreciation_rate = (capital_cost_per_point - salvage_value) / useful_life
             st.markdown(f"""
             - Authored by Desmond Kwang https://www.facebook.com/dkwang62
-            - Maintenance rate: ${rate_per_point:.2f} per point
-            - Purchase price: ${capital_cost_per_point:.2f} per point
-            - Cost of capital: {cost_of_capital_percent:.1f}%
-            - Useful Life: {useful_life} years
-            - Salvage Value: ${salvage_value:.2f} per point
-            - Depreciation: ${(capital_cost_per_point - salvage_value) / useful_life:.2f} per point
-            - Selected discount: {discount_percent}%
-            - Cost of capital calculated as (points * purchase price per point * cost of capital percentage)
-            - Total cost is maintenance plus capital cost plus depreciation
+            - Cost of capital = points * purchase price per point * cost of capital percentage
+            - Total cost = maintenance + capital cost + depreciation
             """)
 
     # Define checkin_date and num_nights first
@@ -852,7 +848,7 @@ try:
         "Check-in Date",
         min_value=datetime(2025, 1, 3).date(),
         max_value=datetime(2026, 12, 31).date(),
-        value=datetime(2025, 7, 8).date()
+        value=datetime(2025, 6, 12).date()
     )
     num_nights = st.number_input("Number of Nights", min_value=1, max_value=30, value=7)
     checkout_date = checkin_date + timedelta(days=num_nights)
@@ -1149,7 +1145,7 @@ try:
                 all_rooms = [room_type] + compare_rooms
                 chart_df, compare_df_pivot, holiday_totals = compare_room_types_owner(
                     resort, all_rooms, checkin_date, adjusted_nights, discount_multiplier,
-                    discount_percent, ap_display_room_types, display_mode, rate_per_point,
+                    discount_percent, ap_display_room_types, year_select, rate_per_point,
                     capital_cost_per_point, cost_of_capital, useful_life, salvage_value
                 )
 
