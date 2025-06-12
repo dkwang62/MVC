@@ -848,13 +848,13 @@ try:
         else:
             rate_option = st.radio("Rate Option", ["Based on Maintenance Rate", "Custom Rate", "Booked within 60 days", "Booked within 30 days"])
             if rate_option == "Based on Maintenance Rate":
-                rate_per_point = 0.81 if datetime.now().year == 2025 else 0.86
+                rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
                 booking_discount = None
             elif rate_option == "Booked within 60 days":
-                rate_per_point = 0.81 if datetime.now().year == 2025 else 0.86
+                rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
                 booking_discount = "within_60_days"
             elif rate_option == "Booked within 30 days":
-                rate_per_point = 0.81 if datetime.now().year == 2025 else 0.86
+                rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
                 booking_discount = "within_30_days"
             else:
                 rate_per_point = st.number_input("Custom Rate per Point ($)", min_value=0.0, value=0.81, step=0.01)
