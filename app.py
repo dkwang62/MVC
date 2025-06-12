@@ -784,7 +784,7 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
             st.session_state.debug_messages.append(f"Error in compare for {date_str} at {resort}: {str(e)}")
             continue
 
-        total_points_row = {"Date": ["Total Points (Non-Holiday)"}
+        total_points_row = {"Date": ["Total Points (Non-Holiday)"]}
         for room in room_types:
             total_points_row[room] = total_points_by_room[room]
             compare_data.append(total_points_row)
