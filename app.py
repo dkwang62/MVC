@@ -808,8 +808,17 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
 
 # Main UI
 try:
-    # Initialize user_mode before title
+    # Initialize variables outside the sidebar
     user_mode = st.sidebar.selectbox("User Mode", options=["Renter", "Owner"], index=0)
+    rate_per_point = 0.81  # Default value
+    discount_percent = 0
+    display_mode = "both"
+    capital_cost_per_point = 16.0
+    cost_of_capital_percent = 7.0
+    useful_life = 15
+    salvage_value = 3.0
+    booking_discount = None
+
     st.title("Marriott Vacation Club " + ("Rent Calculator" if user_mode == "Renter" else "Cost Calculator"))
 
     # Move the "How [Cost/Rent] is Calculated" expander right after the title
@@ -881,9 +890,7 @@ try:
             cost_of_capital_percent = st.number_input("Cost of Capital (%)", min_value=0.0, max_value=100.0, value=7.0, step=0.1)
             useful_life = st.number_input("Useful Life (Years)", min_value=1, value=15, step=1)
             salvage_value = st.number_input("Salvage Value per Point ($)", min_value=0.0, value=3.0, step=0.1)
-            cost_of_capital = cost_of_capital_percent / 100
             st.caption(f"Cost calculation based on {discount_percent}% discount.")
-            booking_discount = None
         else:
             rate_option = st.radio("Rate Option", ["Based on Maintenance Rate", "Custom Rate", "Booked within 60 days", "Booked within 30 days"])
             if rate_option == "Based on Maintenance Rate":
@@ -898,9 +905,9 @@ try:
             else:
                 rate_per_point = st.number_input("Custom Rate per Point ($)", min_value=0.0, value=0.81, step=0.01)
                 booking_discount = None
-            discount_percent, display_mode, capital_cost_per_point, cost_of_capital, useful_life, salvage_value = 0, "both", 0, 0, 0, 0
 
     discount_multiplier = 1 - (discount_percent / 100)
+    cost_of_capital = cost_of_capital_percent / 100
 
     resort = st.selectbox("Select Resort", options=data["resorts_list"], index=data["resorts_list"].index("Ko Olina Beach Club"))
 
