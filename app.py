@@ -871,7 +871,6 @@ try:
             depreciation_rate = (capital_cost_per_point - salvage_value) / useful_life if include_depreciation else 0
             st.markdown(f"""
             - Authored by Desmond Kwang https://www.facebook.com/dkwang62
-            - Purchase Price per Point is set in the parameters and used in both capital cost and depreciation calculations
             - Cost of capital = Points × Purchase Price per Point × Cost of Capital Percentage
             - Depreciation = Points × [(Purchase Price per Point − Salvage Value) ÷ Useful Life]
             - Total cost = Maintenance + Capital Cost + Depreciation
