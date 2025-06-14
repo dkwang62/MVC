@@ -871,7 +871,8 @@ try:
             depreciation_rate = (capital_cost_per_point - salvage_value) / useful_life if include_depreciation else 0
             st.markdown(f"""
             - Authored by Desmond Kwang https://www.facebook.com/dkwang62
-            - Cost of capital = points * purchase price per point * cost of capital percentage
+            - Cost of capital = Points × purchase price per point × cost of capital percentage
+            - Depreciation = Points × [(Purchase price per point − Salvage value per point) ÷ Useful life] 
             - Total cost = maintenance + capital cost + depreciation
             - If no cost components are selected, only points are displayed
             """)
