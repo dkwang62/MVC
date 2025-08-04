@@ -860,7 +860,7 @@ try:
                 - Authored by Desmond Kwang https://www.facebook.com/dkwang62
                 - Rental Rate per Point is based on MVC Abound maintenance fees or custom input
                 - Default: $0.81 for 2025 stays (actual rate)
-                - Default: $0.86 for 2026 stays (forecasted rate)
+                - Default: $0.83 for 2026 stays (forecasted rate)
                 - **Booked within 60 days**: 30% discount on points required, only for Presidential-level owners, applies to stays within 60 days from today
                 - **Booked within 30 days**: 25% discount on points required, only for Executive-level owners, applies to stays within 30 days from today
                 - Rent = (Points × Discount Multiplier) × Rate per Point
@@ -870,7 +870,7 @@ try:
                 - Authored by Desmond Kwang https://www.facebook.com/dkwang62
                 - Rental Rate per Point is based on MVC Abound maintenance fees
                 - Default: $0.81 for 2025 stays (actual rate)
-                - Default: $0.86 for 2026 stays (forecasted rate)
+                - Default: $0.83 for 2026 stays (forecasted rate)
                 - Rent = Points × Rate per Point
                 - Note: Rate modifications are disabled by the owner.
                 """)
@@ -949,13 +949,13 @@ try:
                     ["Based on Maintenance Rate", "Custom Rate", "Booked within 60 days", "Booked within 30 days"]
                 )
                 if rate_option == "Based on Maintenance Rate":
-                    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+                    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.83
                     booking_discount = None
                 elif rate_option == "Booked within 60 days":
-                    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+                    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.83
                     booking_discount = "within_60_days"
                 elif rate_option == "Booked within 30 days":
-                    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+                    rate_per_point = 0.81 if checkin_date.year == 2025 else 0.83
                     booking_discount = "within_30_days"
                 else:
                     rate_per_point = st.number_input(
@@ -967,7 +967,7 @@ try:
                     booking_discount = None
 
     if user_mode == "Renter" and not st.session_state.allow_renter_modifications:
-        rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
+        rate_per_point = 0.81 if checkin_date.year == 2025 else 0.83
         booking_discount = None
 
     discount_multiplier = 1 - (discount_percent / 100)
