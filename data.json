@@ -1442,7 +1442,7 @@
         ]
       }
     },
-    "Beachplace Towers": {
+    "BeachPlace Towers": {
       "2025": {
         "Low Season": [
           [
@@ -1454,7 +1454,7 @@
             "2025-12-18"
           ]
         ],
-        "Shoulder": [
+        "Mid Season": [
           [
             "2025-04-18",
             "2025-06-05"
@@ -1468,7 +1468,7 @@
             "2025-12-04"
           ]
         ],
-        "Mid Season": [
+        "High Season": [
           [
             "2025-01-03",
             "2025-01-30"
@@ -1486,7 +1486,7 @@
             "2025-08-28"
           ]
         ],
-        "High Season": [
+        "Peak Season": [
           [
             "2025-01-31",
             "2025-02-13"
@@ -1508,7 +1508,7 @@
             "2026-12-17"
           ]
         ],
-        "Shoulder": [
+        "Mid Season": [
           [
             "2026-04-17",
             "2026-06-04"
@@ -1522,7 +1522,7 @@
             "2026-12-03"
           ]
         ],
-        "Mid Season": [
+        "High Season": [
           [
             "2026-01-02",
             "2026-01-29"
@@ -1540,7 +1540,7 @@
             "2026-08-27"
           ]
         ],
-        "High Season": [
+        "Peak Season": [
           [
             "2026-01-30",
             "2026-02-12"
@@ -2634,7 +2634,7 @@
         "New Year's Eve/Day": "global:New Year's Eve/Day"
       }
     },
-    "Beachplace Towers": {
+    "BeachPlace Towers": {
       "2025": {
         "Presidents Day": "global:Presidents Day",
         "Independence Day": "global:Independence Day",
@@ -4432,7 +4432,7 @@
         }
       }
     },
-    "Beachplace Towers": {
+    "BeachPlace Towers": {
       "Low Season": {
         "Fri-Sat": {
           "Studio": 200,
@@ -4445,7 +4445,7 @@
           "2-BDRM": 175
         }
       },
-      "Shoulder Season": {
+      "Mid Season": {
         "Fri-Sat": {
           "Studio": 275,
           "1-BDRM": 375,
@@ -4457,7 +4457,7 @@
           "2-BDRM": 250
         }
       },
-      "Mid Season": {
+      "High Season": {
         "Fri-Sat": {
           "Studio": 375,
           "1-BDRM": 550,
@@ -4469,7 +4469,7 @@
           "2-BDRM": 350
         }
       },
-      "High Season": {
+      "Peak Season": {
         "Fri-Sat": {
           "Studio": 425,
           "1-BDRM": 600,
@@ -5475,7 +5475,7 @@
     "Aruba Surf Club",
     "Bali Nusa Dua Gardens",
     "Bali Nusa Dua Terrace",
-    "Beachplace Towers",
+    "BeachPlace Towers",
     "Canyon Villas Arizona",
     "Crystal Shores",
     "Desert Springs Villas II",
