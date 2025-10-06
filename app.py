@@ -1,4 +1,3 @@
-st.write("App started")
 import streamlit as st
 import math
 import json
