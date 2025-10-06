@@ -8,6 +8,8 @@ import traceback
 from collections import defaultdict
 import uuid
 
+st.write("App is running")
+
 # Load data.json
 with open("data.json", "r") as f:
     data = json.load(f)
@@ -195,4 +197,68 @@ def generate_data(resort, date, cache=None):
         return cache[date_str]
 
     year = date.strftime("%Y")
-   
+    day_of_week = date.strftime("%a")
+
+    st.session_state.debug_messages.append(f"Processing date: {date_str}, Day: {day_of_week}, Resort: {resort}")
+
+    is_fri_sat = day_of_week in ["Fri", "Sat"]
+    is_sun = day_of_week == "Sun"
+    day_category = "Fri-Sat" if is_fri_sat else ("Sun" if is_sun else "Mon-Thu")
+    st.session_state.debug_messages.append(f"Day_category: {day_category}")
+
+    entry = {}
+    season = None
+    holiday_name = None
+    is_holiday = False
+    is_holiday_start = False
+    holiday_start_date = None
+    holiday_end_date = None
+    prev_year = str(int(year) - 1)
+
+    # Check for year-end/beginning holiday assumption
+    is_year_end_holiday = False
+    if (date.month == 12 and date.day >= 26) or (date.month == 1 and date.day <= 1):
+        holiday_start = datetime.strptime(f"{prev_year}-12-26", "%Y-%m-%d").date()
+        holiday_end = datetime.strptime(f"{year}-01-01", "%Y-%m-%d").date()
+        if holiday_start <= date <= holiday_end:
+            is_year_end_holiday = True
+            holiday_name = "New Year's Eve/Day"
+            season = "Holiday Week"
+            is_holiday = True
+            holiday_start_date = holiday_start
+            holiday_end_date = holiday_end
+            if date == holiday_start:
+                is_holiday_start = True
+            st.session_state.debug_messages.append(f"Assuming 7-day New Year's Holiday for {date_str} at {resort}")
+
+    # Check other holidays
+    if year in holiday_weeks.get(resort, {}) and not is_year_end_holiday:
+        holiday_data_dict = holiday_weeks[resort][year]
+        for h_name, holiday_data in holiday_data_dict.items():
+            if isinstance(holiday_data, str) and holiday_data.startswith("global:"):
+                global_key = holiday_data.split(":", 1)[1]
+                holiday_data = data["global_dates"].get(year, {}).get(global_key, [])
+            try:
+                if len(holiday_data) >= 2:
+                    start = datetime.strptime(holiday_data[0], "%Y-%m-%d").date()
+                    end = datetime.strptime(holiday_data[1], "%Y-%m-%d").date()
+                    st.session_state.debug_messages.append(f"Checking holiday {h_name} for {resort}: {start} to {end}")
+                    if start <= date <= end:
+                        is_holiday = True
+                        holiday_name = h_name
+                        season = "Holiday Week"
+                        holiday_start_date = start
+                        holiday_end_date = end
+                        if date == start:
+                            is_holiday_start = True
+            except (IndexError, ValueError) as e:
+                st.session_state.debug_messages.append(f"Holiday parse error for {h_name}: {e}")
+
+    # Season determination
+    if not is_holiday:
+        if year in season_blocks.get(resort, {}):
+            for season_name, ranges in season_blocks[resort][year].items():
+                for start_date, end_date in ranges:
+                    try:
+                        start = datetime.strptime(start_date, "%Y-%m-%d").date()
+                        end = datetime.strptime(end_date, "%Y-%m-%d").date()
