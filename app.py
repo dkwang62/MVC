@@ -7,7 +7,6 @@ import plotly.express as px
 import traceback
 from collections import defaultdict
 import uuid
-import random  # CHANGED: Added import for random selection
 
 # Load data.json
 with open("data.json", "r") as f:
@@ -442,7 +441,9 @@ def calculate_stay_renter(resort, room_type, checkin_date, num_nights, rate_per_
                 else:
                     st.session_state.debug_messages.append(f"{date_str}: No point discount, {days_until} days away, {effective_points} points")
             
-            rent = math.ceil(points * rate_per_point)  # Uses full points for rent
+            # CHANGED: Calculate rent using original 'points' (full, as if no discount applied), not effective_points
+            rent = math.ceil(points * rate_per_point)  # Now uses full points for rent
+            # CHANGED: Add debug log for full rent
             if booking_discount and effective_points != points:
                 st.session_state.debug_messages.append(f"{date_str}: Full rent charged despite point discount: ${rent} (based on {points} points)")
 
@@ -455,10 +456,10 @@ def calculate_stay_renter(resort, room_type, checkin_date, num_nights, rate_per_
                         "Date": f"{current_holiday} ({holiday_start.strftime('%b %d, %Y')} - {holiday_end.strftime('%b %d, %Y')})",
                         "Day": "",
                         "Points": effective_points,  # Still shows discounted points
-                        "Rent": f"${rent}"  # Full rent
+                        "Rent": f"${rent}"  # Now full rent
                     })
-                    total_points += effective_points  # Total points discounted
-                    total_rent += rent  # Total rent full
+                    total_points += effective_points  # Total points still discounted
+                    total_rent += rent  # Total rent now full
                 elif current_holiday and date <= holiday_end:
                     continue
             else:
@@ -468,10 +469,10 @@ def calculate_stay_renter(resort, room_type, checkin_date, num_nights, rate_per_
                     "Date": date_str,
                     "Day": date.strftime("%a"),
                     "Points": effective_points,  # Still shows discounted points
-                    "Rent": f"${rent}"  # Full rent
+                    "Rent": f"${rent}"  # Now full rent
                 })
-                total_points += effective_points  # Total points discounted
-                total_rent += rent  # Total rent full
+                total_points += effective_points  # Total points still discounted
+                total_rent += rent  # Total rent now full
         except Exception as e:
             st.session_state.debug_messages.append(f"Error calculating for {resort}, {date_str}: {str(e)}")
             continue
@@ -623,7 +624,9 @@ def compare_room_types_renter(resort, room_types, checkin_date, num_nights, rate
                     else:
                         st.session_state.debug_messages.append(f"{date_str}: {room}: No point discount, {days_until} days away, {effective_points} points")
                 
-                rent = math.ceil(points * rate_per_point)  # Uses full points for rent
+                # CHANGED: Calculate rent using original 'points' (full, as if no discount applied), not effective_points
+                rent = math.ceil(points * rate_per_point)  # Now uses full points for rent
+                # CHANGED: Add debug log for full rent
                 if booking_discount and effective_points != points:
                     st.session_state.debug_messages.append(f"{date_str}: {room} Full rent charged despite point discount: ${rent} (based on {points} points)")
 
@@ -634,7 +637,7 @@ def compare_room_types_renter(resort, room_types, checkin_date, num_nights, rate
                             h_end = max(e for _, e in holiday_ranges if holiday_names.get(date) == holiday_name)
                             holiday_totals[room][holiday_name] = {
                                 "points": effective_points,
-                                "rent": rent,  # Full rent
+                                "rent": rent,  # CHANGED: Now full rent
                                 "start": h_start,
                                 "end": h_end
                             }
@@ -643,27 +646,27 @@ def compare_room_types_renter(resort, room_types, checkin_date, num_nights, rate
                         compare_data.append({
                             "Date": f"{holiday_name} ({start_str} - {end_str})",
                             "Room Type": room,
-                            "Points": effective_points,  # Discounted points
-                            "Rent": f"${rent}"  # Full rent
+                            "Points": effective_points,  # Still shows discounted points
+                            "Rent": f"${rent}"  # Now full rent
                         })
                     continue
                 compare_data.append({
                     "Date": date_str,
                     "Room Type": room,
-                    "Points": effective_points,  # Discounted points
-                    "Rent": f"${rent}"  # Full rent
+                    "Points": effective_points,  # Still shows discounted points
+                    "Rent": f"${rent}"  # Now full rent
                 })
-                total_points_by_room[room] += effective_points  # Total points discounted
-                total_rent_by_room[room] += rent  # Total rent full
+                total_points_by_room[room] += effective_points  # Total points still discounted
+                total_rent_by_room[room] += rent  # Total rent now full
 
                 chart_data.append({
                     "Date": date,
                     "DateStr": date_str,
                     "Day": day_of_week,
                     "Room Type": room,
-                    "Points": effective_points,  # Discounted points
-                    "Rent": f"${rent}",  # Full rent
-                    "RentValue": rent,  # Full rent
+                    "Points": effective_points,  # Still discounted for points chart
+                    "Rent": f"${rent}",  # CHANGED: Full rent for rent display/chart
+                    "RentValue": rent,  # CHANGED: Full rent value
                     "Holiday": entry.get("holiday_name", "No")
                 })
 
@@ -870,7 +873,7 @@ try:
                 - Default: $0.83 for 2026 stays (forecasted rate)
                 - **Booked within 60 days**: 30% discount on points required, only for Presidential-level owners, applies to stays within 60 days from today
                 - **Booked within 30 days**: 25% discount on points required, only for Executive-level owners, applies to stays within 30 days from today
-                - Rent = Points × Rate per Point (full points, no discount applied to rent)
+                - Rent = (Points × Discount Multiplier) × Rate per Point
                 """)
             else:
                 st.markdown("""
@@ -891,25 +894,18 @@ try:
             - If no cost components are selected, only points are displayed
             """)
 
-    # CHANGED: Randomize default check-in date
-    current_date = datetime.now().date()
-    max_checkin_date = datetime(2026, 12, 24).date()  # Ensures checkout (checkin + 7 days) is within 2026
-    days_range = (max_checkin_date - current_date).days
-    random_days = random.randint(0, days_range)
-    default_checkin_date = current_date + timedelta(days=random_days)
-    st.session_state.debug_messages.append(f"Randomized default check-in date: {default_checkin_date}")
-
+    # Define checkin_date and num_nights
     checkin_date = st.date_input(
         "Check-in Date",
         min_value=datetime(2025, 1, 3).date(),
-        max_value=max_checkin_date,  # CHANGED: Adjusted max_value to ensure checkout within 2026
-        value=default_checkin_date   # CHANGED: Use randomized default date
+        max_value=datetime(2026, 12, 31).date(),
+        value=datetime(2025, 6, 12).date()
     )
     num_nights = st.number_input(
         "Number of Nights",
         min_value=1,
         max_value=30,
-        value=7  # Unchanged: Fixed at 7 days as requested
+        value=7
     )
     checkout_date = checkin_date + timedelta(days=num_nights)
     st.write(f"Checkout Date: {checkout_date.strftime('%Y-%m-%d')}")
@@ -987,13 +983,10 @@ try:
     discount_multiplier = 1 - (discount_percent / 100)
     cost_of_capital = cost_of_capital_percent / 100
 
-    # CHANGED: Randomize default resort
-    default_resort = random.choice(data["resorts_list"])
-    st.session_state.debug_messages.append(f"Randomized default resort: {default_resort}")
     resort = st.selectbox(
         "Select Resort",
         options=data["resorts_list"],
-        index=data["resorts_list"].index(default_resort)  # CHANGED: Use random resort
+        index=data["resorts_list"].index("Ko Olina Beach Club")
     )
 
     year_select = str(checkin_date.year)
@@ -1037,14 +1030,9 @@ try:
         room_types = st.session_state.room_types
         display_to_internal = st.session_state.display_to_internal
 
-    # CHANGED: Randomize default room type
-    default_room_index = random.randint(0, len(room_types) - 1)
-    default_room_type = room_types[default_room_index]
-    st.session_state.debug_messages.append(f"Randomized default room type: {default_room_type}")
     room_type = st.selectbox(
         "Select Room Type",
         options=room_types,
-        index=default_room_index,  # CHANGED: Use random room type index
         key="room_type_select"
     )
     compare_rooms = st.multiselect(
@@ -1096,7 +1084,7 @@ try:
                     else:
                         st.warning(f"No 25% discount on points applied. Executive-level discount requires stay dates within 30 days from today ({datetime.now().date().strftime('%Y-%m-%d')}).")
 
-            # Note for clarity on rent behavior
+            # CHANGED: Add a note for clarity on the new behavior
             if booking_discount and discount_applied:
                 st.info("**Note:** Points shown are after discount (reduced usage). Rent is calculated at full price (no discount applied to rent amount).")
 
@@ -1131,7 +1119,7 @@ try:
                         else:
                             st.warning(f"No 25% discount on points applied in comparison. Executive-level discount requires stay dates within 30 days from today ({datetime.now().date().strftime('%Y-%m-%d')}).")
 
-                # Note for clarity on rent behavior in comparison
+                # CHANGED: Add a note for clarity on the new behavior in comparison
                 if booking_discount and discount_applied:
                     st.info("**Note:** Points shown are after discount (reduced usage). Rent is calculated at full price (no discount applied to rent amount).")
 
@@ -1156,8 +1144,8 @@ try:
                                     "Holiday": holiday_name,
                                     "Room Type": room,
                                     "Points": totals["points"],
-                                    "Rent": f"${totals['rent']}",  # Full rent
-                                    "RentValue": totals["rent"],  # Full rent
+                                    "Rent": f"${totals['rent']}",  # Now full rent from updated totals
+                                    "RentValue": totals["rent"],  # Now full
                                     "Start": totals["start"],
                                     "End": totals["end"]
                                 })
@@ -1388,18 +1376,19 @@ try:
                             )
                             st.plotly_chart(fig, use_container_width=True)
 
-    # Display Gantt chart for seasons and holidays
-    st.subheader(f"Seasons and Holidays for {resort}")
-    gantt_fig = create_gantt_chart(resort, year_select)
-    st.plotly_chart(gantt_fig, use_container_width=True)
+        st.subheader(f"Season and Holiday Calendar for {year_select}")
+        gantt_fig = create_gantt_chart(resort, year_select)
+        st.plotly_chart(gantt_fig, use_container_width=True)
 
 except Exception as e:
-    st.error(f"An error occurred: {str(e)}")
-    st.session_state.debug_messages.append(f"Main UI error: {str(e)}")
-    st.session_state.debug_messages.append(traceback.format_exc())
-
-# Debug Information (Optional, for development)
-if st.checkbox("Show Debug Information"):
-    st.subheader("Debug Messages")
-    for msg in st.session_state.debug_messages:
-        st.write(msg)
+    st.error(f"Application error: {str(e)}")
+    st.session_state.debug_messages.append(f"Error: {str(e)}\n{traceback.format_exc()}")
+    with st.expander("Debug Information"):
+        if st.button("Clear Debug Messages"):
+            st.session_state.debug_messages = []
+            st.session_state.debug_messages.append("Debug messages cleared.")
+        if st.session_state.debug_messages:
+            for msg in st.session_state.debug_messages:
+                st.write(msg)
+        else:
+            st.write("No debug messages available.")
