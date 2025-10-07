@@ -53,14 +53,6 @@ season_blocks = data.get("season_blocks", {})
 reference_points = data.get("reference_points", {})
 holiday_weeks = data.get("holiday_weeks", {})
 
-# Initialize session state
-if "debug_messages" not in st.session_state:
-    st.session_state.debug_messages = []
-if "data_cache" not in st.session_state:
-    st.session_state.data_cache = {}
-if "allow_renter_modifications" not in st.session_state:
-    st.session_state.allow_renter_modifications = False
-
 # Helper functions
 def get_display_room_type(room_key):
     if room_key in room_view_legend:
@@ -427,7 +419,6 @@ def calculate_stay_renter(resort, room_type, checkin_date, num_nights, rate_per_
             entry, _ = generate_data(resort, date)
             points = entry.get(room_type, 0)
             effective_points = points
-            # CHANGED: Apply discount unconditionally based on booking_discount
             if booking_discount == "within_60_days":
                 effective_points = math.floor(points * 0.7)  # 30% discount on points
                 discount_applied = True
@@ -606,7 +597,6 @@ def compare_room_types_renter(resort, room_types, checkin_date, num_nights, rate
                 internal_room = get_internal_room_key(room)
                 points = entry.get(room, 0)
                 effective_points = points
-                # CHANGED: Apply discount unconditionally based on booking_discount
                 if booking_discount == "within_60_days":
                     effective_points = math.floor(points * 0.7)  # 30% discount
                     discount_applied = True
@@ -837,6 +827,35 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
 
     return chart_df, compare_df_pivot, holiday_totals
 
+# Initialize session state
+if "debug_messages" not in st.session_state:
+    st.session_state.debug_messages = []
+if "data_cache" not in st.session_state:
+    st.session_state.data_cache = {}
+if "allow_renter_modifications" not in st.session_state:
+    st.session_state.allow_renter_modifications = False
+# CHANGED: Initialize session state for selections
+if "selected_resort" not in st.session_state:
+    st.session_state.selected_resort = random.choice(data["resorts_list"])
+    st.session_state.debug_messages.append(f"Initialized selected_resort: {st.session_state.selected_resort}")
+if "selected_checkin_date" not in st.session_state:
+    current_date = datetime.now().date()
+    max_checkin_date = datetime(2026, 12, 24).date()
+    days_range = (max_checkin_date - current_date).days
+    random_days = random.randint(0, days_range)
+    st.session_state.selected_checkin_date = current_date + timedelta(days=random_days)
+    st.session_state.debug_messages.append(f"Initialized selected_checkin_date: {st.session_state.selected_checkin_date}")
+if "selected_room_type" not in st.session_state or "room_types" not in st.session_state:
+    sample_entry, display_to_internal = generate_data(st.session_state.selected_resort, st.session_state.selected_checkin_date)
+    room_types = sorted(
+        [k for k in sample_entry if k not in ["HolidayWeek", "HolidayWeekStart", "holiday_name", "holiday_start", "holiday_end"]]
+    )
+    st.session_state.room_types = room_types
+    st.session_state.display_to_internal = display_to_internal
+    st.session_state.selected_room_type = random.choice(room_types) if room_types else None
+    st.session_state.debug_messages.append(f"Initialized room_types: {room_types}, selected_room_type: {st.session_state.selected_room_type}")
+st.session_state.debug_messages.append("Session state initialization completed after function definitions")
+
 # Main UI
 try:
     user_mode = st.sidebar.selectbox("User Mode", options=["Renter", "Owner"], index=0)
@@ -885,19 +904,37 @@ try:
             - If no cost components are selected, only points are displayed
             """)
 
-    current_date = datetime.now().date()
-    max_checkin_date = datetime(2026, 12, 24).date()
-    days_range = (max_checkin_date - current_date).days
-    random_days = random.randint(0, days_range)
-    default_checkin_date = current_date + timedelta(days=random_days)
-    st.session_state.debug_messages.append(f"Randomized default check-in date: {default_checkin_date}")
+    # CHANGED: Add Randomize button
+    if st.button("Randomize"):
+        current_date = datetime.now().date()
+        max_checkin_date = datetime(2026, 12, 24).date()
+        days_range = (max_checkin_date - current_date).days
+        random_days = random.randint(0, days_range)
+        st.session_state.selected_checkin_date = current_date + timedelta(days=random_days)
+        st.session_state.selected_resort = random.choice(data["resorts_list"])
+        sample_entry, display_to_internal = generate_data(st.session_state.selected_resort, st.session_state.selected_checkin_date)
+        room_types = sorted(
+            [k for k in sample_entry if k not in ["HolidayWeek", "HolidayWeekStart", "holiday_name", "holiday_start", "holiday_end"]]
+        )
+        st.session_state.room_types = room_types
+        st.session_state.display_to_internal = display_to_internal
+        st.session_state.selected_room_type = random.choice(room_types) if room_types else None
+        st.session_state.debug_messages.append(
+            f"Randomized selections: resort={st.session_state.selected_resort}, "
+            f"checkin_date={st.session_state.selected_checkin_date}, room_type={st.session_state.selected_room_type}"
+        )
 
+    # CHANGED: Use session state for persistent selections
     checkin_date = st.date_input(
         "Check-in Date",
         min_value=datetime(2025, 1, 3).date(),
-        max_value=max_checkin_date,
-        value=default_checkin_date
+        max_value=datetime(2026, 12, 24).date(),
+        value=st.session_state.selected_checkin_date,
+        key="checkin_date"
     )
+    st.session_state.selected_checkin_date = checkin_date
+    st.session_state.debug_messages.append(f"Updated selected_checkin_date: {checkin_date}")
+
     num_nights = st.number_input(
         "Number of Nights",
         min_value=1,
@@ -980,64 +1017,40 @@ try:
     discount_multiplier = 1 - (discount_percent / 100)
     cost_of_capital = cost_of_capital_percent / 100
 
-    default_resort = random.choice(data["resorts_list"])
-    st.session_state.debug_messages.append(f"Randomized default resort: {default_resort}")
+    # CHANGED: Update room types if resort changes
     resort = st.selectbox(
         "Select Resort",
         options=data["resorts_list"],
-        index=data["resorts_list"].index(default_resort)
+        index=data["resorts_list"].index(st.session_state.selected_resort) if st.session_state.selected_resort in data["resorts_list"] else 0,
+        key="resort_select"
     )
-
-    year_select = str(checkin_date.year)
-
-    if (
-        "last_resort" not in st.session_state
-        or st.session_state.last_resort != resort
-        or "last_year" not in st.session_state
-        or st.session_state.last_year != year_select
-    ):
-        st.session_state.data_cache.clear()
-        if "room_types" in st.session_state:
-            del st.session_state.room_types
-        if "display_to_internal" in st.session_state:
-            del st.session_state.display_to_internal
-        st.session_state.last_resort = resort
-        st.session_state.last_year = year_select
-        st.session_state.debug_messages.append(
-            f"Cleared cache and room data due to resort ({resort}) or year ({year_select}) change"
-        )
-
-    if "room_types" not in st.session_state:
-        sample_date = checkin_date
-        st.session_state.debug_messages.append(f"Generating room types for {resort} on {sample_date}")
-        sample_entry, display_to_internal = generate_data(resort, sample_date)
+    if resort != st.session_state.selected_resort:
+        st.session_state.selected_resort = resort
+        sample_entry, display_to_internal = generate_data(resort, checkin_date)
         room_types = sorted(
-            [
-                k
-                for k in sample_entry
-                if k not in ["HolidayWeek", "HolidayWeekStart", "holiday_name", "holiday_start", "holiday_end"]
-            ]
+            [k for k in sample_entry if k not in ["HolidayWeek", "HolidayWeekStart", "holiday_name", "holiday_start", "holiday_end"]]
         )
-        if not room_types:
-            st.error(f"No room types found for {resort}. Please ensure reference_points data is available.")
-            st.session_state.debug_messages.append(f"No room types for {resort}")
-            st.stop()
         st.session_state.room_types = room_types
         st.session_state.display_to_internal = display_to_internal
-        st.session_state.debug_messages.append(f"Room types for {resort}: {room_types}")
+        st.session_state.selected_room_type = random.choice(room_types) if room_types else None
+        st.session_state.data_cache.clear()
+        st.session_state.debug_messages.append(
+            f"Resort changed to {resort}, updated room_types: {room_types}, selected_room_type: {st.session_state.selected_room_type}"
+        )
     else:
         room_types = st.session_state.room_types
         display_to_internal = st.session_state.display_to_internal
 
-    default_room_index = random.randint(0, len(room_types) - 1)
-    default_room_type = room_types[default_room_index]
-    st.session_state.debug_messages.append(f"Randomized default room type: {default_room_type}")
+    # CHANGED: Use session state for room type
     room_type = st.selectbox(
         "Select Room Type",
         options=room_types,
-        index=default_room_index,
+        index=room_types.index(st.session_state.selected_room_type) if st.session_state.selected_room_type in room_types else 0,
         key="room_type_select"
     )
+    st.session_state.selected_room_type = room_type
+    st.session_state.debug_messages.append(f"Updated selected_room_type: {room_type}")
+
     compare_rooms = st.multiselect(
         "Compare With Other Room Types",
         options=[r for r in room_types if r != room_type]
@@ -1074,7 +1087,6 @@ try:
             else:
                 st.error("No data available for the selected period.")
 
-            # CHANGED: Simplified discount status message since discounts are applied unconditionally
             if st.session_state.allow_renter_modifications:
                 if booking_discount == "within_60_days" and discount_applied:
                     st.info(f"30% discount on points (Presidential level) applied to {len(discounted_days)} day(s): {', '.join(discounted_days)}")
@@ -1102,7 +1114,6 @@ try:
                 all_rooms = [room_type] + compare_rooms
                 chart_df, compare_df_pivot, holiday_totals, discount_applied, discounted_days = compare_room_types_renter(resort, all_rooms, checkin_date, adjusted_nights, rate_per_point, booking_discount)
 
-                # CHANGED: Simplified discount status message for comparison
                 if st.session_state.allow_renter_modifications:
                     if booking_discount == "within_60_days" and discount_applied:
                         st.info(f"30% discount on points (Presidential level) applied to {len(discounted_days)} day(s) in comparison: {', '.join(discounted_days)}")
@@ -1249,7 +1260,7 @@ try:
                 all_rooms = [room_type] + compare_rooms
                 chart_df, compare_df_pivot, holiday_totals = compare_room_types_owner(
                     resort, all_rooms, checkin_date, adjusted_nights, discount_multiplier,
-                    discount_percent, ap_display_room_types, year_select, rate_per_point,
+                    discount_percent, ap_display_room_types, checkin_date.year, rate_per_point,
                     capital_cost_per_point, cost_of_capital, useful_life, salvage_value,
                     include_maintenance, include_capital, include_depreciation
                 )
@@ -1366,7 +1377,7 @@ try:
 
     # Display Gantt chart for seasons and holidays
     st.subheader(f"Seasons and Holidays for {resort}")
-    gantt_fig = create_gantt_chart(resort, year_select)
+    gantt_fig = create_gantt_chart(resort, str(checkin_date.year))
     st.plotly_chart(gantt_fig, use_container_width=True)
 
 except Exception as e:
