@@ -834,7 +834,6 @@ if "data_cache" not in st.session_state:
     st.session_state.data_cache = {}
 if "allow_renter_modifications" not in st.session_state:
     st.session_state.allow_renter_modifications = False
-# CHANGED: Initialize session state for selections
 if "selected_resort" not in st.session_state:
     st.session_state.selected_resort = random.choice(data["resorts_list"])
     st.session_state.debug_messages.append(f"Initialized selected_resort: {st.session_state.selected_resort}")
@@ -904,27 +903,52 @@ try:
             - If no cost components are selected, only points are displayed
             """)
 
-    # CHANGED: Add Randomize button
+    # Randomize button with explicit state updates
     if st.button("Randomize"):
+        st.session_state.debug_messages.append("Randomize button clicked")
+        # Randomize resort
+        new_resort = random.choice(data["resorts_list"])
+        st.session_state.selected_resort = new_resort
+        # Update resort widget state
+        st.session_state.resort_select = new_resort
+        st.session_state.debug_messages.append(f"Randomized resort: {new_resort}")
+
+        # Randomize check-in date
         current_date = datetime.now().date()
         max_checkin_date = datetime(2026, 12, 24).date()
         days_range = (max_checkin_date - current_date).days
         random_days = random.randint(0, days_range)
-        st.session_state.selected_checkin_date = current_date + timedelta(days=random_days)
-        st.session_state.selected_resort = random.choice(data["resorts_list"])
-        sample_entry, display_to_internal = generate_data(st.session_state.selected_resort, st.session_state.selected_checkin_date)
-        room_types = sorted(
+        new_checkin_date = current_date + timedelta(days=random_days)
+        st.session_state.selected_checkin_date = new_checkin_date
+        # Update date_input widget state
+        st.session_state.checkin_date = new_checkin_date
+        st.session_state.debug_messages.append(f"Randomized check-in date: {new_checkin_date}")
+
+        # Clear cache to ensure fresh data
+        st.session_state.data_cache.clear()
+        st.session_state.debug_messages.append("Cleared data_cache for randomization")
+
+        # Update room types based on new resort and date
+        sample_entry, display_to_internal = generate_data(new_resort, new_checkin_date)
+        new_room_types = sorted(
             [k for k in sample_entry if k not in ["HolidayWeek", "HolidayWeekStart", "holiday_name", "holiday_start", "holiday_end"]]
         )
-        st.session_state.room_types = room_types
+        st.session_state.room_types = new_room_types
         st.session_state.display_to_internal = display_to_internal
-        st.session_state.selected_room_type = random.choice(room_types) if room_types else None
-        st.session_state.debug_messages.append(
-            f"Randomized selections: resort={st.session_state.selected_resort}, "
-            f"checkin_date={st.session_state.selected_checkin_date}, room_type={st.session_state.selected_room_type}"
-        )
+        st.session_state.debug_messages.append(f"Updated room_types: {new_room_types}")
 
-    # CHANGED: Use session state for persistent selections
+        # Randomize room type
+        new_room_type = random.choice(new_room_types) if new_room_types else None
+        st.session_state.selected_room_type = new_room_type
+        # Update room_type_select widget state
+        st.session_state.room_type_select = new_room_type
+        st.session_state.debug_messages.append(f"Randomized room_type: {new_room_type}")
+
+        # Clear comparison selections to avoid conflicts
+        st.session_state.compare_rooms = []
+        st.session_state.debug_messages.append("Cleared compare_rooms for randomization")
+
+    # Use session state for persistent selections
     checkin_date = st.date_input(
         "Check-in Date",
         min_value=datetime(2025, 1, 3).date(),
@@ -1017,7 +1041,7 @@ try:
     discount_multiplier = 1 - (discount_percent / 100)
     cost_of_capital = cost_of_capital_percent / 100
 
-    # CHANGED: Update room types if resort changes
+    # Update room types if resort changes
     resort = st.selectbox(
         "Select Resort",
         options=data["resorts_list"],
@@ -1026,6 +1050,7 @@ try:
     )
     if resort != st.session_state.selected_resort:
         st.session_state.selected_resort = resort
+        st.session_state.data_cache.clear()
         sample_entry, display_to_internal = generate_data(resort, checkin_date)
         room_types = sorted(
             [k for k in sample_entry if k not in ["HolidayWeek", "HolidayWeekStart", "holiday_name", "holiday_start", "holiday_end"]]
@@ -1033,7 +1058,9 @@ try:
         st.session_state.room_types = room_types
         st.session_state.display_to_internal = display_to_internal
         st.session_state.selected_room_type = random.choice(room_types) if room_types else None
-        st.session_state.data_cache.clear()
+        st.session_state.resort_select = resort
+        st.session_state.room_type_select = st.session_state.selected_room_type
+        st.session_state.compare_rooms = []
         st.session_state.debug_messages.append(
             f"Resort changed to {resort}, updated room_types: {room_types}, selected_room_type: {st.session_state.selected_room_type}"
         )
@@ -1041,7 +1068,7 @@ try:
         room_types = st.session_state.room_types
         display_to_internal = st.session_state.display_to_internal
 
-    # CHANGED: Use session state for room type
+    # Use session state for room type
     room_type = st.selectbox(
         "Select Room Type",
         options=room_types,
@@ -1053,7 +1080,8 @@ try:
 
     compare_rooms = st.multiselect(
         "Compare With Other Room Types",
-        options=[r for r in room_types if r != room_type]
+        options=[r for r in room_types if r != room_type],
+        key="compare_rooms"
     )
 
     original_checkin_date = checkin_date
