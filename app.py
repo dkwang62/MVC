@@ -1073,8 +1073,6 @@ try:
 
     if compare_rooms:
         if user_mode == "Renter":
-            st.subheader(f"{resort} Room Type Comparison")
-            st.info("Note: Non-holiday weeks are compared day-by-day; holiday weeks are compared as total rent for the week.")
             all_rooms = [room_type] + compare_rooms
             chart_df, compare_df_pivot, holiday_totals, discount_applied, discounted_days = compare_room_types_renter(resort, all_rooms, checkin_date, adjusted_nights, rate_per_point, booking_discount)
 
