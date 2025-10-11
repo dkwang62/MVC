@@ -1022,7 +1022,7 @@ try:
             if not breakdown.empty:
                 csv_data = breakdown.to_csv(index=False).encode('utf-8')
                 st.download_button(
-                    label="Download Breakdown as CSV",
+                    label="Download Breakdown for Excel",
                     data=csv_data,
                     file_name=f"{resort}_stay_breakdown.csv",
                     mime="text/csv"
@@ -1065,7 +1065,7 @@ try:
             if not breakdown.empty:
                 csv_data = breakdown.to_csv(index=False).encode('utf-8')
                 st.download_button(
-                    label="Download Breakdown as CSV",
+                    label="Download Breakdown for Excel",
                     data=csv_data,
                     file_name=f"{resort}_stay_breakdown.csv",
                     mime="text/csv"
@@ -1097,7 +1097,7 @@ try:
 
             compare_csv = compare_df_pivot.to_csv(index=False).encode('utf-8')
             st.download_button(
-                label="Download Room Comparison as CSV",
+                label="Download Room Comparison for Excel",
                 data=compare_csv,
                 file_name=f"{resort}_room_comparison.csv",
                 mime="text/csv"
@@ -1206,7 +1206,7 @@ try:
 
             compare_csv = compare_df_pivot.to_csv(index=False).encode('utf-8')
             st.download_button(
-                label="Download Room Comparison as CSV",
+                label="Download Room Comparison for Excel",
                 data=compare_csv,
                 file_name=f"{resort}_room_comparison.csv",
                 mime="text/csv"
