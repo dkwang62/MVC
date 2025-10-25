@@ -763,7 +763,7 @@ try:
         "Check-in Date",
         min_value=datetime(2025, 1, 3).date(),
         max_value=datetime(2026, 12, 31).date(),
-        value=datetime(2025, 6, 12).date()
+        value=datetime(2026, 6, 12).date()
     )
     num_nights = st.number_input(
         "Number of Nights",
