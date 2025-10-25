@@ -169,8 +169,8 @@ def generate_data(resort, date, cache=None):
     holiday_start_date = None
     holiday_end_date = None
     prev_year = str(int(year) - 1)
+    is_year_end_holiday = False  # Initialize to avoid undefined variable
     # Check for year-end/beginning holiday assumption
-    is_year_end_holiday = False
     if (date.month == 12 and date.day >= 26) or (date.month == 1 and date.day <= 1):
         holiday_start = datetime.strptime(f"{prev_year}-12-26", "%Y-%m-%d").date()
         holiday_end = datetime.strptime(f"{year}-01-01", "%Y-%m-%d").date()
@@ -598,11 +598,8 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
                             holiday_names[d] = h_name
         except (IndexError, ValueError):
             pass
-    total_points_by_room = {room: 0 for room in room_types}
     total_cost_by_room = {room: 0 for room in room_types}
     holiday_totals = {room: defaultdict(dict) for room in room_types}
-    # Determine display mode based on cost selections
-    display_mode = "points" if not (include_maintenance or include_capital or include_depreciation) else "costs"
     for date in all_dates:
         date_str = date.strftime("%Y-%m-%d")
         day_of_week = date.strftime("%a")
@@ -616,13 +613,17 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
                 internal_room = get_internal_room_key(room)
                 points = entry.get(room, 0)
                 discounted_points = math.floor(points * discount_multiplier)
+                maintenance_cost = math.ceil(discounted_points * rate_per_point) if include_maintenance else 0
+                capital_cost = math.ceil(discounted_points * capital_cost_per_point * cost_of_capital) if include_capital else 0
+                depreciation_cost = math.ceil(discounted_points * depreciation_cost_per_point) if include_depreciation else 0
+                total_day_cost = maintenance_cost + capital_cost + depreciation_cost
                 if is_holiday_date:
                     if is_holiday_start:
                         if holiday_name not in holiday_totals[room]:
                             h_start = min(h for h, _ in holiday_ranges if holiday_names.get(date) == holiday_name)
                             h_end = max(e for _, e in holiday_ranges if holiday_names.get(date) == holiday_name)
                             holiday_totals[room][holiday_name] = {
-                                "points": discounted_points,
+                                "total_cost": total_day_cost,
                                 "start": h_start,
                                 "end": h_end
                             }
@@ -631,81 +632,54 @@ def compare_room_types_owner(resort, room_types, checkin_date, num_nights, disco
                         row = {
                             "Date": f"{holiday_name} ({start_str} - {end_str})",
                             "Room Type": room,
-                            "Points": discounted_points
+                            "Total Cost": f"${total_day_cost}" if total_day_cost > 0 else "$0"
                         }
-                        if display_mode == "costs":
-                            maintenance_cost = math.ceil(discounted_points * rate_per_point) if include_maintenance else 0
-                            capital_cost = math.ceil(discounted_points * capital_cost_per_point * cost_of_capital) if include_capital else 0
-                            depreciation_cost = math.ceil(discounted_points * depreciation_cost_per_point) if include_depreciation else 0
-                            total_holiday_cost = maintenance_cost + capital_cost + depreciation_cost
-                            if include_maintenance:
-                                row["Maintenance"] = f"${maintenance_cost}"
-                            if include_capital:
-                                row["Capital Cost"] = f"${capital_cost}"
-                            if include_depreciation:
-                                row["Depreciation"] = f"${depreciation_cost}"
-                            if total_holiday_cost > 0:
-                                row["Total Cost"] = f"${total_holiday_cost}"
                         compare_data.append(row)
                     continue
                 else:
                     row = {
                         "Date": date_str,
                         "Room Type": room,
-                        "Points": discounted_points
+                        "Total Cost": f"${total_day_cost}" if total_day_cost > 0 else "$0"
                     }
-                    if display_mode == "costs":
-                        maintenance_cost = math.ceil(discounted_points * rate_per_point) if include_maintenance else 0
-                        capital_cost = math.ceil(discounted_points * capital_cost_per_point * cost_of_capital) if include_capital else 0
-                        depreciation_cost = math.ceil(discounted_points * depreciation_cost_per_point) if include_depreciation else 0
-                        total_day_cost = maintenance_cost + capital_cost + depreciation_cost
-                        if include_maintenance:
-                            row["Maintenance"] = f"${maintenance_cost}"
-                        if include_capital:
-                            row["Capital Cost"] = f"${capital_cost}"
-                        if include_depreciation:
-                            row["Depreciation"] = f"${depreciation_cost}"
-                        if total_day_cost > 0:
-                            row["Total Cost"] = f"${total_day_cost}"
-                            total_cost_by_room[room] += total_day_cost
                     compare_data.append(row)
-                    total_points_by_room[room] += discounted_points
+                    total_cost_by_room[room] += total_day_cost
                 chart_row = {
                     "Date": date,
                     "DateStr": date_str,
                     "Day": day_of_week,
                     "Room Type": room,
-                    "Points": discounted_points,
+                    "TotalCostValue": total_day_cost,
                     "Holiday": entry.get("holiday_name", "No")
                 }
-                if display_mode == "costs":
-                    maintenance_cost = math.ceil(discounted_points * rate_per_point) if include_maintenance else 0
-                    capital_cost = math.ceil(discounted_points * capital_cost_per_point * cost_of_capital) if include_capital else 0
-                    depreciation_cost = math.ceil(discounted_points * depreciation_cost_per_point) if include_depreciation else 0
-                    total_day_cost = maintenance_cost + capital_cost + depreciation_cost
-                    if total_day_cost > 0:
-                        chart_row["Total Cost"] = f"${total_day_cost}"
-                        chart_row["TotalCostValue"] = total_day_cost
                 chart_data.append(chart_row)
         except Exception:
             continue
-    total_points_row = {"Date": "Total Points (Non-Holiday)"}
+    total_cost_row = {"Date": "Total Cost (Non-Holiday)"}
     for room in room_types:
-        total_points_row[room] = total_points_by_room[room]
-    compare_data.append(total_points_row)
-    if display_mode == "costs":
-        total_cost_row = {"Date": "Total Cost (Non-Holiday)"}
-        for room in room_types:
-            total_cost_row[room] = f"${total_cost_by_room[room]}" if total_cost_by_room[room] > 0 else "$0"
-        compare_data.append(total_cost_row)
+        total_cost_row[room] = f"${total_cost_by_room[room]}" if total_cost_by_room[room] > 0 else "$0"
+    compare_data.append(total_cost_row)
     compare_df = pd.DataFrame(compare_data)
     compare_df_pivot = compare_df.pivot_table(
         index="Date",
         columns="Room Type",
-        values=["Points"] if display_mode == "points" else ["Points", "Maintenance", "Capital Cost", "Depreciation", "Total Cost"],
+        values="Total Cost",
         aggfunc="first"
     ).reset_index()
-    compare_df_pivot.columns = ['Date'] + [f"{col[1]} {col[0]}" for col in compare_df_pivot.columns[1:]]
+    compare_df_pivot = compare_df_pivot[['Date'] + [rt for rt in room_types if rt in compare_df_pivot.columns]]
+    holiday_data = []
+    for room in room_types:
+        for holiday_name, totals in holiday_totals[room].items():
+            if totals["total_cost"] > 0:
+                holiday_data.append({
+                    "Holiday": holiday_name,
+                    "Room Type": room,
+                    "Total Cost": f"${totals['total_cost']}",
+                    "TotalCostValue": totals["total_cost"],
+                    "Start": totals["start"],
+                    "End": totals["end"]
+                })
+    holiday_df = pd.DataFrame(holiday_data)
     chart_df = pd.DataFrame(chart_data)
     return chart_df, compare_df_pivot, holiday_totals
 
@@ -821,7 +795,7 @@ try:
                 elif rate_option == "Booked within 60 days":
                     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
                     booking_discount = "within_60_days"
-                elif rate_option == "Booked within 30 days":
+                elif rate_option == "within_30_days":
                     rate_per_point = 0.81 if checkin_date.year == 2025 else 0.86
                     booking_discount = "within_30_days"
                 else:
@@ -1043,11 +1017,11 @@ try:
                             barmode="group",
                             labels={"RentValue": "Rent ($)", "Day": "Day of Week"},
                             height=600,
-                            text="RentValue",  # Use RentValue column for text
+                            text="RentValue",
                             text_auto=True,
                             category_orders={"Day": day_order}
                         )
-                        fig.update_traces(texttemplate="$%{text:.0f}", textposition="auto")  # Format as dollar amount
+                        fig.update_traces(texttemplate="$%{text:.0f}", textposition="auto")
                         fig.update_xaxes(
                             ticktext=day_order,
                             tickvals=[0, 1, 2, 3, 4, 5, 6],
@@ -1072,13 +1046,12 @@ try:
                             y="RentValue",
                             color="Room Type",
                             barmode="group",
-                            # title=title,
                             labels={"RentValue": "Rent ($)", "Holiday": "Holiday Week"},
                             height=600,
-                            text="RentValue",  # Use RentValue column for text
+                            text="RentValue",
                             text_auto=True
                         )
-                        fig.update_traces(texttemplate="$%{text:.0f}", textposition="auto")  # Format as dollar amount
+                        fig.update_traces(texttemplate="$%{text:.0f}", textposition="auto")
                         fig.update_layout(
                             legend_title_text="Room Type",
                             bargap=0.2,
@@ -1093,18 +1066,8 @@ try:
                     capital_cost_per_point, cost_of_capital, useful_life, salvage_value,
                     include_maintenance, include_capital, include_depreciation
                 )
-                display_columns = ["Date"] + [col for col in compare_df_pivot.columns if "Points" in col]
-                if include_maintenance or include_capital or include_depreciation:
-                    if include_maintenance:
-                        display_columns.extend([col for col in compare_df_pivot.columns if "Maintenance" in col])
-                    if include_capital:
-                        display_columns.extend([col for col in compare_df_pivot.columns if "Capital Cost" in col])
-                    if include_depreciation:
-                        display_columns.extend([col for col in compare_df_pivot.columns if "Depreciation" in col])
-                    if include_maintenance or include_capital or include_depreciation:
-                        display_columns.extend([col for col in compare_df_pivot.columns if "Total Cost" in col])
-                st.write(f"### {resort} {'Points' if not (include_maintenance or include_capital or include_depreciation) else 'Room Type Costs'} Comparison")
-                st.dataframe(compare_df_pivot[display_columns], use_container_width=True)
+                st.write(f"### {resort} Room Type Total Cost Comparison")
+                st.dataframe(compare_df_pivot, use_container_width=True)
                 compare_csv = compare_df_pivot.to_csv(index=False).encode('utf-8')
                 st.download_button(
                     label="Download Room Comparison for Excel",
@@ -1117,12 +1080,12 @@ try:
                     holiday_data = []
                     for room in all_rooms:
                         for holiday_name, totals in holiday_totals[room].items():
-                            if totals["points"] > 0:
+                            if totals["total_cost"] > 0:
                                 holiday_data.append({
                                     "Holiday": holiday_name,
                                     "Room Type": room,
-                                    "Points": totals["points"],
-                                    "PointsValue": totals["points"],
+                                    "Total Cost": f"${totals['total_cost']}",
+                                    "TotalCostValue": totals["total_cost"],
                                     "Start": totals["start"],
                                     "End": totals["end"]
                                 })
@@ -1136,16 +1099,16 @@ try:
                         fig = px.bar(
                             non_holiday_df,
                             x="Day",
-                            y="Points",
+                            y="TotalCostValue",
                             color="Room Type",
                             barmode="group",
-                            labels={"Points": "Points", "Day": "Day of Week"},
+                            labels={"TotalCostValue": "Total Cost ($)", "Day": "Day of Week"},
                             height=600,
-                            text="Points",
+                            text="TotalCostValue",
                             text_auto=True,
                             category_orders={"Day": day_order}
                         )
-                        fig.update_traces(texttemplate="%{text}", textposition="auto")
+                        fig.update_traces(texttemplate="$%{text:.0f}", textposition="auto")
                         fig.update_xaxes(
                             ticktext=day_order,
                             tickvals=[0, 1, 2, 3, 4, 5, 6],
@@ -1162,27 +1125,26 @@ try:
                         end_date = holiday_df["End"].max()
                         start_date_str = start_date.strftime("%b %d")
                         end_date_str = end_date.strftime("%b %d, %Y")
-                        title = f"{resort} Room Type Comparison (Holiday Weeks, {start_date_str} - {end_date_str})"
+                        title = f"{resort} Room Type Total Cost Comparison (Holiday Weeks, {start_date_str} - {end_date_str})"
                         st.subheader(title)
                         fig = px.bar(
                             holiday_df,
                             x="Holiday",
-                            y="PointsValue",
+                            y="TotalCostValue",
                             color="Room Type",
                             barmode="group",
-                            labels={"PointsValue": "Points", "Holiday": "Holiday Week"},  # Fixed by adding missing parenthesis
+                            labels={"TotalCostValue": "Total Cost ($)", "Holiday": "Holiday Week"},
                             height=600,
-                            text="Points",
+                            text="TotalCostValue",
                             text_auto=True
                         )
-                        fig.update_traces(texttemplate="%{text}", textposition="auto")
+                        fig.update_traces(texttemplate="$%{text:.0f}", textposition="auto")
                         fig.update_layout(
                             legend_title_text="Room Type",
                             bargap=0.2,
                             bargroupgap=0.1
                         )
                         st.plotly_chart(fig, use_container_width=True)
-
         # Display Gantt chart at the bottom of all content
         # st.subheader(f"{resort} Seasons and Holidays ({year_select})")
         st.plotly_chart(gantt_fig, use_container_width=True)
