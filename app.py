@@ -81,6 +81,7 @@ def generate_data(resort: str, date: datetime.date):
     h_start = h_end = None
     is_h_start = False
 
+    # New Year's
     if (date.month == 12 and date.day >= 26) or (date.month == 1 and date.day <= 1):
         prev = str(int(year) - 1)
         start = datetime.strptime(f"{prev}-12-26", "%Y-%m-%d").date()
@@ -88,6 +89,7 @@ def generate_data(resort: str, date: datetime.date):
         if start <= date <= end:
             holiday, h_start, h_end, is_h_start = "New Year's Eve/Day", start, end, date == start
 
+    # Holiday Weeks
     if not holiday and year in HOLIDAY_WEEKS.get(resort, {}):
         for name, raw in HOLIDAY_WEEKS[resort][year].items():
             if isinstance(raw, str) and raw.startswith("global:"):
@@ -99,6 +101,7 @@ def generate_data(resort: str, date: datetime.date):
                     holiday, h_start, h_end, is_h_start = name, s, e, date == s
                     break
 
+    # Seasons
     if not holiday and year in SEASON_BLOCKS.get(resort, {}):
         for s_name, ranges in SEASON_BLOCKS[resort][year].items():
             for rs, re in ranges:
@@ -108,6 +111,7 @@ def generate_data(resort: str, date: datetime.date):
             if season != "Default Season":
                 break
 
+    # Points
     if holiday:
         src = REF_POINTS.get(resort, {}).get("Holiday Week", {}).get(holiday, {})
         for internal_key, pts in src.items():
@@ -138,7 +142,7 @@ def generate_data(resort: str, date: datetime.date):
     return entry, disp_to_int
 
 # ----------------------------------------------------------------------
-# GANTT CHART — FULLY FIXED (ONLY THIS FUNCTION CHANGED)
+# GANTT CHART — FULLY FIXED
 # ----------------------------------------------------------------------
 def gantt_chart(resort: str, year: int):
     rows = []
@@ -224,7 +228,7 @@ def gantt_chart(resort: str, year: int):
     fig.update_yaxes(autorange="reversed")
     fig.update_xaxes(tickformat="%d %b %Y")
 
-    # CORRECT HOVER: base = Start, x = End
+    # CORRECT HOVER
     fig.update_traces(
         hovertemplate=(
             "<b>%{y}</b><br>"
@@ -234,7 +238,6 @@ def gantt_chart(resort: str, year: int):
     )
 
     fig.update_layout(showlegend=True, xaxis_title="Date", yaxis_title="Period")
-
     return fig
 
 # ----------------------------------------------------------------------
@@ -462,9 +465,94 @@ def compare_owner(resort, rooms, checkin, nights, disc_mul,
     return pivot, chart_df, holiday_df
 
 # ----------------------------------------------------------------------
-# Adjust holiday range
+# Adjust holiday range — FIXED
 # ----------------------------------------------------------------------
 def adjust_date_range(resort, start, nights):
     end = start + timedelta(days=nights-1)
     ranges = []
-    if resort in data.get("holiday_weeks", {}
+    if resort in data.get("holiday_weeks", {}):  # ← Fixed: added missing )
+        for name, raw in data["holiday_weeks"][resort].get(str(start.year), {}).items():
+            if isinstance(raw, str) and raw.startswith("global:"):
+                raw = resolve_global(str(start.year), raw.split(":",1)[1])
+            if len(raw) >= 2:
+                s = datetime.strptime(raw[0], "%Y-%m-%d").date()
+                e = datetime.strptime(raw[1], "%Y-%m-%d").date()
+                if s <= end and e >= start:
+                    ranges.append((s, e, name))
+    if ranges:
+        s0 = min(s for s, _, _ in ranges)
+        e0 = max(e for _, e, _ in ranges)
+        return min(start, s0), (max(end, e0) - min(start, s0)).days + 1, True
+    return start, nights, False
+
+# ----------------------------------------------------------------------
+# UI STARTS HERE
+# ----------------------------------------------------------------------
+user_mode = st.sidebar.selectbox("User Mode", ["Renter", "Owner"], index=0, key="mode")
+st.title(f"Marriott Vacation Club {'Rent' if user_mode=='Renter' else 'Cost'} Calculator")
+
+checkin = st.date_input(
+    "Check-in Date",
+    min_value=datetime(2025,1,3).date(),
+    max_value=datetime(2026,12,31).date(),
+    value=datetime(2026,6,12).date()
+)
+st.markdown(f"**Selected Check-in:** `{fmt_date(checkin)}`")
+nights = st.number_input("Number of Nights", 1, 30, 7)
+
+maintenance_rates = data.get("maintenance_rates", {})
+default_rate = maintenance_rates.get(str(checkin.year), 0.86)
+
+with st.expander("How " + ("Rent" if user_mode=="Renter" else "Cost") + " Is Calculated"):
+    if user_mode == "Renter":
+        st.markdown(f"""
+        - Authored by Desmond Kwang https://www.facebook.com/dkwang62
+        - Rental Rate per Point is based on MVC Abound maintenance fees
+        - Default: **${default_rate:.2f}/point** for {checkin.year} stays (from data.json)
+        - **Booked within 60 days**: 30% discount on points required (Presidential)
+        - **Booked within 30 days**: 25% discount on points required (Executive)
+        - **Rent = Full Points × Rate** (discount does NOT reduce rent)
+        """)
+    else:
+        st.markdown("""
+        - Authored by Desmond Kwang https://www.facebook.com/dkwang62
+        - Cost of capital = Points × Purchase Price per Point × Cost of Capital %
+        - Depreciation = Points × [(Purchase Price – Salvage) ÷ Useful Life]
+        - Total cost = Maintenance + Capital Cost + Depreciation
+        """)
+
+rate_per_point = default_rate
+discount_opt = None
+disc_mul = 1.0
+coc = 0.07
+cap_per_pt = 16.0
+life = 15
+salvage = 3.0
+inc_maint = inc_cap = inc_dep = True
+
+with st.sidebar:
+    st.header("Parameters")
+    if user_mode == "Owner":
+        cap_per_pt = st.number_input("Purchase Price per Point ($)", 0.0, step=0.1, value=16.0)
+        disc_lvl = st.selectbox("Last-Minute Discount",
+                                 [0, 25, 30],
+                                 format_func=lambda x: f"{x}% Discount ({['Ordinary','Executive','Presidential'][x//25]})")
+        disc_mul = 1 - disc_lvl/100
+        inc_maint = st.checkbox("Include Maintenance Cost", True)
+        if inc_maint:
+            rate_per_point = st.number_input("Maintenance Rate per Point ($)", 0.0, step=0.01, value=default_rate)
+        inc_cap = st.checkbox("Include Capital Cost", True)
+        if inc_cap:
+            coc = st.number_input("Cost of Capital (%)", 0.0, 100.0, 7.0, 0.1) / 100
+        inc_dep = st.checkbox("Include Depreciation Cost", True)
+        if inc_dep:
+            life = st.number_input("Useful Life (Years)", 1, value=15)
+            salvage = st.number_input("Salvage Value per Point ($)", 0.0, value=3.0, step=0.1)
+        st.caption(f"Cost based on {disc_lvl}% discount.")
+    else:
+        st.session_state.allow_renter_modifications = st.checkbox(
+            "More Options", st.session_state.allow_renter_modifications)
+        if st.session_state.allow_renter_modifications:
+            opt = st.radio("Rate Option",
+                           ["Based on Maintenance Rate", "Custom Rate",
+                           
