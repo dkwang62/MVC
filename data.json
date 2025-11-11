@@ -6093,108 +6093,102 @@
     "Pulse San Francisco": {
       "Low Season": {
         "Fri-Sat": {
-          "Doubles": 225,
-          "King": 225,
-          "King City": 250,
-          "2-Bedroom": 450
+          "Guest No-View": 400,
+          "Guest Courtyard": 475,
+          "Guest Urban": 425,
+          "Guest ConnectUrban": 850
         },
         "Sun-Thu": {
-          "Doubles": 175,
-          "King": 175,
-          "King City": 200,
-          "2-Bedroom": 350
+          "Guest No-View": 250,
+          "Guest Courtyard": 300,
+          "Guest Urban": 275,
+          "Guest ConnectUrban": 550
         }
       },
       "Mid Season": {
         "Fri-Sat": {
-          "Doubles": 275,
-          "King": 275,
-          "King City": 300,
-          "2-Bedroom": 550
+          "Guest No-View": 525,
+          "Guest Courtyard": 650,
+          "Guest Urban": 575,
+          "Guest ConnectUrban": 1150
         },
         "Sun-Thu": {
-          "Doubles": 200,
-          "King": 200,
-          "King City": 225,
-          "2-Bedroom": 4000
+          "Guest No-View": 300,
+          "Guest Courtyard": 375,
+          "Guest Urban": 350,
+          "Guest ConnectUrban": 700
         }
       },
       "High Season": {
         "Fri-Sat": {
-          "Doubles": 325,
-          "King": 325,
-          "King City": 350,
-          "2-Bedroom": 650
+          "Guest No-View": 625,
+          "Guest Courtyard": 750,
+          "Guest Urban": 675,
+          "Guest ConnectUrban": 1350
         },
         "Sun-Thu": {
-          "Doubles": 225,
-          "King": 225,
-          "King City": 250,
-          "2-Bedroom": 450
+          "Guest No-View": 350,
+          "Guest Courtyard": 450,
+          "Guest Urban": 400,
+          "Guest ConnectUrban": 800
         }
       },
       "Peak Season": {
         "Fri-Sat": {
-          "Doubles": 375,
-          "King": 375,
-          "King City": 425,
-          "2-Bedroom": 750
+          "Guest No-View": 775,
+          "Guest Courtyard": 900,
+          "Guest Urban": 825,
+          "Guest ConnectUrban": 1650
         },
         "Sun-Thu": {
-          "Doubles": 300,
-          "King": 300,
-          "King City": 325,
-          "2-Bedroom": 600
+          "Guest No-View": 450,
+          "Guest Courtyard": 550,
+          "Guest Urban": 500,
+          "Guest ConnectUrban": 1000
         }
       },
       "Holiday Week": {
         "Presidents Day": {
-          "Doubles": 1750,
-          "King": 1750,
-          "King City": 1925,
-          "2-Bedroom": 3500
-        },
-        "Memorial Day": {
-          "Doubles": 2025,
-          "King": 2025,
-          "King City": 2275,
-          "2-Bedroom": 4050
+          "Guest No-View": 2575,
+          "Guest Courtyard": 3175,
+          "Guest Urban": 2925,
+          "Guest ConnectUrban": 5850
         },
         "Independence Day": {
-          "Doubles": 2500,
-          "King": 2500,
-          "King City": 2775,
-          "2-Bedroom": 5000
-        },
-        "Labor Day": {
-          "Doubles": 2025,
-          "King": 2025,
-          "King City": 2275,
-          "2-Bedroom": 4050
+          "Guest No-View": 3000,
+          "Guest Courtyard": 3750,
+          "Guest Urban": 3350,
+          "Guest ConnectUrban": 6700
         },
         "Thanksgiving": {
-          "Doubles": 1750,
-          "King": 1750,
-          "King City": 1925,
-          "2-Bedroom": 3500
+          "Guest No-View": 2050,
+          "Guest Courtyard": 2450,
+          "Guest Urban": 2225,
+          "Guest ConnectUrban": 4450
         },
         "Thanksgiving 2": {
-          "Doubles": 1600,
-          "King": 1600,
-          "King City": 1775,
-          "2-Bedroom": 3200
+          "Guest No-View": 2550,
+          "Guest Courtyard": 3175,
+          "Guest Urban": 2900,
+          "Guest ConnectUrban": 5800
         },
         "Christmas": {
-          "Doubles": 2125,
-          "King": 2125,
-          "King City": 2400,
-          "2-Bedroom": 4250
+          "Guest No-View": 3575,
+          "Guest Courtyard": 4325,
+          "Guest Urban": 3925,
+          "Guest ConnectUrban": 7850
         },
         "New Year's Eve/Day": {
-          "Doubles": 2325,
-          "King": 2325,
-          "King City": 2600,
-          "2-Bedroom": 4650
+          "Guest No-View": 3800,
+          "Guest Courtyard": 4550,
+          "Guest Urban": 4150,
+          "Guest ConnectUrban": 8300
+        },
+        "Easter": {
+          "Guest ConnectUrban": 3000,
+          "Guest Courtyard": 3750,
+          "Guest No-View": 3350,
+          "Guest Urban": 6700
         }
       }
     }
