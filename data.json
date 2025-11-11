@@ -3100,8 +3100,22 @@
       }
     },
     "Pulse San Francisco": {
-      "2025": {},
-      "2026": {}
+      "2025": {
+        "Presidents Day": "global:Presidents Day",
+        "Independence Day": "global:Independence Day",
+        "Thanksgiving": "global:Thanksgiving",
+        "Thanksgiving 2": "global:Thanksgiving 2",
+        "Christmas": "global:Christmas",
+        "New Year's Eve/Day": "global:New Year's Eve/Day"
+      },
+      "2026": {
+        "Presidents Day": "global:Presidents Day",
+        "Independence Day": "global:Independence Day",
+        "Thanksgiving": "global:Thanksgiving",
+        "Thanksgiving 2": "global:Thanksgiving 2",
+        "Christmas": "global:Christmas",
+        "New Year's Eve/Day": "global:New Year's Eve/Day"
+      }
     }
   },
   "room_view_legend": {
@@ -6164,6 +6178,12 @@
           "Guest Urban": 3350,
           "Guest ConnectUrban": 6700
         },
+        "Easter": {
+          "Guest ConnectUrban": 3000,
+          "Guest Courtyard": 3750,
+          "Guest No-View": 3350,
+          "Guest Urban": 6700
+        },
         "Thanksgiving": {
           "Guest No-View": 2050,
           "Guest Courtyard": 2450,
@@ -6187,12 +6207,6 @@
           "Guest Courtyard": 4550,
           "Guest Urban": 4150,
           "Guest ConnectUrban": 8300
-        },
-        "Easter": {
-          "Guest ConnectUrban": 3000,
-          "Guest Courtyard": 3750,
-          "Guest No-View": 3350,
-          "Guest Urban": 6700
         }
       }
     }
