@@ -3102,6 +3102,7 @@
     "Pulse San Francisco": {
       "2025": {
         "Presidents Day": "global:Presidents Day",
+        "Easter": "global:Easter",
         "Independence Day": "global:Independence Day",
         "Thanksgiving": "global:Thanksgiving",
         "Thanksgiving 2": "global:Thanksgiving 2",
@@ -3110,6 +3111,7 @@
       },
       "2026": {
         "Presidents Day": "global:Presidents Day",
+        "Easter": "global:Easter",
         "Independence Day": "global:Independence Day",
         "Thanksgiving": "global:Thanksgiving",
         "Thanksgiving 2": "global:Thanksgiving 2",
@@ -6229,6 +6231,7 @@
     "Mayflower Washington",
     "Pulse New York",
     "Pulse San Diego",
+    "Pulse San Francisco",
     "Mountainside Utah",
     "Newport Coast",
     "Ocean Pointe",
@@ -6239,8 +6242,7 @@
     "Surfers Paradise",
     "Village Paris",
     "Waikoloa Ocean Club",
-    "Westin Ka'anapali",
-    "Pulse San Francisco"
+    "Westin Ka'anapali"
   ],
   "maintenance_rates": {
     "2025": 0.81,
