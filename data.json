@@ -2548,6 +2548,92 @@
           ]
         ]
       }
+    },
+    "Pulse San Francisco": {
+      "2025": {
+        "Low Season": [
+          [
+            "2025-01-03",
+            "2025-02-13"
+          ],
+          [
+            "2025-02-21",
+            "2025-03-06"
+          ],
+          [
+            "2025-12-05",
+            "2025-12-18"
+          ]
+        ],
+        "Mid Season": [
+          [
+            "2025-10-03",
+            "2025-11-20"
+          ]
+        ],
+        "High Season": [
+          [
+            "2025-03-07",
+            "2025-05-22"
+          ],
+          [
+            "2025-09-05",
+            "2025-10-02"
+          ]
+        ],
+        "Peak Season": [
+          [
+            "2025-05-30",
+            "2025-07-03"
+          ],
+          [
+            "2025-07-11",
+            "2025-08-28"
+          ]
+        ]
+      },
+      "2026": {
+        "Low Season": [
+          [
+            "2026-01-02",
+            "2026-02-12"
+          ],
+          [
+            "2026-02-20",
+            "2026-03-05"
+          ],
+          [
+            "2026-12-04",
+            "2026-12-17"
+          ]
+        ],
+        "Mid Season": [
+          [
+            "2026-10-02",
+            "2026-11-19"
+          ]
+        ],
+        "High Season": [
+          [
+            "2026-03-06",
+            "2026-05-21"
+          ],
+          [
+            "2026-09-11",
+            "2026-10-01"
+          ]
+        ],
+        "Peak Season": [
+          [
+            "2026-05-29",
+            "2026-07-02"
+          ],
+          [
+            "2026-07-10",
+            "2026-09-03"
+          ]
+        ]
+      }
     }
   },
   "holiday_weeks": {
@@ -3268,7 +3354,7 @@
           "AP_Studio_MA": 440,
           "AP_1BR_MA": 630,
           "AP_2BR_MA": 960,
-          "AP_2BR_MK": 1160,      
+          "AP_2BR_MK": 1160,
           "Studio MA": 360,
           "Studio MK": 430,
           "Studio PHMA": 360,
@@ -4516,7 +4602,7 @@
           "3-BDRM GV": 2450,
           "3-BDRM SF": 3350
         },
-        "New Year’s Eve/Day": {
+        "New Year\u2019s Eve/Day": {
           "Studio GV": 850,
           "Studio SF": 850,
           "2-BDRM GV": 1925,
@@ -4569,7 +4655,7 @@
           "2-BDRM": 1800,
           "3-BDRM": 2250
         },
-        "Mid–Term": {
+        "Mid\u2013Term": {
           "Studio": 1575,
           "2-BDRM": 3100,
           "3-BDRM": 3825
@@ -4579,7 +4665,7 @@
           "2-BDRM": 2925,
           "3-BDRM": 3600
         },
-        "New Year’s Eve/Day": {
+        "New Year\u2019s Eve/Day": {
           "Studio": 1750,
           "2-BDRM": 3325,
           "3-BDRM": 4050
@@ -4673,7 +4759,7 @@
           "2-BDRM": 2275,
           "3-BDRM": 2500
         },
-        "New Year’s Eve/Day": {
+        "New Year\u2019s Eve/Day": {
           "1-BDRM": 1700,
           "2-BDRM": 2275,
           "3-BDRM": 2500
@@ -6003,6 +6089,114 @@
           "3-BDRM OF": 7175
         }
       }
+    },
+    "Pulse San Francisco": {
+      "Low Season": {
+        "Fri-Sat": {
+          "Doubles": 225,
+          "King": 225,
+          "King City": 250,
+          "2-Bedroom": 450
+        },
+        "Sun-Thu": {
+          "Doubles": 175,
+          "King": 175,
+          "King City": 200,
+          "2-Bedroom": 350
+        }
+      },
+      "Mid Season": {
+        "Fri-Sat": {
+          "Doubles": 275,
+          "King": 275,
+          "King City": 300,
+          "2-Bedroom": 550
+        },
+        "Sun-Thu": {
+          "Doubles": 200,
+          "King": 200,
+          "King City": 225,
+          "2-Bedroom": 4000
+        }
+      },
+      "High Season": {
+        "Fri-Sat": {
+          "Doubles": 325,
+          "King": 325,
+          "King City": 350,
+          "2-Bedroom": 650
+        },
+        "Sun-Thu": {
+          "Doubles": 225,
+          "King": 225,
+          "King City": 250,
+          "2-Bedroom": 450
+        }
+      },
+      "Peak Season": {
+        "Fri-Sat": {
+          "Doubles": 375,
+          "King": 375,
+          "King City": 425,
+          "2-Bedroom": 750
+        },
+        "Sun-Thu": {
+          "Doubles": 300,
+          "King": 300,
+          "King City": 325,
+          "2-Bedroom": 600
+        }
+      },
+      "Holiday Week": {
+        "Presidents Day": {
+          "Doubles": 1750,
+          "King": 1750,
+          "King City": 1925,
+          "2-Bedroom": 3500
+        },
+        "Memorial Day": {
+          "Doubles": 2025,
+          "King": 2025,
+          "King City": 2275,
+          "2-Bedroom": 4050
+        },
+        "Independence Day": {
+          "Doubles": 2500,
+          "King": 2500,
+          "King City": 2775,
+          "2-Bedroom": 5000
+        },
+        "Labor Day": {
+          "Doubles": 2025,
+          "King": 2025,
+          "King City": 2275,
+          "2-Bedroom": 4050
+        },
+        "Thanksgiving": {
+          "Doubles": 1750,
+          "King": 1750,
+          "King City": 1925,
+          "2-Bedroom": 3500
+        },
+        "Thanksgiving 2": {
+          "Doubles": 1600,
+          "King": 1600,
+          "King City": 1775,
+          "2-Bedroom": 3200
+        },
+        "Christmas": {
+          "Doubles": 2125,
+          "King": 2125,
+          "King City": 2400,
+          "2-Bedroom": 4250
+        },
+        "New Year's Eve/Day": {
+          "Doubles": 2325,
+          "King": 2325,
+          "King City": 2600,
+          "2-Bedroom": 4650
+        }
+      }
     }
   },
   "resorts_list": [
@@ -6033,7 +6227,8 @@
     "Surfers Paradise",
     "Village Paris",
     "Waikoloa Ocean Club",
-    "Westin Ka'anapali"
+    "Westin Ka'anapali",
+    "Pulse San Francisco"
   ],
   "maintenance_rates": {
     "2025": 0.81,
@@ -6150,5 +6345,36 @@
         "2026-09-10"
       ]
     }
+  },
+  "point_costs": {
+    "Ko Olina Beach Club": {},
+    "Aruba Ocean Club": {},
+    "Aruba Surf Club": {},
+    "Bali Nusa Dua Gardens": {},
+    "Bali Nusa Dua Terrace": {},
+    "BeachPlace Towers": {},
+    "Canyon Villas Arizona": {},
+    "Crystal Shores": {},
+    "Desert Springs II": {},
+    "Grand Chateau Vegas": {},
+    "Grande Vista Orlando": {},
+    "Kauai Beach Club": {},
+    "Marbella Beach": {},
+    "Maui Ocean Club": {},
+    "Mayflower Washington": {},
+    "Pulse New York": {},
+    "Pulse San Diego": {},
+    "Mountainside Utah": {},
+    "Newport Coast": {},
+    "Ocean Pointe": {},
+    "Phuket Beach Club": {},
+    "Playa Andaluza": {},
+    "Shadow Ridge": {},
+    "Sheraton Kauai": {},
+    "Surfers Paradise": {},
+    "Village Paris": {},
+    "Waikoloa Ocean Club": {},
+    "Westin Ka'anapali": {},
+    "Pulse San Francisco": {}
   }
 }
