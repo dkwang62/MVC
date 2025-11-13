@@ -2680,6 +2680,108 @@
           ]
         ]
       }
+    },
+    "testing": {
+      "2025": {
+        "Low Season": [
+          [
+            "2025-01-03",
+            "2025-01-30"
+          ],
+          [
+            "2025-03-28",
+            "2025-04-17"
+          ],
+          [
+            "2025-04-25",
+            "2025-05-01"
+          ],
+          [
+            "2025-05-09",
+            "2025-06-05"
+          ],
+          [
+            "2025-08-29",
+            "2025-11-20"
+          ],
+          [
+            "2025-12-05",
+            "2025-12-18"
+          ]
+        ],
+        "High Season": [
+          [
+            "2025-01-31",
+            "2025-02-13"
+          ],
+          [
+            "2025-02-21",
+            "2025-03-27"
+          ],
+          [
+            "2025-06-06",
+            "2025-07-03"
+          ],
+          [
+            "2025-07-11",
+            "2025-08-07"
+          ],
+          [
+            "2025-08-15",
+            "2025-08-28"
+          ]
+        ]
+      },
+      "2026": {
+        "Low Season": [
+          [
+            "2026-01-02",
+            "2026-01-29"
+          ],
+          [
+            "2026-03-27",
+            "2026-04-02"
+          ],
+          [
+            "2026-04-10",
+            "2026-04-30"
+          ],
+          [
+            "2026-05-08",
+            "2026-06-04"
+          ],
+          [
+            "2026-08-28",
+            "2026-11-19"
+          ],
+          [
+            "2026-12-04",
+            "2026-12-17"
+          ]
+        ],
+        "High Season": [
+          [
+            "2026-01-30",
+            "2026-02-12"
+          ],
+          [
+            "2026-02-20",
+            "2026-03-26"
+          ],
+          [
+            "2026-06-05",
+            "2026-07-02"
+          ],
+          [
+            "2026-07-10",
+            "2026-08-13"
+          ],
+          [
+            "2026-08-21",
+            "2026-08-27"
+          ]
+        ]
+      }
     }
   },
   "holiday_weeks": {
@@ -3173,6 +3275,26 @@
       },
       "2026": {
         "Easter": "global:Easter",
+        "Christmas": "global:Christmas",
+        "New Year's Eve/Day": "global:New Year's Eve/Day"
+      }
+    },
+    "testing": {
+      "2025": {
+        "Presidents Day": "global:Presidents Day",
+        "Easter": "global:Easter",
+        "Independence Day": "global:Independence Day",
+        "Thanksgiving": "global:Thanksgiving",
+        "Thanksgiving 2": "global:Thanksgiving 2",
+        "Christmas": "global:Christmas",
+        "New Year's Eve/Day": "global:New Year's Eve/Day"
+      },
+      "2026": {
+        "Presidents Day": "global:Presidents Day",
+        "Easter": "global:Easter",
+        "Independence Day": "global:Independence Day",
+        "Thanksgiving": "global:Thanksgiving",
+        "Thanksgiving 2": "global:Thanksgiving 2",
         "Christmas": "global:Christmas",
         "New Year's Eve/Day": "global:New Year's Eve/Day"
       }
@@ -4680,7 +4802,7 @@
           "3-BDRM GV": 2450,
           "3-BDRM SF": 3350
         },
-        "New Year\u2019s Eve/Day": {
+        "New Year’s Eve/Day": {
           "Studio GV": 850,
           "Studio SF": 850,
           "2-BDRM GV": 1925,
@@ -4733,7 +4855,7 @@
           "2-BDRM": 1800,
           "3-BDRM": 2250
         },
-        "Mid\u2013Term": {
+        "Mid–Term": {
           "Studio": 1575,
           "2-BDRM": 3100,
           "3-BDRM": 3825
@@ -4743,7 +4865,7 @@
           "2-BDRM": 2925,
           "3-BDRM": 3600
         },
-        "New Year\u2019s Eve/Day": {
+        "New Year’s Eve/Day": {
           "Studio": 1750,
           "2-BDRM": 3325,
           "3-BDRM": 4050
@@ -4837,7 +4959,7 @@
           "2-BDRM": 2275,
           "3-BDRM": 2500
         },
-        "New Year\u2019s Eve/Day": {
+        "New Year’s Eve/Day": {
           "1-BDRM": 1700,
           "2-BDRM": 2275,
           "3-BDRM": 2500
@@ -6322,10 +6444,297 @@
           "2BR": 6570
         }
       }
+    },
+    "testing": {
+      "Low Season": {
+        "Fri-Sat": {
+          "Studio1": 340,
+          "Studio2": 360,
+          "Studio3": 340,
+          "Studio4": 475,
+          "1BR1": 575,
+          "1BR2": 625,
+          "1BR3": 850,
+          "2BR1": 775,
+          "2BR2": 900,
+          "2BR3": 775,
+          "2BR4": 1075,
+          "1BR5": 630,
+          "2BR5": 960,
+          "2BR6": 1160,
+          "Studio5": 440,
+          "3BR2": 1175,
+          "3BR1": 925,
+          "1BR4": 575
+        },
+        "Sun": {
+          "Studio1": 205,
+          "Studio2": 270,
+          "Studio3": 205,
+          "Studio4": 295,
+          "1BR1": 355,
+          "1BR2": 465,
+          "1BR3": 550,
+          "2BR1": 500,
+          "2BR2": 625,
+          "2BR3": 500,
+          "2BR4": 750,
+          "1BR5": 510,
+          "2BR5": 770,
+          "2BR6": 910,
+          "Studio5": 350,
+          "3BR2": 825,
+          "3BR1": 650,
+          "1BR4": 355
+        },
+        "Mon-Thu": {
+          "Studio1": 205,
+          "Studio2": 270,
+          "Studio3": 205,
+          "Studio4": 295,
+          "1BR1": 355,
+          "1BR2": 465,
+          "1BR3": 550,
+          "2BR1": 500,
+          "2BR2": 625,
+          "2BR3": 500,
+          "2BR4": 750,
+          "1BR5": 360,
+          "2BR5": 550,
+          "2BR6": 660,
+          "Studio5": 250,
+          "3BR2": 825,
+          "3BR1": 650,
+          "1BR4": 355
+        }
+      },
+      "High Season": {
+        "Fri-Sat": {
+          "Studio1": 360,
+          "Studio2": 430,
+          "Studio3": 360,
+          "Studio4": 520,
+          "1BR1": 625,
+          "1BR2": 725,
+          "1BR3": 925,
+          "2BR1": 850,
+          "2BR2": 1050,
+          "2BR3": 850,
+          "2BR4": 1250,
+          "1BR5": 630,
+          "2BR5": 960,
+          "2BR6": 1160,
+          "Studio5": 440,
+          "3BR2": 1375,
+          "3BR1": 1075,
+          "1BR4": 625
+        },
+        "Sun": {
+          "Studio1": 250,
+          "Studio2": 295,
+          "Studio3": 250,
+          "Studio4": 340,
+          "1BR1": 415,
+          "1BR2": 525,
+          "1BR3": 625,
+          "2BR1": 575,
+          "2BR2": 725,
+          "2BR3": 575,
+          "2BR4": 875,
+          "1BR5": 510,
+          "2BR5": 770,
+          "2BR6": 910,
+          "Studio5": 350,
+          "3BR2": 975,
+          "3BR1": 750,
+          "1BR4": 415
+        },
+        "Mon-Thu": {
+          "Studio1": 250,
+          "Studio2": 295,
+          "Studio3": 250,
+          "Studio4": 340,
+          "1BR1": 415,
+          "1BR2": 525,
+          "1BR3": 625,
+          "2BR1": 575,
+          "2BR2": 725,
+          "2BR3": 575,
+          "2BR4": 875,
+          "1BR5": 360,
+          "2BR5": 550,
+          "2BR6": 660,
+          "Studio5": 250,
+          "3BR2": 975,
+          "3BR1": 750,
+          "1BR4": 415
+        }
+      },
+      "AP Rooms": {
+        "Fri-Sat": {
+          "1BR5": 630,
+          "2BR5": 960,
+          "2BR6": 1160,
+          "Studio5": 440
+        },
+        "Sun": {
+          "1BR5": 510,
+          "2BR5": 770,
+          "2BR6": 910,
+          "Studio5": 350
+        },
+        "Mon-Thu": {
+          "1BR5": 360,
+          "2BR5": 550,
+          "2BR6": 660,
+          "Studio5": 250
+        }
+      },
+      "Holiday Week": {
+        "Presidents Day": {
+          "Studio1": 2160,
+          "Studio2": 2475,
+          "Studio3": 2160,
+          "Studio4": 2800,
+          "1BR1": 3525,
+          "1BR2": 4300,
+          "1BR3": 5275,
+          "2BR1": 4800,
+          "2BR2": 6025,
+          "2BR3": 4800,
+          "2BR4": 7225,
+          "1BR5": 3525,
+          "2BR5": 4800,
+          "2BR6": 6025,
+          "Studio5": 2160,
+          "3BR2": 8025,
+          "3BR1": 6250,
+          "1BR4": 3525
+        },
+        "Easter": {
+          "Studio1": 2160,
+          "Studio2": 2475,
+          "Studio3": 2160,
+          "Studio4": 2800,
+          "1BR1": 3525,
+          "1BR2": 4300,
+          "1BR3": 5275,
+          "2BR1": 4800,
+          "2BR2": 6025,
+          "2BR3": 4800,
+          "2BR4": 7225,
+          "1BR5": 3525,
+          "2BR5": 4800,
+          "2BR6": 6025,
+          "Studio5": 2160,
+          "3BR2": 8025,
+          "3BR1": 6250,
+          "1BR4": 3525
+        },
+        "Independence Day": {
+          "Studio1": 1960,
+          "Studio2": 2320,
+          "Studio3": 1960,
+          "Studio4": 2725,
+          "1BR1": 3325,
+          "1BR2": 4100,
+          "1BR3": 5025,
+          "2BR1": 4575,
+          "2BR2": 5725,
+          "2BR3": 4575,
+          "2BR4": 6875,
+          "1BR5": 3525,
+          "2BR5": 4575,
+          "2BR6": 5725,
+          "Studio5": 1960,
+          "3BR2": 7625,
+          "3BR1": 5900,
+          "1BR4": 3325
+        },
+        "Thanksgiving": {
+          "Studio1": 1690,
+          "Studio2": 2070,
+          "Studio3": 1690,
+          "Studio4": 2410,
+          "1BR1": 2950,
+          "1BR2": 3600,
+          "1BR3": 4450,
+          "2BR1": 4050,
+          "2BR2": 4925,
+          "2BR3": 4050,
+          "2BR4": 5900,
+          "1BR5": 2950,
+          "2BR5": 4050,
+          "2BR6": 4925,
+          "Studio5": 1690,
+          "3BR2": 6475,
+          "3BR1": 5100,
+          "1BR4": 2950
+        },
+        "Thanksgiving 2": {
+          "Studio1": 2160,
+          "Studio2": 2475,
+          "Studio3": 2160,
+          "Studio4": 2880,
+          "1BR1": 3525,
+          "1BR2": 4300,
+          "1BR3": 5275,
+          "2BR1": 4800,
+          "2BR2": 6025,
+          "2BR3": 4800,
+          "2BR4": 7225,
+          "1BR5": 3525,
+          "2BR5": 4800,
+          "2BR6": 6025,
+          "Studio5": 2160,
+          "3BR2": 8025,
+          "3BR1": 6250,
+          "1BR4": 3525
+        },
+        "Christmas": {
+          "Studio1": 2160,
+          "Studio2": 2475,
+          "Studio3": 2160,
+          "Studio4": 2880,
+          "1BR1": 3525,
+          "1BR2": 4300,
+          "1BR3": 5275,
+          "2BR1": 4800,
+          "2BR2": 6025,
+          "2BR3": 4800,
+          "2BR4": 7225,
+          "1BR5": 3525,
+          "2BR5": 4800,
+          "2BR6": 6025,
+          "Studio5": 2160,
+          "3BR2": 8025,
+          "3BR1": 6250,
+          "1BR4": 3525
+        },
+        "New Year's Eve/Day": {
+          "Studio1": 2365,
+          "Studio2": 2835,
+          "Studio3": 2365,
+          "Studio4": 3330,
+          "1BR1": 4075,
+          "1BR2": 4975,
+          "1BR3": 6100,
+          "2BR1": 5550,
+          "2BR2": 6875,
+          "2BR3": 5550,
+          "2BR4": 8250,
+          "1BR5": 4075,
+          "2BR5": 5500,
+          "2BR6": 6875,
+          "Studio5": 2365,
+          "3BR2": 9175,
+          "3BR1": 7100,
+          "1BR4": 4075
+        }
+      }
     }
   },
   "resorts_list": [
-    "Ko Olina Beach Club",
     "Aruba Ocean Club",
     "Aruba Surf Club",
     "Bali Nusa Dua Gardens",
@@ -6337,24 +6746,26 @@
     "Grand Chateau Vegas",
     "Grande Vista Orlando",
     "Kauai Beach Club",
+    "Ko Olina Beach Club",
     "Marbella Beach",
     "Maui Ocean Club",
     "Mayflower Washington",
-    "Pulse New York",
-    "Pulse San Diego",
-    "Pulse San Francisco",
     "Mountainside Utah",
     "Newport Coast",
     "Ocean Pointe",
     "Phuket Beach Club",
+    "Phuket Khao Lak",
     "Playa Andaluza",
+    "Pulse New York",
+    "Pulse San Diego",
+    "Pulse San Francisco",
     "Shadow Ridge",
     "Sheraton Kauai",
     "Surfers Paradise",
     "Village Paris",
     "Waikoloa Ocean Club",
     "Westin Ka'anapali",
-    "Phuket Khao Lak"
+    "testing"
   ],
   "maintenance_rates": {
     "2025": 0.81,
@@ -6502,6 +6913,7 @@
     "Waikoloa Ocean Club": {},
     "Westin Ka'anapali": {},
     "Pulse San Francisco": {},
-    "Phuket Khao Lak": {}
+    "Phuket Khao Lak": {},
+    "testing": {}
   }
 }
