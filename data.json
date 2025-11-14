@@ -439,7 +439,7 @@
       "2025": {
         "Low Season": [
           [
-            "2025-07-06",
+            "2025-06-06",
             "2025-07-03"
           ],
           [
@@ -482,7 +482,7 @@
         "Peak Season": [
           [
             "2025-01-31",
-            "2025-04-10"
+            "2025-02-13"
           ]
         ]
       },
@@ -2681,92 +2681,104 @@
         ]
       }
     },
-    "Testing": {
+    "Grand Residence Tahoe": {
       "2025": {
+        "Low Season": [
+          [
+            "2025-04-18",
+            "2025-06-05"
+          ],
+          [
+            "2025-10-10",
+            "2025-11-20"
+          ]
+        ],
+        "Mid Season": [
+          [
+            "2025-06-06",
+            "2025-07-03"
+          ],
+          [
+            "2025-08-22",
+            "2025-10-09"
+          ]
+        ],
         "High Season": [
           [
             "2025-01-03",
-            "2025-02-06"
+            "2025-01-30"
           ],
           [
             "2025-04-04",
             "2025-04-17"
           ],
           [
-            "2025-04-25",
-            "2025-05-01"
+            "2025-07-11",
+            "2025-08-21"
+          ],
+          [
+            "2025-12-05",
+            "2025-12-18"
           ]
         ],
         "Peak Season": [
           [
-            "2025-02-07",
+            "2025-01-31",
             "2025-02-13"
           ],
           [
             "2025-02-21",
             "2025-04-03"
           ]
-        ],
-        "Mid Season": [
-          [
-            "2025-05-02",
-            "2025-07-03"
-          ],
-          [
-            "2025-07-11",
-            "2025-09-04"
-          ],
-          [
-            "2025-11-07",
-            "2025-12-18"
-          ]
-        ],
-        "Low Season": [
-          [
-            "2025-09-05",
-            "2025-11-06"
-          ]
         ]
       },
       "2026": {
+        "Low Season": [
+          [
+            "2026-04-17",
+            "2026-06-04"
+          ],
+          [
+            "2026-10-09",
+            "2026-11-19"
+          ]
+        ],
+        "Mid Season": [
+          [
+            "2026-06-05",
+            "2026-07-02"
+          ],
+          [
+            "2026-08-21",
+            "2026-10-08"
+          ]
+        ],
         "High Season": [
           [
             "2026-01-02",
-            "2026-02-05"
+            "2026-01-29"
           ],
           [
-            "2026-04-10",
-            "2026-04-30"
+            "2026-04-03",
+            "2026-04-16"
+          ],
+          [
+            "2026-07-10",
+            "2026-08-20"
+          ],
+          [
+            "2026-12-04",
+            "2026-12-17"
           ]
         ],
         "Peak Season": [
           [
-            "2026-02-06",
+            "2026-01-30",
             "2026-02-12"
           ],
           [
             "2026-02-20",
-            "2026-04-09"
-          ]
-        ],
-        "Mid Season": [
-          [
-            "2026-05-01",
-            "2026-07-02"
-          ],
-          [
-            "2026-07-10",
-            "2026-09-03"
-          ],
-          [
-            "2026-11-06",
-            "2026-12-17"
-          ]
-        ],
-        "Low Season": [
-          [
-            "2026-09-04",
-            "2026-11-05"
+            "2026-04-02"
           ]
         ]
       }
@@ -3267,20 +3279,22 @@
         "New Year's Eve/Day": "global:New Year's Eve/Day"
       }
     },
-    "Testing": {
+    "Grand Residence Tahoe": {
       "2025": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
         "Independence Day": "global:Independence Day",
+        "Thanksgiving": "global:Thanksgiving",
+        "Thanksgiving 2": "global:Thanksgiving 2",
         "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "New Year's Eve/Day": "global:New Year's Eve/Day",
+        "Presidents Day": "global:Presidents Day"
       },
       "2026": {
-        "Presidents Day": "global:Presidents Day",
-        "Easter": "global:Easter",
         "Independence Day": "global:Independence Day",
+        "Thanksgiving": "global:Thanksgiving",
+        "Thanksgiving 2": "global:Thanksgiving 2",
         "Christmas": "global:Christmas",
-        "New Year's Eve/Day": "global:New Year's Eve/Day"
+        "New Year's Eve/Day": "global:New Year's Eve/Day",
+        "Presidents Day": "global:Presidents Day"
       }
     }
   },
@@ -6429,119 +6443,85 @@
         }
       }
     },
-    "Testing": {
-      "High Season": {
+    "Grand Residence Tahoe": {
+      "Low Season": {
         "Fri-Sat": {
-          "Studio OV": 350,
-          "Studio OF": 450,
-          "1-BR OF": 650,
-          "1-BR OV": 500,
-          "2-BR OF": 975,
-          "2-BR OV": 750
+          "Studio": 175,
+          "1BR": 275,
+          "2BR": 450
         },
         "Sun-Thu": {
-          "Studio OV": 250,
-          "Studio OF": 325,
-          "1-BR OF": 450,
-          "1-BR OV": 350,
-          "2-BR OF": 675,
-          "2-BR OV": 525
-        }
-      },
-      "Peak Season": {
-        "Fri-Sat": {
-          "Studio OV": 375,
-          "Studio OF": 500,
-          "1-BR OF": 700,
-          "1-BR OV": 550,
-          "2-BR OF": 1075,
-          "2-BR OV": 825
-        },
-        "Sun-Thu": {
-          "Studio OV": 275,
-          "Studio OF": 350,
-          "1-BR OF": 500,
-          "1-BR OV": 375,
-          "2-BR OF": 750,
-          "2-BR OV": 600
+          "Studio": 80,
+          "1BR": 110,
+          "2BR": 175
         }
       },
       "Mid Season": {
         "Fri-Sat": {
-          "Studio OV": 300,
-          "Studio OF": 375,
-          "1-BR OF": 525,
-          "1-BR OV": 425,
-          "2-BR OF": 825,
-          "2-BR OV": 625
+          "Studio": 250,
+          "1BR": 325,
+          "2BR": 575
         },
         "Sun-Thu": {
-          "Studio OV": 200,
-          "Studio OF": 275,
-          "1-BR OF": 375,
-          "1-BR OV": 300,
-          "2-BR OF": 575,
-          "2-BR OV": 450
+          "Studio": 110,
+          "1BR": 135,
+          "2BR": 225
         }
       },
-      "Low Season": {
+      "High Season": {
         "Fri-Sat": {
-          "Studio OV": 225,
-          "Studio OF": 300,
-          "1-BR OF": 425,
-          "1-BR OV": 325,
-          "2-BR OF": 650,
-          "2-BR OV": 500
+          "Studio": 300,
+          "1BR": 450,
+          "2BR": 750
         },
         "Sun-Thu": {
-          "Studio OV": 175,
-          "Studio OF": 200,
-          "1-BR OF": 300,
-          "1-BR OV": 225,
-          "2-BR OF": 450,
-          "2-BR OV": 350
+          "Studio": 135,
+          "1BR": 175,
+          "2BR": 300
+        }
+      },
+      "Peak Season": {
+        "Fri-Sat": {
+          "Studio": 400,
+          "1BR": 550,
+          "2BR": 950
+        },
+        "Sun-Thu": {
+          "Studio": 160,
+          "1BR": 225,
+          "2BR": 375
         }
       },
       "Holiday Week": {
-        "Presidents Day": {
-          "Studio OV": 2750,
-          "Studio OF": 3675,
-          "1-BR OF": 5275,
-          "1-BR OV": 4075,
-          "2-BR OF": 8025,
-          "2-BR OV": 6250
-        },
-        "Easter": {
-          "Studio OV": 2750,
-          "Studio OF": 3675,
-          "1-BR OF": 5275,
-          "1-BR OV": 4075,
-          "2-BR OF": 8025,
-          "2-BR OV": 6250
-        },
         "Independence Day": {
-          "Studio OV": 1600,
-          "Studio OF": 2125,
-          "1-BR OF": 2925,
-          "1-BR OV": 2350,
-          "2-BR OF": 4525,
-          "2-BR OV": 3500
+          "Studio": 900,
+          "1BR": 1225,
+          "2BR": 1775
+        },
+        "Thanksgiving": {
+          "Studio": 1400,
+          "1BR": 2000,
+          "2BR": 3000
+        },
+        "Thanksgiving 2": {
+          "Studio": 1725,
+          "1BR": 2500,
+          "2BR": 3775
         },
         "Christmas": {
-          "Studio OV": 2750,
-          "Studio OF": 3675,
-          "1-BR OF": 5275,
-          "1-BR OV": 4075,
-          "2-BR OF": 8025,
-          "2-BR OV": 6250
+          "Studio": 1400,
+          "1BR": 2000,
+          "2BR": 3000
         },
         "New Year's Eve/Day": {
-          "Studio OV": 3150,
-          "Studio OF": 4075,
-          "1-BR OF": 5850,
-          "1-BR OV": 4525,
-          "2-BR OF": 8875,
-          "2-BR OV": 6875
+          "Studio": 1725,
+          "1BR": 2500,
+          "2BR": 3775
+        },
+        "Presidents Day": {
+          "1BR": 1500,
+          "2BR": 1500,
+          "Studio": 1500
         }
       }
     }
@@ -6556,6 +6536,7 @@
     "Crystal Shores",
     "Desert Springs II",
     "Grand Chateau Vegas",
+    "Grand Residence Tahoe",
     "Grande Vista Orlando",
     "Kauai Beach Club",
     "Ko Olina Beach Club",
@@ -6576,8 +6557,7 @@
     "Surfers Paradise",
     "Village Paris",
     "Waikoloa Ocean Club",
-    "Westin Ka'anapali",
-    "Testing"
+    "Westin Ka'anapali"
   ],
   "maintenance_rates": {
     "2025": 0.81,
@@ -6726,6 +6706,14 @@
     "Village Paris": {},
     "Waikoloa Ocean Club": {},
     "Westin Ka'anapali": {},
-    "Testing": {}
+    "Grand Residence Tahoe": {
+      "Holiday Week": {
+        "Presidents Day": {
+          "1BR": 1500,
+          "2BR": 1500,
+          "Studio": 1500
+        }
+      }
+    }
   }
 }
