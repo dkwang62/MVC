@@ -606,9 +606,9 @@ resorts = data.get("resorts_list", [])
 # --- SIDEBAR: User Mode & Parameters (Always Visible) ---
 with st.sidebar:
     st.header("Mode & Parameters")
-    user_mode = st.selectbox("User Mode", ["Renter", "Owner"], key="mode")
-
-    default_rate = data.get("maintenance_rates", {}).get("2026", 0.86)
+    user_mode = st.selectbox("User Mode", ["Renter", "Owner"], key="mode", index=0)
+    
+    default_rate = data.get("maintenance_rates", {}).get("2026", 0.56)
 
     if user_mode == "Owner":
         cap_per_pt = st.number_input("Purchase Price per Point ($)", 0.0, step=0.1, value=16.0, key="cap_per_pt")
