@@ -489,7 +489,7 @@ def adjust_date_range(resort, start, nights):
 # UI STARTS HERE
 # ----------------------------------------------------------------------
 user_mode = st.sidebar.selectbox("User Mode", ["Renter", "Owner"], index=0, key="mode")
-st.title(f"Marriott Vacation Club {'Rent' if user_mode=='Renter' else 'Cost'} Calculator")
+# st.title(f"Marriott Vacation Club {'Rent' if user_mode=='Renter' else 'Cost'} Calculator")
 
 checkin = st.date_input(
     "Check-in Date",
