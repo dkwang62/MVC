@@ -578,12 +578,11 @@ setup_page()
 initialize_session_state()
 
 # Load data
-st.title(f"Marriott Vacation Club {'Rent' if user_mode=='Renter' else 'Cost'} Calculator")
 if st.session_state.data is None:
     try:
         with open("data.json", "r") as f:
             st.session_state.data = json.load(f)
-            st.info(f"Loaded {len(st.session_state.data.get('resorts_list', []))} resorts from data.json")
+#           st.info(f"Loaded {len(st.session_state.data.get('resorts_list', []))} resorts from data.json")
     except FileNotFoundError:
         st.info("No data.json found. Please upload a file.")
     except Exception as e:
