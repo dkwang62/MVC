@@ -578,6 +578,7 @@ setup_page()
 initialize_session_state()
 
 # Load data
+st.title(f"Marriott Vacation Club {'Rent' if user_mode=='Renter' else 'Cost'} Calculator")
 if st.session_state.data is None:
     try:
         with open("data.json", "r") as f:
