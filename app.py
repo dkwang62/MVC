@@ -650,7 +650,7 @@ with st.sidebar:
             rate_per_point, discount_opt = default_rate, None
 
 # --- Resort Selection ---
-st.title("Select Resort")
+st.title(f"Marriott Vacation Club {'Rent' if user_mode=='Renter' else 'Cost'} Calculator")
 cols = st.columns(6)
 current_resort = st.session_state.current_resort
 for i, resort_name in enumerate(resorts):
