@@ -849,8 +849,6 @@ if compare:
     all_rooms = [room] + compare
     compare_df_pivot, chart_df, holiday_df, disc_applied, disc_days = compare_renter(
         resort, all_rooms, checkin_adj, nights_adj, rate_per_point, discount_opt)
-
-    st.subheader(f"{resort} Room Type Comparison (Renter Mode)")
     
     st.write(f"### {resort} Room Type Comparison")
     st.dataframe(compare_df_pivot, use_container_width=True)
@@ -911,8 +909,8 @@ if compare:
             end_date = non_holiday_df["Date"].max()
             start_date_str = start_date.strftime("%b %d")
             end_date_str = end_date.strftime("%b %d, %Y")
-            title = f"{resort} Daily Rent Comparison (Non-Holiday, {start_date_str} - {end_date_str})"
-            st.subheader(title)
+            # title = f"{resort} Daily Rent Comparison (Non-Holiday, {start_date_str} - {end_date_str})"
+            # st.subheader(title)
 
             day_order = ["Fri", "Sat", "Sun", "Mon", "Tue", "Wed", "Thu"]
             fig = px.bar(
