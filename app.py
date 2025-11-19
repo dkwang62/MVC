@@ -838,8 +838,8 @@ else:
 # ----------------------------------------------------------------------
 # Gantt Chart Display and Comparison (Final Section)
 # ----------------------------------------------------------------------
-st.markdown("---")
-st.subheader("Season & Holiday Overview")
+# st.markdown("---")
+# st.subheader("Season & Holiday Overview")
 st.plotly_chart(gantt, use_container_width=True)
 
 # ----------------------------------------------------------------------
