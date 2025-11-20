@@ -708,7 +708,7 @@ if not resort:
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    checkin = st.date_input("Check-in Date", value=datetime(2026, 7, 24).date(),
+    checkin = st.date_input("Check-in Date", value=datetime(2026, 2, 20).date(),
                             min_value=datetime(2025, 1, 3).date(),
                             max_value=datetime(2026, 12, 31).date(), key="checkin")
 
