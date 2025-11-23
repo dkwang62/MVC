@@ -1214,7 +1214,7 @@ def main():
                 
                 {discount_text}                                
                 - 📊 **Points column** shows **reduced points** used
-                - 💰 Rent is ALWAYS based on **undiscounted points** despite fewer points**
+                - 💰 Rent is ALWAYS based on **undiscounted points
                 
                 #### Holiday Handling:
                 - Holiday points represent the **FULL period** (not per-night)
