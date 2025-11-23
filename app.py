@@ -702,7 +702,7 @@ def main():
     resort_title = full_name if raw_resort else r_name
     st.subheader(f"{st.session_state.full_resort_name} – {room_sel}")
 
-if mode == UserMode.OWNER:
+    if mode == UserMode.OWNER:
         # Count how many components are enabled
         num_components = sum([
             owner_params.get('inc_m', False),
