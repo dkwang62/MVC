@@ -620,53 +620,47 @@ def main():
     if not r_name:
         st.stop()
 
-    # === INSERT THIS RIGHT AFTER RESORT SELECTION (before st.divider()) ===
+    # Find the raw resort data
+    raw_resort = next((r for r in st.session_state.data["resorts"] if r["display_name"] == r_name), None)
+    if raw_resort:
+        full_name = raw_resort.get("resort_name", r_name)
+        code = raw_resort.get("code", "N/A")
+        resort_id = raw_resort.get("id", "N/A")
+        timezone = raw_resort.get("timezone", "Not specified")
 
-r_name = st.session_state.current_resort
-if not r_name:
-    st.stop()
-
-# Find the raw resort data
-raw_resort = next((r for r in st.session_state.data["resorts"] if r["display_name"] == r_name), None)
-if raw_resort:
-    full_name = raw_resort.get("resort_name", r_name)
-    code = raw_resort.get("code", "N/A")
-    resort_id = raw_resort.get("id", "N/A")
-    timezone = raw_resort.get("timezone", "Not specified")
-
-    # Beautiful, prominent info card
-    st.markdown(
-        f"""
-        <div style="
-            background: linear-gradient(90deg, #1e3a8a, #1e40af);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        ">
-            <h2 style="margin:0; color:#fbbf24;">{full_name}</h2>
-            <div style="margin-top: 12px; font-size: 1.1em; opacity: 0.95;">
-                <span style="background:#1e40af; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
-                    Code: {code}
-                </span>
-                &nbsp;&nbsp;&nbsp;
-                <span style="background:#dc2626; padding: 4px 12px; border-radius: 20px;">
-                    {timezone}
-                </span>
+        # Beautiful, prominent info card
+        st.markdown(
+            f"""
+            <div style="
+                background: linear-gradient(90deg, #1e3a8a, #1e40af);
+                color: white;
+                padding: 20px;
+                border-radius: 12px;
+                margin: 20px 0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            ">
+                <h2 style="margin:0; color:#fbbf24;">{full_name}</h2>
+                <div style="margin-top: 12px; font-size: 1.1em; opacity: 0.95;">
+                    <span style="background:#1e40af; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
+                        Code: {code}
+                    </span>
+                    &nbsp;&nbsp;&nbsp;
+                    <span style="background:#dc2626; padding: 4px 12px; border-radius: 20px;">
+                        {timezone}
+                    </span>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                    Internal ID: <code style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">{resort_id}</code>
+                </div>
             </div>
-            <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
-                Internal ID: <code style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">{resort_id}</code>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            """,
+            unsafe_allow_html=True
+        )
 
-    # Optional: Also show in sidebar (for quick reference)
-    with st.sidebar:
-        st.markdown(f"**Selected:** {full_name}")
-        st.markdown(f"**Code:** `{code}` • **TZ:** `{timezone}`")
+        # Optional: Also show in sidebar (for quick reference)
+        with st.sidebar:
+            st.markdown(f"**Selected:** {full_name}")
+            st.markdown(f"**Code:** `{code}` • **TZ:** `{timezone}`")
 
     
     st.divider()
