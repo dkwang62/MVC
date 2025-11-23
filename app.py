@@ -900,7 +900,7 @@ def main():
     
     # Get resort info and display
     resort_info = repo.get_resort_info(r_name)
-    render_resort_card(resort_info["full_name"], resort_info["timezone"],resort_info["address"])
+    render_resort_card(resort_info["full_name"], resort_info["timezone"], resort_info["address"])
     
     st.divider()
     
