@@ -588,18 +588,19 @@ def render_resort_card(resort_name: str, timezone: str):
     """Render an enhanced resort information card"""
     st.markdown(f"""
         <div style="
-            background: linear-gradient(135deg, #ff5a5f 0%, #e04347 100%);
-            color: white;
-            padding: 24px;
-            border-radius: 12px;
-            margin: 20px 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.2s ease;
         ">
-            <h2 style="margin:0; color: white; font-size: 28px; font-weight: 700;">
+            <h2 style="margin:0; color: var(--primary-color); font-size: 28px; font-weight: 700;">
                 🏖️ {resort_name}
             </h2>
-            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 16px;">
-                ⏰ Timezone: {timezone}
+            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 16px;">
+                🕒 Timezone: {timezone}
             </p>
         </div>
     """, unsafe_allow_html=True)
