@@ -646,13 +646,7 @@ def main():
             """,
             unsafe_allow_html=True
         )
-    
-        # Optional: Also show in sidebar (for quick reference)
-        with st.sidebar:
-            st.markdown(f"**Selected:** {full_name}")
-            st.markdown(f"**Code:** `{code}` • **TZ:** `{timezone}`")
-
-    
+   
     st.divider()
     
     # Input parameters
