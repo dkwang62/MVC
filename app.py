@@ -588,7 +588,7 @@ def render_resort_card(resort_name: str, timezone: str):
     """Render an enhanced resort information card"""
     st.markdown(f"""
         <div style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff5a5f 0%, #e04347 100%);
             color: white;
             padding: 24px;
             border-radius: 12px;
