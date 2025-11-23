@@ -989,7 +989,6 @@ def main():
         pct = "30%" if policy == DiscountPolicy.PRESIDENTIAL else "25%"
         st.success(
             f"🎉 **Discount Applied!** {pct} off points for {len(res.discounted_days)} day(s). "
-            f"You save points while paying full rental cost!"
         )
     
     st.divider()
