@@ -1208,18 +1208,13 @@ def main():
                     discount_text = "**Standard points applied**"
                 
                 st.markdown(f"""
-                ### 🏨 Renter Cost Calculation
+                ### 🏨 Rent Calculation
                 
                 **Current Rate:** **${rate:.2f}** per point (based on {checkin_year} maintenance rate)
                 
-                {discount_text}
-                                
-                ✅ Rent is ALWAYS based on **undiscounted points**
-                
-                Last minute discount if applied applies to points but not to rent:
+                {discount_text}                                
                 - 📊 **Points column** shows **reduced points** used
-                - 💰 **Rent column** shows cost based on **original undiscounted points**
-                - 🎉 **You pay the same rent despite fewer points used!**
+                - 💰 Rent is ALWAYS based on **undiscounted points** despite fewer points**
                 
                 #### Holiday Handling:
                 - Holiday points represent the **FULL period** (not per-night)
