@@ -1015,7 +1015,7 @@ def main():
         )
     
     with col2:
-        if st.button("ℹ️ How It Works", use_container_width=True):
+        if st.button("ℹ️ How it is calculated", use_container_width=True):
             st.session_state.show_help = not st.session_state.show_help
     
     # Comparison section
