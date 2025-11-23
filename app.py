@@ -495,150 +495,59 @@ def setup_page():
         initial_sidebar_state="expanded"
     )
     
-    # Professional teal/slate color scheme
+    # Enhanced custom CSS
     st.markdown("""
         <style>
-        html, body, .main, [data-testid="stAppViewContainer"] {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: var(--text-color);
-        }
-        
-        :root {
-            --primary-color: #008080;
-            --secondary-color: #556B2F;
-            --danger-color: #C0392B;
-            --warning-color: #E67E22;
-            --success-color: #27AE60;
-            --text-color: #34495E;
-            --bg-color: #F8F9FA;
-            --card-bg: #FFFFFF;
-            --border-color: #EAECEE;
-        }
-        
         /* Main container styling */
         .main {
-            background-color: var(--bg-color);
             padding-top: 1rem;
         }
         
         /* Button styling */
         .stButton button {
             width: 100%;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 500;
-            padding: 0.5rem 1.2rem;
-            transition: all 0.2s ease;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
         
         .stButton button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        }
-        
-        .stButton [data-testid="baseButton-primary"] {
-            background-color: var(--primary-color) !important;
-            color: white !important;
-            border: 1px solid var(--primary-color) !important;
-        }
-        
-        .stButton [data-testid="baseButton-primary"]:hover {
-            background-color: #006666 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
         /* Metric cards */
         div[data-testid="stMetricValue"] {
             font-size: 28px;
             font-weight: 600;
-            color: var(--primary-color) !important;
         }
         
         div[data-testid="metric-container"] {
-            background-color: #ECF0F1 !important;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: none;
-        }
-        
-        .metric-label {
-            color: #64748b !important;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        /* Card styling */
-        .card {
-            background: var(--card-bg);
+            background-color: #f8f9fa;
+            padding: 1rem;
             border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            border: none;
-            transition: all 0.2s ease;
+            border-left: 4px solid #0d6efd;
         }
         
-        .card:hover {
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.10);
-            transform: translateY(-1px);
+        /* Resort button grid */
+        .resort-button {
+            margin: 4px;
         }
         
         /* Sidebar styling */
         section[data-testid="stSidebar"] {
-            background-color: var(--card-bg);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            border-right: 1px solid var(--border-color);
-        }
-        
-        section[data-testid="stSidebar"] * {
-            color: var(--text-color) !important;
-        }
-        
-        section[data-testid="stSidebar"] h2 {
-            color: var(--primary-color) !important;
-            font-weight: 700;
-        }
-        
-        section[data-testid="stSidebar"] .streamlit-expanderHeader {
-            background: #F4F6F6;
-            border: 1px solid var(--border-color);
-            color: var(--text-color) !important;
-            font-weight: 500;
-            margin: 4px 0;
-        }
-        
-        section[data-testid="stSidebar"] .stDownloadButton>button {
-            background: var(--primary-color) !important;
-            color: white !important;
-            font-weight: 600 !important;
-        }
-        
-        section[data-testid="stSidebar"] .stDownloadButton>button * {
-            color: white !important;
+            background-color: #f8f9fa;
         }
         
         /* Dataframe styling */
         .dataframe {
             font-size: 14px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         /* Expander styling */
         .streamlit-expanderHeader {
-            background: var(--card-bg);
-            border-radius: 6px;
             font-weight: 600;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            transition: background 0.2s;
-        }
-        
-        .streamlit-expanderHeader:hover {
-            background: #F4F6F6;
+            font-size: 16px;
         }
         
         /* Info boxes */
@@ -646,83 +555,31 @@ def setup_page():
             border-radius: 8px;
         }
         
-        .success-box {
-            background: #E8F8F5;
-            color: var(--primary-color);
-            padding: 16px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-weight: 600;
-            text-align: center;
-            font-size: 15px;
-            border: 1px solid #C0DEDD;
-            box-shadow: none;
-        }
-        
-        .section-header {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-color);
-            padding: 10px 0;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-        
-        .info-box {
-            background: #EBF5FB;
-            border-left: 4px solid #3498DB;
-            color: var(--text-color);
-            padding: 15px;
-            border-radius: 6px;
-            margin: 10px 0;
-        }
-        
-        .warning-box {
-            background: #FEF9E7;
-            border-left: 4px solid #F39C12;
-            color: var(--text-color);
-            padding: 15px;
-            border-radius: 6px;
-            margin: 10px 0;
-        }
-        
         /* Header styling */
         h1 {
-            color: var(--primary-color);
+            color: #1e3a8a;
             font-weight: 700;
         }
         
         h2 {
-            color: var(--text-color);
+            color: #1e40af;
             font-weight: 600;
             margin-top: 2rem;
         }
         
         h3 {
-            color: var(--text-color);
+            color: #2563eb;
             font-weight: 600;
         }
         
-        /* Input fields */
-        .stNumberInput>div>div>input,
-        .stTextInput>div>div>input,
-        .stDateInput>div>div>input,
-        .stSelectbox>div>div,
-        .stMultiSelect>div>div {
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-            transition: border-color 0.2s;
+        /* Download button */
+        .stDownloadButton button {
+            background-color: #059669;
+            color: white;
         }
         
-        .stNumberInput:focus-within>div>div>input,
-        .stTextInput:focus-within>div>div>input,
-        .stDateInput:focus-within>div>div>input,
-        .stSelectbox:focus-within>div>div,
-        .stMultiSelect:focus-within>div>div>div {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 1px var(--primary-color);
+        .stDownloadButton button:hover {
+            background-color: #047857;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -731,19 +588,18 @@ def render_resort_card(resort_name: str, timezone: str):
     """Render an enhanced resort information card"""
     st.markdown(f"""
         <div style="
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            border-left: 4px solid var(--primary-color);
-            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #ff5a5f 0%, #e04347 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         ">
-            <h2 style="margin:0; color: var(--primary-color); font-size: 28px; font-weight: 700;">
+            <h2 style="margin:0; color: white; font-size: 28px; font-weight: 700;">
                 🏖️ {resort_name}
             </h2>
-            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 16px;">
-                🕒 Timezone: {timezone}
+            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 16px;">
+                ⏰ Timezone: {timezone}
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -1009,14 +865,14 @@ def main():
     # Mode indicator badge
     if mode == UserMode.OWNER:
         st.markdown("""
-            <div style="display: inline-block; background-color: var(--primary-color); color: white; padding: 8px 16px; 
+            <div style="display: inline-block; background-color: #059669; color: white; padding: 8px 16px; 
                         border-radius: 20px; font-weight: 600; margin-bottom: 16px;">
                 👤 Owner Mode: Ownership Cost Analysis
             </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
-            <div style="display: inline-block; background-color: var(--primary-color); color: white; padding: 8px 16px; 
+            <div style="display: inline-block; background-color: #2563eb; color: white; padding: 8px 16px; 
                         border-radius: 20px; font-weight: 600; margin-bottom: 16px;">
                 👤 Renter Mode: Rental Cost Analysis
             </div>
@@ -1133,7 +989,6 @@ def main():
         pct = "30%" if policy == DiscountPolicy.PRESIDENTIAL else "25%"
         st.success(
             f"🎉 **Discount Applied!** {pct} off points for {len(res.discounted_days)} day(s). "
-            f"You save points while paying full rental cost!"
         )
     
     st.divider()
@@ -1160,7 +1015,7 @@ def main():
         )
     
     with col2:
-        if st.button("ℹ️ How It Works", use_container_width=True):
+        if st.button("ℹ️ How it is calculated", use_container_width=True):
             st.session_state.show_help = not st.session_state.show_help
     
     # Comparison section
@@ -1345,46 +1200,27 @@ def main():
             else:
                 discount_text = ""
                 if policy == DiscountPolicy.PRESIDENTIAL:
-                    discount_text = "**Presidential Discount (30% off):** Applies when booking within 60 days of check-in"
+                    discount_text = "**Presidential last-minute 30% pts disc:** when booked within 60 days of check-in"
                 elif policy == DiscountPolicy.EXECUTIVE:
-                    discount_text = "**Executive Discount (25% off):** Applies when booking within 30 days of check-in"
+                    discount_text = "**Executive last-minute 25% pts disc :** when booked within 30 days of check-in"
                 else:
-                    discount_text = "**No Discount Applied:** Standard point rates"
+                    discount_text = "**Standard points applied**"
                 
                 st.markdown(f"""
-                ### 🏨 Renter Cost Calculation
+                ### 🏨 Rent Calculation
                 
                 **Current Rate:** **${rate:.2f}** per point (based on {checkin_year} maintenance rate)
                 
-                **Discount Policy:**  
-                {discount_text}
-                
-                #### Important Notes:
-                
-                ✅ **Key Concept:** Rent cost is ALWAYS based on **undiscounted (raw) points**
-                
-                When a discount applies:
-                - 📊 **Points column** shows **reduced points** debited from your account
-                - 💰 **Rent column** shows cost based on **original undiscounted points**
-                - 🎉 **You pay the same rent but use fewer points!**
+                {discount_text}                                
+                - 📊 **Points column** shows **reduced points** used
+                - 💰 Rent is ALWAYS based on **undiscounted points
                 
                 #### Holiday Handling:
                 - Holiday points represent the **FULL period** (not per-night)
                 - Stays overlapping holidays automatically expand to full period
-                - Multiple consecutive holidays merge into one booking
-                
-                #### Example:
-                
-                A night requiring **200 raw points** with 30% Presidential discount:
-                - Points debited: **140 points** (200 × 0.7)
-                - Rent cost: **${math.ceil(200 * rate):,.2f}** (200 raw points × ${rate:.2f})
-                - **Savings:** 60 points while paying the same rent!
                 
                 #### 💡 Pro Tips:
-                - Book within discount windows to maximize point efficiency
-                - Presidential discount (60 days) offers better point savings
                 - Compare room types to find the best value
-                - Download CSV for detailed analysis and record-keeping
                 """)
     
     # Footer
