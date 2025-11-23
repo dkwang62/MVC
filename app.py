@@ -1201,46 +1201,32 @@ def main():
             else:
                 discount_text = ""
                 if policy == DiscountPolicy.PRESIDENTIAL:
-                    discount_text = "**Presidential Discount (30% off):** Applies when booking within 60 days of check-in"
+                    discount_text = "**Presidential last-minute 30% pts disc:** when booked within 60 days of check-in"
                 elif policy == DiscountPolicy.EXECUTIVE:
-                    discount_text = "**Executive Discount (25% off):** Applies when booking within 30 days of check-in"
+                    discount_text = "**Executive last-minute 25% pts disc :** when booked within 30 days of check-in"
                 else:
-                    discount_text = "**No Discount Applied:** Standard point rates"
+                    discount_text = "**Standard points applied**"
                 
                 st.markdown(f"""
                 ### 🏨 Renter Cost Calculation
                 
                 **Current Rate:** **${rate:.2f}** per point (based on {checkin_year} maintenance rate)
                 
-                **Discount Policy:**  
                 {discount_text}
+                                
+                ✅ Rent is ALWAYS based on **undiscounted points**
                 
-                #### Important Notes:
-                
-                ✅ **Key Concept:** Rent cost is ALWAYS based on **undiscounted (raw) points**
-                
-                When a discount applies:
-                - 📊 **Points column** shows **reduced points** debited from your account
+                Last minute discount if applied applies to points but not to rent:
+                - 📊 **Points column** shows **reduced points** used
                 - 💰 **Rent column** shows cost based on **original undiscounted points**
-                - 🎉 **You pay the same rent but use fewer points!**
+                - 🎉 **You pay the same rent despite fewer points used!**
                 
                 #### Holiday Handling:
                 - Holiday points represent the **FULL period** (not per-night)
                 - Stays overlapping holidays automatically expand to full period
-                - Multiple consecutive holidays merge into one booking
-                
-                #### Example:
-                
-                A night requiring **200 raw points** with 30% Presidential discount:
-                - Points debited: **140 points** (200 × 0.7)
-                - Rent cost: **${math.ceil(200 * rate):,.2f}** (200 raw points × ${rate:.2f})
-                - **Savings:** 60 points while paying the same rent!
                 
                 #### 💡 Pro Tips:
-                - Book within discount windows to maximize point efficiency
-                - Presidential discount (60 days) offers better point savings
                 - Compare room types to find the best value
-                - Download CSV for detailed analysis and record-keeping
                 """)
     
     # Footer
