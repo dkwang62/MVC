@@ -621,10 +621,12 @@ def main():
         st.stop()
 
     # Find the raw resort data
-    raw_resort = next((r for r in st.session_state.data["resorts"] if r["display_name"] == r_name), None)
+    raw_resort = next((r for r in st.session_state.data["resorts"] 
+                       if r["display_name"] == r_name), None)
+
     if raw_resort:
-        full_name = raw_resort.get("resort_name", r_name)
-        timezone = raw_resort.get("timezone", "Timezone not specified")
+        full_name = raw_resort.get("resort_name", r_name)          # ← official name
+        timezone  = raw_resort.get("timezone", "Unknown")
 
         st.markdown(
             f"""
@@ -636,17 +638,16 @@ def main():
                 margin: 20px 0;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             ">
-                <h3 style="margin: 0; color: #212529; font-size: 1.4rem;">
+                <h3 style="margin:0; color:#212529;">
                     {full_name}
+                    <span style="margin-left: 20px; font-weight: normal; color: #495057; font-size: 0.95em;">
+                        Timezone: {timezone}
+                    </span>
                 </h3>
-                <p style="margin: 8px 0 0; color: #495057; font-size: 1rem;">
-                    Timezone: <strong>{timezone}</strong>
-                </p>
             </div>
             """,
             unsafe_allow_html=True
-        )
-   
+        )   
     st.divider()
     
     # Input parameters
@@ -698,8 +699,9 @@ def main():
     res = calc.calculate_breakdown(r_name, room_sel, adj_in, adj_n, mode, rate, policy, owner_params)
     
     # Display results with metrics
-    st.subheader(f"📊 {r_name} - {room_sel}")
-    
+    resort_title = full_name if raw_resort else r_name
+    st.subheader(f"{resort_title} – {Tiles}")
+
     if mode == UserMode.OWNER:
         # Count how many components are enabled
         num_components = sum([
