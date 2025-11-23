@@ -707,7 +707,6 @@ def main():
     res = calc.calculate_breakdown(r_name, room_sel, adj_in, adj_n, mode, rate, policy, owner_params)
     
     # Display results with metrics
-    resort_title = full_name if raw_resort else r_name
     st.subheader(f"{st.session_state.full_resort_name} – {room_sel}")
 
     if mode == UserMode.OWNER:
