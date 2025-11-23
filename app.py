@@ -624,8 +624,6 @@ def main():
     raw_resort = next((r for r in st.session_state.data["resorts"] if r["display_name"] == r_name), None)
     if raw_resort:
         full_name = raw_resort.get("resort_name", r_name)
-        code = raw_resort.get("code", "N/A")
-        resort_id = raw_resort.get("id", "N/A")
         timezone = raw_resort.get("timezone", "Not specified")
 
         # Beautiful, prominent info card
