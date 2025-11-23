@@ -624,39 +624,29 @@ def main():
     raw_resort = next((r for r in st.session_state.data["resorts"] if r["display_name"] == r_name), None)
     if raw_resort:
         full_name = raw_resort.get("resort_name", r_name)
-        code = raw_resort.get("code", "N/A")
-        resort_id = raw_resort.get("id", "N/A")
-        timezone = raw_resort.get("timezone", "Not specified")
+        timezone = raw_resort.get("timezone", "Timezone not specified")
 
-        # Beautiful, prominent info card
         st.markdown(
             f"""
             <div style="
-                background: linear-gradient(90deg, #1e3a8a, #1e40af);
-                color: white;
-                padding: 20px;
-                border-radius: 12px;
+                background-color: #f8f9fa;
+                border-left: 5px solid #0d6efd;
+                padding: 16px 20px;
+                border-radius: 8px;
                 margin: 20px 0;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             ">
-                <h2 style="margin:0; color:#fbbf24;">{full_name}</h2>
-                <div style="margin-top: 12px; font-size: 1.1em; opacity: 0.95;">
-                    <span style="background:#1e40af; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
-                        Code: {code}
-                    </span>
-                    &nbsp;&nbsp;&nbsp;
-                    <span style="background:#dc2626; padding: 4px 12px; border-radius: 20px;">
-                        {timezone}
-                    </span>
-                </div>
-                <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
-                    Internal ID: <code style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">{resort_id}</code>
-                </div>
+                <h3 style="margin: 0; color: #212529; font-size: 1.4rem;">
+                    {full_name}
+                </h3>
+                <p style="margin: 8px 0 0; color: #495057; font-size: 1rem;">
+                    Timezone: <strong>{timezone}</strong>
+                </p>
             </div>
             """,
             unsafe_allow_html=True
         )
-
+    
         # Optional: Also show in sidebar (for quick reference)
         with st.sidebar:
             st.markdown(f"**Selected:** {full_name}")
