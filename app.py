@@ -152,9 +152,10 @@ class MVCRepository:
         if raw_r:
             return {
                 "full_name": raw_r.get("resort_name", resort_name),
-                "timezone": raw_r.get("timezone", "Unknown")
+                "timezone": raw_r.get("timezone", "Unknown"),
+                "address": raw_r.get("address", "Address not available")
             }
-        return {"full_name": resort_name, "timezone": "Unknown"}
+        return {"full_name": resort_name, "timezone": "Unknown", "address": "Address not available"}
 
 # ==============================================================================
 # LAYER 3: SERVICE (Pure Business Logic Engine)
@@ -490,7 +491,7 @@ class MVCCalculator:
 def setup_page():
     st.set_page_config(
         page_title="MVC Points Calculator",
-        page_icon="🏖️",
+        page_icon="🖖️",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -584,7 +585,7 @@ def setup_page():
         </style>
     """, unsafe_allow_html=True)
 
-def render_resort_card(resort_name: str, timezone: str):
+def render_resort_card(resort_name: str, timezone: str, address: str):
     """Render an enhanced resort information card"""
     st.markdown(f"""
         <div style="
@@ -597,10 +598,13 @@ def render_resort_card(resort_name: str, timezone: str):
             transition: all 0.2s ease;
         ">
             <h2 style="margin:0; color: var(--primary-color); font-size: 28px; font-weight: 700;">
-                🏖️ {resort_name}
+                🖖️ {resort_name}
             </h2>
             <p style="margin: 8px 0 0 0; color: #64748b; font-size: 16px;">
                 🕒 Timezone: {timezone}
+            </p>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">
+                📍 {address}
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -861,7 +865,7 @@ def main():
                 st.info("💡 Using maintenance rate with no discount")
     
     # Main content
-    st.title("🏖️ Marriott Vacation Club Calculator")
+    st.title("🖖️ Marriott Vacation Club Calculator")
     
     # Mode indicator badge
     if mode == UserMode.OWNER:
@@ -880,7 +884,7 @@ def main():
         """, unsafe_allow_html=True)
     
     # Resort selection
-    st.markdown("### 📍 Select Resort")
+    st.markdown("### 🏖 Select Resort")
     
     if st.session_state.current_resort not in resorts:
         st.session_state.current_resort = resorts[0] if resorts else None
@@ -1230,7 +1234,7 @@ def main():
         <div style="text-align: center; color: #6b7280; padding: 20px;">
             <p style="margin: 0;">Built with ❤️ for Marriott Vacation Club Members</p>
             <p style="margin: 4px 0 0 0; font-size: 14px;">
-                Calculate smarter. Vacation better. 🏖️
+                Calculate smarter. Vacation better. 🖖️
             </p>
         </div>
     """, unsafe_allow_html=True)
