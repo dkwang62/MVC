@@ -791,7 +791,7 @@ def main():
    
     repo = MVCRepository(st.session_state.data)
     calc = MVCCalculator(repo)
-    resorts_full = repo.get_resort_list_full()  # Get full resort dicts for sorting
+    resorts = repo.get_resort_list()
    
     # Sidebar parameters
     with st.sidebar:
@@ -929,6 +929,7 @@ def main():
         st.session_state.current_resort = resorts[0] if resorts else None
    
     # Display resorts in a grid
+    resorts_full = repo.get_resort_list_full()
     render_resort_grid(resorts_full, st.session_state.current_resort)
    
     r_name = st.session_state.current_resort
