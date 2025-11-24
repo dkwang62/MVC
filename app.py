@@ -745,6 +745,36 @@ def render_metrics_grid(result: CalculationResult, mode: UserMode, owner_params:
                     help="Total rental cost"
                 )
 
+def render_resort_grid(resorts: List[Dict[str, Any]], current_resort: Optional[str]):
+    st.markdown("<div class='section-header'>🏨 Resort Selection (West to East)</div>", unsafe_allow_html=True)
+    if not resorts:
+        st.info("No resorts available. Create one below!")
+        return
+    sorted_resorts = sort_resorts_west_to_east(resorts)
+    num_cols = 6
+    cols = st.columns(num_cols)
+    num_resorts = len(sorted_resorts)
+    num_rows = (num_resorts + num_cols - 1) // num_cols  # ceil division
+    for col_idx, col in enumerate(cols):
+        with col:
+            for row in range(num_rows):
+                idx = col_idx * num_rows + row
+                if idx < num_resorts:
+                    resort = sorted_resorts[idx]
+                    name = resort.get("display_name", f"Resort {idx+1}")
+                    tz = resort.get("timezone", "UTC")
+                    region = get_region_label(tz)
+                    button_type = "primary" if current_resort == name else "secondary"
+                    if st.button(
+                        f"🏨 {name}",
+                        key=f"resort_btn_{name}",
+                        type=button_type,
+                        use_container_width=True,
+                        help=resort.get("address", "No address")
+                    ):
+                        st.session_state.current_resort = name
+                        st.rerun()
+
 def main():
     setup_page()
    
