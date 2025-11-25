@@ -1212,6 +1212,14 @@ def main():
                 showlegend=True,
                 hovermode="closest"
             )
+
+            c_map = {
+                "Holiday": "#6A0DAD",
+                "Mid Season": "#56B4E9",
+                "Low Season": "#009E73",
+                "High Season": "#E69F00",
+                "Peak Season": "#AA0044"
+            }
            
             gantt_fig.update_xaxes(
                 tickformat="%b %d",
