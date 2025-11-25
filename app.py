@@ -1201,7 +1201,6 @@ def main():
                 x_end="Finish",
                 y="Task",
                 color="Type",
-                color_discrete_map=c_map,
                 title=f"{resort_info['full_name']} - {year_str} Calendar Overview"
             )
            
@@ -1212,14 +1211,6 @@ def main():
                 showlegend=True,
                 hovermode="closest"
             )
-
-            c_map = {
-                "Holiday": "#6A0DAD",
-                "Mid Season": "#56B4E9",
-                "Low Season": "#009E73",
-                "High Season": "#E69F00",
-                "Peak Season": "#AA0044"
-            }
            
             gantt_fig.update_xaxes(
                 tickformat="%b %d",
