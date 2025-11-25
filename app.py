@@ -1195,10 +1195,11 @@ def main():
             gdf = pd.DataFrame(g_rows)
            
             c_map = {
-                "Holiday": "#ef4444",
-                "Low Season": "#10b981",
-                "High Season": "#f59e0b",
-                "Peak Season": "#eab308"
+                "Holiday": "#AA0044",
+                "Mid Season": "#56B4E9",
+                "Low Season": "#009E73",
+                "High Season": "#E69F00",
+                "Peak Season": "#AA0044"
             }
            
             gantt_fig = px.timeline(
