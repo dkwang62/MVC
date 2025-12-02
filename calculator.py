@@ -237,15 +237,9 @@ class MVCCalculator:
                 discount_applied=False,
                 discounted_days=[],
             )
-
-        # --- NEW: in renter mode, snap rate to 2dp so 0.80699... becomes exactly 0.81 ---
-        if user_mode == UserMode.RENTER:
-            rate = round(float(rate), 2)
-        # -------------------------------------------------------------------------------
-
         rows: List[Dict[str, Any]] = []
-        tot_eff_pts = 0                    # total effective points (after discounts)
-        tot_financial = 0.0               # running total $ (will be overridden at end)
+        tot_eff_pts = 0
+        tot_financial = 0.0
         tot_m = tot_c = tot_d = 0.0
         disc_applied = False
         disc_days: List[str] = []
@@ -253,16 +247,12 @@ class MVCCalculator:
         processed_holidays: set[str] = set()
         i = 0
         today = datetime.now().date()
-
         while i < nights:
             d = checkin + timedelta(days=i)
             d_str = d.strftime("%Y-%m-%d")
             day_str = d.strftime("%a")
             pts_map, holiday = self._get_daily_points(resort, d)
-
-            # ==============================
-            # HOLIDAY BLOCK (once per period)
-            # ==============================
+            # Holiday block (full-period pricing once)
             if holiday and holiday.name not in processed_holidays:
                 processed_holidays.add(holiday.name)
                 raw = pts_map.get(room, 0)
@@ -270,8 +260,6 @@ class MVCCalculator:
                 holiday_days = (holiday.end_date - holiday.start_date).days + 1
                 is_disc_holiday = False
                 days_out = (holiday.start_date - today).days
-
-                # --- existing discount logic (unchanged) ---
                 if is_owner:
                     disc_mul = owner_config.get("disc_mul", 1.0)
                     disc_pct = (1 - disc_mul) * 100
@@ -286,21 +274,19 @@ class MVCCalculator:
                     elif discount_policy == DiscountPolicy.EXECUTIVE:
                         renter_disc_mul = 0.75
                     if (
-                        discount_policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
+                        discount_policy == DiscountPolicy.PRESIDENTIAL
+                        and days_out <= 60
                     ) or (
                         discount_policy == DiscountPolicy.EXECUTIVE and days_out <= 30
                     ):
                         eff = math.floor(raw * renter_disc_mul)
                         is_disc_holiday = True
-                # -------------------------------------------------
-
                 if is_disc_holiday:
                     disc_applied = True
                     for j in range(holiday_days):
                         disc_date = holiday.start_date + timedelta(days=j)
                         disc_days.append(disc_date.strftime("%Y-%m-%d"))
-
-                # Cost computation (daily $ still rounded up)
+                # Cost computation
                 holiday_cost = 0.0
                 m = c = dp = 0.0
                 if is_owner and owner_config:
@@ -313,10 +299,9 @@ class MVCCalculator:
                     holiday_cost = m + c + dp
                 else:
                     holiday_cost = math.ceil(eff * rate)
-
                 row: Dict[str, Any] = {
                     "Date": f"{holiday.name} ({holiday.start_date.strftime('%b %d, %Y')} - "
-                            f"{holiday.end_date.strftime('%b %d, %Y')})",
+                    f"{holiday.end_date.strftime('%b %d, %Y')})",
                     "Day": "",
                     "Points": eff,
                 }
@@ -330,7 +315,6 @@ class MVCCalculator:
                     row["Total Cost"] = holiday_cost
                 else:
                     row[room] = holiday_cost
-
                 rows.append(row)
                 tot_eff_pts += eff
                 tot_financial += holiday_cost
@@ -338,17 +322,12 @@ class MVCCalculator:
                 tot_c += c
                 tot_d += dp
                 i += holiday_days
-
-            # ==================
-            # REGULAR (NON-HOLIDAY) DAY
-            # ==================
+            # Regular day
             elif not holiday:
                 raw = pts_map.get(room, 0)
                 eff = raw
                 is_disc_day = False
                 days_out = (d - today).days
-
-                # --- existing discount logic (unchanged) ---
                 if is_owner:
                     disc_mul = owner_config.get("disc_mul", 1.0)
                     disc_pct = (1 - disc_mul) * 100
@@ -363,18 +342,16 @@ class MVCCalculator:
                     elif discount_policy == DiscountPolicy.EXECUTIVE:
                         renter_disc_mul = 0.75
                     if (
-                        discount_policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
+                        discount_policy == DiscountPolicy.PRESIDENTIAL
+                        and days_out <= 60
                     ) or (
                         discount_policy == DiscountPolicy.EXECUTIVE and days_out <= 30
                     ):
                         eff = math.floor(raw * renter_disc_mul)
                         is_disc_day = True
-                # -------------------------------------------------
-
                 if is_disc_day:
                     disc_applied = True
                     disc_days.append(d_str)
-
                 day_cost = 0.0
                 m = c = dp = 0.0
                 if is_owner and owner_config:
@@ -387,7 +364,6 @@ class MVCCalculator:
                     day_cost = m + c + dp
                 else:
                     day_cost = math.ceil(eff * rate)
-
                 row = {
                     "Date": d_str,
                     "Day": day_str,
@@ -403,7 +379,6 @@ class MVCCalculator:
                     row["Total Cost"] = day_cost
                 else:
                     row[room] = day_cost
-
                 rows.append(row)
                 tot_eff_pts += eff
                 tot_financial += day_cost
@@ -411,40 +386,10 @@ class MVCCalculator:
                 tot_c += c
                 tot_d += dp
                 i += 1
-
             else:
                 # Should not be hit, but keep safety
                 i += 1
-
         df = pd.DataFrame(rows)
-
-        # ============================================================
-        # NEW PRIORITY RULE:
-        #   - RENTER: Total Rent = total effective points × renter rate
-        #   - OWNER: totals = total effective points × per-point economics
-        #     (maintenance, capital, depreciation) subject to inc_* flags.
-        # ============================================================
-        if user_mode == UserMode.RENTER:
-            tot_financial = tot_eff_pts * rate
-        elif user_mode == UserMode.OWNER and owner_config:
-            maint_total = tot_eff_pts * rate if owner_config.get("inc_m", False) else 0.0
-            cap_total = (
-                tot_eff_pts * owner_config.get("cap_rate", 0.0)
-                if owner_config.get("inc_c", False)
-                else 0.0
-            )
-            dep_total = (
-                tot_eff_pts * owner_config.get("dep_rate", 0.0)
-                if owner_config.get("inc_d", False)
-                else 0.0
-            )
-
-            tot_m = maint_total
-            tot_c = cap_total
-            tot_d = dep_total
-            tot_financial = maint_total + cap_total + dep_total
-        # ============================================================
-
         # Format currency columns
         if is_owner and not df.empty:
             for col in ["Maintenance", "Capital Cost", "Depreciation", "Total Cost"]:
@@ -458,7 +403,6 @@ class MVCCalculator:
                     df[col] = df[col].apply(
                         lambda x: f"${x:,.0f}" if isinstance(x, (int, float)) else x
                     )
-
         return CalculationResult(
             breakdown_df=df,
             total_points=tot_eff_pts,
@@ -470,8 +414,184 @@ class MVCCalculator:
             d_cost=tot_d,
         )
 
+    def compare_stays(
+        self,
+        resort_name: str,
+        rooms: List[str],
+        checkin: date,
+        nights: int,
+        user_mode: UserMode,
+        rate: float,
+        policy: DiscountPolicy,
+        owner_config: Optional[dict],
+    ) -> ComparisonResult:
+        daily_data: List[Dict[str, Any]] = []
+        holiday_data: Dict[str, Dict[str, float]] = defaultdict(
+            lambda: defaultdict(float)
+        )
+        is_owner = user_mode == UserMode.OWNER
+        disc_mul = owner_config["disc_mul"] if owner_config else 1.0
+        renter_mul = 1.0
+        if not is_owner:
+            if policy == DiscountPolicy.PRESIDENTIAL:
+                renter_mul = 0.7
+            elif policy == DiscountPolicy.EXECUTIVE:
+                renter_mul = 0.75
+        val_key = "TotalCostValue" if is_owner else "RentValue"
+        resort = self.repo.get_resort(resort_name)
+        if not resort:
+            return ComparisonResult(
+                pivot_df=pd.DataFrame(),
+                daily_chart_df=pd.DataFrame(),
+                holiday_chart_df=pd.DataFrame(),
+            )
+        processed_holidays: Dict[str, set[str]] = {room: set() for room in rooms}
+        today = datetime.now().date()
+        for room in rooms:
+            i = 0
+            while i < nights:
+                d = checkin + timedelta(days=i)
+                pts_map, h = self._get_daily_points(resort, d)
+                # Holiday, price once per holiday per room
+                if h and h.name not in processed_holidays[room]:
+                    processed_holidays[room].add(h.name)
+                    raw = pts_map.get(room, 0)
+                    eff = raw
+                    days_out = (h.start_date - today).days
+                    if is_owner:
+                        disc_pct = (1 - disc_mul) * 100
+                        thresh = 30 if disc_pct == 25 else 60 if disc_pct == 30 else 0
+                        if disc_pct > 0 and days_out <= thresh:
+                            eff = math.floor(raw * disc_mul)
+                        else:
+                            eff = raw
+                    else:
+                        if (
+                            policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
+                        ) or (policy == DiscountPolicy.EXECUTIVE and days_out <= 30):
+                            eff = math.floor(raw * renter_mul)
+                    if is_owner:
+                        m = c = dp = 0.0
+                        if owner_config and owner_config.get("inc_m", False):
+                            m = math.ceil(eff * rate)
+                        if owner_config and owner_config.get("inc_c", False):
+                            c = math.ceil(eff * owner_config.get("cap_rate", 0.0))
+                        if owner_config and owner_config.get("inc_d", False):
+                            dp = math.ceil(eff * owner_config.get("dep_rate", 0.0))
+                        cost = m + c + dp
+                    else:
+                        cost = math.ceil(eff * rate)
+                    holiday_data[room][h.name] += cost
+                    holiday_days = (h.end_date - h.start_date).days + 1
+                    i += holiday_days
+                # Regular days
+                elif not h:
+                    raw = pts_map.get(room, 0)
+                    eff = raw
+                    days_out = (d - today).days
+                    if is_owner:
+                        disc_pct = (1 - disc_mul) * 100
+                        thresh = 30 if disc_pct == 25 else 60 if disc_pct == 30 else 0
+                        if disc_pct > 0 and days_out <= thresh:
+                            eff = math.floor(raw * disc_mul)
+                        else:
+                            eff = raw
+                    else:
+                        if (
+                            policy == DiscountPolicy.PRESIDENTIAL
+                            and days_out <= 60
+                        ) or (
+                            policy == DiscountPolicy.EXECUTIVE
+                            and days_out <= 30
+                        ):
+                            eff = math.floor(raw * renter_mul)
+                    if is_owner:
+                        m = c = dp = 0.0
+                        if owner_config and owner_config.get("inc_m", False):
+                            m = math.ceil(eff * rate)
+                        if owner_config and owner_config.get("inc_c", False):
+                            c = math.ceil(eff * owner_config.get("cap_rate", 0.0))
+                        if owner_config and owner_config.get("inc_d", False):
+                            dp = math.ceil(eff * owner_config.get("dep_rate", 0.0))
+                        cost = m + c + dp
+                    else:
+                        cost = math.ceil(eff * rate)
+                    daily_data.append(
+                        {
+                            "Day": d.strftime("%a"),
+                            "Date": d,
+                            "Room Type": room,
+                            val_key: cost,
+                            "Holiday": "No",
+                        }
+                    )
+                    i += 1
+                else:
+                    i += 1
+        # Build pivot table using the main breakdown of the primary room as template
+        template_res = self.calculate_breakdown(
+            resort_name,
+            rooms[0],
+            checkin,
+            nights,
+            user_mode,
+            rate,
+            policy,
+            owner_config,
+        )
+        pivot_rows: List[Dict[str, Any]] = []
+        for _, tmpl_row in template_res.breakdown_df.iterrows():
+            new_row: Dict[str, Any] = {"Date": tmpl_row["Date"]}
+            for room in rooms:
+                # Holiday row
+                if "(" in str(tmpl_row["Date"]):
+                    h_name = str(tmpl_row["Date"]).split(" (")[0]
+                    val = holiday_data[room].get(h_name, 0.0)
+                else:
+                    # Day row
+                    try:
+                        d_obj = datetime.strptime(
+                            str(tmpl_row["Date"]), "%Y-%m-%d"
+                        ).date()
+                    except Exception:
+                        d_obj = None
+                    if d_obj is not None:
+                        val = next(
+                            (
+                                x[val_key]
+                                for x in daily_data
+                                if x["Date"] == d_obj and x["Room Type"] == room
+                            ),
+                            0.0,
+                        )
+                    else:
+                        val = 0.0
+                new_row[room] = f"${val:,.0f}"
+            pivot_rows.append(new_row)
+        # Total row
+        total_label = "Total Cost" if is_owner else "Total Rent"
+        tot_row: Dict[str, Any] = {"Date": total_label}
+        for r in rooms:
+            tot_sum = sum(
+                x[val_key] for x in daily_data if x["Room Type"] == r
+            ) + sum(holiday_data[r].values())
+            tot_row[r] = f"${tot_sum:,.0f}"
+        pivot_rows.append(tot_row)
+        # Holiday chart rows
+        h_chart_rows: List[Dict[str, Any]] = []
+        for r, h_map in holiday_data.items():
+            for h_name, val in h_map.items():
+                h_chart_rows.append(
+                    {"Holiday": h_name, "Room Type": r, val_key: val}
+                )
+        daily_df = pd.DataFrame(daily_data)
+        holiday_df = pd.DataFrame(h_chart_rows)
+        return ComparisonResult(
+            pivot_df=pd.DataFrame(pivot_rows),
+            daily_chart_df=daily_df,
+            holiday_chart_df=holiday_df,
+        )
 
-return ComparisonResult(
     def adjust_holiday(
         self, resort_name: str, checkin: date, nights: int
     ) -> Tuple[date, int, bool]:
