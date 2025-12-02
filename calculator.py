@@ -237,9 +237,15 @@ class MVCCalculator:
                 discount_applied=False,
                 discounted_days=[],
             )
+
+        # --- NEW: in renter mode, snap rate to 2dp so 0.80699... becomes exactly 0.81 ---
+        if user_mode == UserMode.RENTER:
+            rate = round(float(rate), 2)
+        # -------------------------------------------------------------------------------
+
         rows: List[Dict[str, Any]] = []
-        tot_eff_pts = 0
-        tot_financial = 0.0
+        tot_eff_pts = 0                    # total effective points (after discounts)
+        tot_financial = 0.0               # running total $ (will be overridden at end)
         tot_m = tot_c = tot_d = 0.0
         disc_applied = False
         disc_days: List[str] = []
@@ -247,12 +253,16 @@ class MVCCalculator:
         processed_holidays: set[str] = set()
         i = 0
         today = datetime.now().date()
+
         while i < nights:
             d = checkin + timedelta(days=i)
             d_str = d.strftime("%Y-%m-%d")
             day_str = d.strftime("%a")
             pts_map, holiday = self._get_daily_points(resort, d)
-            # Holiday block (full-period pricing once)
+
+            # ==============================
+            # HOLIDAY BLOCK (once per period)
+            # ==============================
             if holiday and holiday.name not in processed_holidays:
                 processed_holidays.add(holiday.name)
                 raw = pts_map.get(room, 0)
@@ -260,6 +270,8 @@ class MVCCalculator:
                 holiday_days = (holiday.end_date - holiday.start_date).days + 1
                 is_disc_holiday = False
                 days_out = (holiday.start_date - today).days
+
+                # --- existing discount logic (unchanged) ---
                 if is_owner:
                     disc_mul = owner_config.get("disc_mul", 1.0)
                     disc_pct = (1 - disc_mul) * 100
@@ -274,19 +286,21 @@ class MVCCalculator:
                     elif discount_policy == DiscountPolicy.EXECUTIVE:
                         renter_disc_mul = 0.75
                     if (
-                        discount_policy == DiscountPolicy.PRESIDENTIAL
-                        and days_out <= 60
+                        discount_policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
                     ) or (
                         discount_policy == DiscountPolicy.EXECUTIVE and days_out <= 30
                     ):
                         eff = math.floor(raw * renter_disc_mul)
                         is_disc_holiday = True
+                # -------------------------------------------------
+
                 if is_disc_holiday:
                     disc_applied = True
                     for j in range(holiday_days):
                         disc_date = holiday.start_date + timedelta(days=j)
                         disc_days.append(disc_date.strftime("%Y-%m-%d"))
-                # Cost computation
+
+                # Cost computation (daily $ still rounded up)
                 holiday_cost = 0.0
                 m = c = dp = 0.0
                 if is_owner and owner_config:
@@ -299,9 +313,10 @@ class MVCCalculator:
                     holiday_cost = m + c + dp
                 else:
                     holiday_cost = math.ceil(eff * rate)
+
                 row: Dict[str, Any] = {
                     "Date": f"{holiday.name} ({holiday.start_date.strftime('%b %d, %Y')} - "
-                    f"{holiday.end_date.strftime('%b %d, %Y')})",
+                            f"{holiday.end_date.strftime('%b %d, %Y')})",
                     "Day": "",
                     "Points": eff,
                 }
@@ -315,6 +330,7 @@ class MVCCalculator:
                     row["Total Cost"] = holiday_cost
                 else:
                     row[room] = holiday_cost
+
                 rows.append(row)
                 tot_eff_pts += eff
                 tot_financial += holiday_cost
@@ -322,12 +338,17 @@ class MVCCalculator:
                 tot_c += c
                 tot_d += dp
                 i += holiday_days
-            # Regular day
+
+            # ==================
+            # REGULAR (NON-HOLIDAY) DAY
+            # ==================
             elif not holiday:
                 raw = pts_map.get(room, 0)
                 eff = raw
                 is_disc_day = False
                 days_out = (d - today).days
+
+                # --- existing discount logic (unchanged) ---
                 if is_owner:
                     disc_mul = owner_config.get("disc_mul", 1.0)
                     disc_pct = (1 - disc_mul) * 100
@@ -342,16 +363,18 @@ class MVCCalculator:
                     elif discount_policy == DiscountPolicy.EXECUTIVE:
                         renter_disc_mul = 0.75
                     if (
-                        discount_policy == DiscountPolicy.PRESIDENTIAL
-                        and days_out <= 60
+                        discount_policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
                     ) or (
                         discount_policy == DiscountPolicy.EXECUTIVE and days_out <= 30
                     ):
                         eff = math.floor(raw * renter_disc_mul)
                         is_disc_day = True
+                # -------------------------------------------------
+
                 if is_disc_day:
                     disc_applied = True
                     disc_days.append(d_str)
+
                 day_cost = 0.0
                 m = c = dp = 0.0
                 if is_owner and owner_config:
@@ -364,6 +387,7 @@ class MVCCalculator:
                     day_cost = m + c + dp
                 else:
                     day_cost = math.ceil(eff * rate)
+
                 row = {
                     "Date": d_str,
                     "Day": day_str,
@@ -379,6 +403,7 @@ class MVCCalculator:
                     row["Total Cost"] = day_cost
                 else:
                     row[room] = day_cost
+
                 rows.append(row)
                 tot_eff_pts += eff
                 tot_financial += day_cost
@@ -386,10 +411,40 @@ class MVCCalculator:
                 tot_c += c
                 tot_d += dp
                 i += 1
+
             else:
                 # Should not be hit, but keep safety
                 i += 1
+
         df = pd.DataFrame(rows)
+
+        # ============================================================
+        # NEW PRIORITY RULE:
+        #   - RENTER: Total Rent = total effective points × renter rate
+        #   - OWNER: totals = total effective points × per-point economics
+        #     (maintenance, capital, depreciation) subject to inc_* flags.
+        # ============================================================
+        if user_mode == UserMode.RENTER:
+            tot_financial = tot_eff_pts * rate
+        elif user_mode == UserMode.OWNER and owner_config:
+            maint_total = tot_eff_pts * rate if owner_config.get("inc_m", False) else 0.0
+            cap_total = (
+                tot_eff_pts * owner_config.get("cap_rate", 0.0)
+                if owner_config.get("inc_c", False)
+                else 0.0
+            )
+            dep_total = (
+                tot_eff_pts * owner_config.get("dep_rate", 0.0)
+                if owner_config.get("inc_d", False)
+                else 0.0
+            )
+
+            tot_m = maint_total
+            tot_c = cap_total
+            tot_d = dep_total
+            tot_financial = maint_total + cap_total + dep_total
+        # ============================================================
+
         # Format currency columns
         if is_owner and not df.empty:
             for col in ["Maintenance", "Capital Cost", "Depreciation", "Total Cost"]:
@@ -403,6 +458,7 @@ class MVCCalculator:
                     df[col] = df[col].apply(
                         lambda x: f"${x:,.0f}" if isinstance(x, (int, float)) else x
                     )
+
         return CalculationResult(
             breakdown_df=df,
             total_points=tot_eff_pts,
@@ -413,6 +469,7 @@ class MVCCalculator:
             c_cost=tot_c,
             d_cost=tot_d,
         )
+
 
     def compare_stays(
         self,
