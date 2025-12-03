@@ -300,7 +300,7 @@ class MVCCalculator:
                         disc_date = holiday.start_date + timedelta(days=j)
                         disc_days.append(disc_date.strftime("%Y-%m-%d"))
 
-                # Cost computation (daily $ still rounded up)
+                # Cost computation (daily $ still rounded up for display)
                 holiday_cost = 0.0
                 m = c = dp = 0.0
                 if is_owner and owner_config:
@@ -333,10 +333,7 @@ class MVCCalculator:
 
                 rows.append(row)
                 tot_eff_pts += eff
-                tot_financial += holiday_cost
-                tot_m += m
-                tot_c += c
-                tot_d += dp
+                # We do NOT add to totals here for the final calc, only for display
                 i += holiday_days
 
             # ==================
@@ -355,7 +352,8 @@ class MVCCalculator:
                     thresh = 30 if disc_pct == 25 else 60 if disc_pct == 30 else 0
                     if disc_pct > 0 and days_out <= thresh:
                         eff = math.floor(raw * disc_mul)
-                        is_disc_day = True
+                    else:
+                        eff = raw
                 else:
                     renter_disc_mul = 1.0
                     if discount_policy == DiscountPolicy.PRESIDENTIAL:
@@ -374,6 +372,9 @@ class MVCCalculator:
                 if is_disc_day:
                     disc_applied = True
                     disc_days.append(d_str)
+
+                # accumulate effective points for this day
+                # total_pts_by_room[room] += eff  <-- Logic moved to end
 
                 day_cost = 0.0
                 m = c = dp = 0.0
@@ -406,10 +407,6 @@ class MVCCalculator:
 
                 rows.append(row)
                 tot_eff_pts += eff
-                tot_financial += day_cost
-                tot_m += m
-                tot_c += c
-                tot_d += dp
                 i += 1
 
             else:
@@ -419,25 +416,23 @@ class MVCCalculator:
         df = pd.DataFrame(rows)
 
         # ============================================================
-        # NEW PRIORITY RULE:
-        #   - RENTER: Total Rent = total effective points × renter rate
-        #   - OWNER: totals = total effective points × per-point economics
-        #     (maintenance, capital, depreciation) subject to inc_* flags.
+        # NEW PRIORITY RULE (ROUND OF SUMS):
+        #   - RENTER: Total Rent = ceil(total effective points * renter rate)
+        #   - OWNER: totals = ceil(total effective points * per-point economics)
         # ============================================================
         if user_mode == UserMode.RENTER:
-            tot_financial = tot_eff_pts * rate
+            tot_financial = math.ceil(tot_eff_pts * rate)
+            tot_m = tot_c = tot_d = 0.0
         elif user_mode == UserMode.OWNER and owner_config:
-            maint_total = tot_eff_pts * rate if owner_config.get("inc_m", False) else 0.0
-            cap_total = (
-                tot_eff_pts * owner_config.get("cap_rate", 0.0)
-                if owner_config.get("inc_c", False)
-                else 0.0
-            )
-            dep_total = (
-                tot_eff_pts * owner_config.get("dep_rate", 0.0)
-                if owner_config.get("inc_d", False)
-                else 0.0
-            )
+            maint_total = math.ceil(tot_eff_pts * rate) if owner_config.get("inc_m", False) else 0.0
+            
+            cap_total = 0.0
+            if owner_config.get("inc_c", False):
+                cap_total = math.ceil(tot_eff_pts * owner_config.get("cap_rate", 0.0))
+                
+            dep_total = 0.0
+            if owner_config.get("inc_d", False):
+                dep_total = math.ceil(tot_eff_pts * owner_config.get("dep_rate", 0.0))
 
             tot_m = maint_total
             tot_c = cap_total
@@ -655,28 +650,28 @@ class MVCCalculator:
                 new_row[room] = f"${val:,.0f}"
             pivot_rows.append(new_row)
 
-        # NEW: Total row driven by total effective points × rate (not sum of ceiled daily costs)
+        # NEW: Total row driven by total effective points * rate (ceil applied)
         total_label = "Total Cost" if is_owner else "Total Rent"
         tot_row: Dict[str, Any] = {"Date": total_label}
         for r in rooms:
             pts = total_pts_by_room[r]
             if is_owner and owner_config:
                 maint_total = (
-                    pts * rate if owner_config.get("inc_m", False) else 0.0
+                    math.ceil(pts * rate) if owner_config.get("inc_m", False) else 0.0
                 )
                 cap_total = (
-                    pts * owner_config.get("cap_rate", 0.0)
+                    math.ceil(pts * owner_config.get("cap_rate", 0.0))
                     if owner_config.get("inc_c", False)
                     else 0.0
                 )
                 dep_total = (
-                    pts * owner_config.get("dep_rate", 0.0)
+                    math.ceil(pts * owner_config.get("dep_rate", 0.0))
                     if owner_config.get("inc_d", False)
                     else 0.0
                 )
                 tot_sum = maint_total + cap_total + dep_total
             else:
-                tot_sum = pts * rate
+                tot_sum = math.ceil(pts * rate)
 
             tot_row[r] = f"${tot_sum:,.0f}"
         pivot_rows.append(tot_row)
