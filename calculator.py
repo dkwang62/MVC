@@ -785,6 +785,98 @@ def render_metrics_grid(
                 )
 
 # ==============================================================================
+# NEW HELPERS FOR TABLES
+# ==============================================================================
+def get_all_room_types_for_resort(resort_data: ResortData) -> List[str]:
+    rooms = set()
+    for year_obj in resort_data.years.values():
+        for season in year_obj.seasons:
+            for cat in season.day_categories:
+                if isinstance(cat.room_points, dict):
+                    rooms.update(cat.room_points.keys())
+        for holiday in year_obj.holidays:
+            if isinstance(holiday.room_points, dict):
+                rooms.update(holiday.room_points.keys())
+    return sorted(rooms)
+
+def build_rental_cost_table(
+    resort_data: ResortData,
+    year: int,
+    rate: float,
+    discount_mul: float = 1.0,
+    mode: UserMode = UserMode.RENTER,
+    owner_params: Optional[dict] = None
+) -> Optional[pd.DataFrame]:
+    yd = resort_data.years.get(str(year))
+    if not yd:
+        return None
+
+    room_types = get_all_room_types_for_resort(resort_data)
+    if not room_types:
+        return None
+
+    rows = []
+
+    # Seasons
+    for season in yd.seasons:
+        name = season.name.strip() or "Unnamed Season"
+        weekly_totals = {}
+        has_data = False
+
+        for dow in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]:
+            for cat in season.day_categories:
+                if dow in cat.days:
+                    rp = cat.room_points
+                    for room in room_types:
+                        pts = rp.get(room, 0)
+                        if pts:
+                            has_data = True
+                        weekly_totals[room] = weekly_totals.get(room, 0) + pts
+                    break
+
+        if has_data:
+            row = {"Season": name}
+            for room in room_types:
+                raw_pts = weekly_totals.get(room, 0)
+                eff_pts = math.floor(raw_pts * discount_mul) if discount_mul < 1 else raw_pts
+                if mode == UserMode.RENTER:
+                    cost = math.ceil(eff_pts * rate)
+                else:
+                    m = math.ceil(eff_pts * rate) if owner_params.get("inc_m", False) else 0
+                    c = math.ceil(eff_pts * owner_params.get("cap_rate", 0.0)) if owner_params.get("inc_c", False) else 0
+                    d = math.ceil(eff_pts * owner_params.get("dep_rate", 0.0)) if owner_params.get("inc_d", False) else 0
+                    cost = m + c + d
+                row[room] = f"${cost:,}"
+            rows.append(row)
+
+    # Holidays
+    for holiday in yd.holidays:
+        hname = holiday.name.strip() or "Unnamed Holiday"
+        rp = holiday.room_points or {}
+        row = {"Season": f"Holiday – {hname}"}
+        any_value = False
+        for room in room_types:
+            raw = rp.get(room, 0)
+            if raw:
+                any_value = True
+            eff = math.floor(raw * discount_mul) if discount_mul < 1 else raw
+            if mode == UserMode.RENTER:
+                cost = math.ceil(eff * rate) if raw else 0
+            else:
+                m = math.ceil(eff * rate) if owner_params.get("inc_m", False) else 0
+                c = math.ceil(eff * owner_params.get("cap_rate", 0.0)) if owner_params.get("inc_c", False) else 0
+                d = math.ceil(eff * owner_params.get("dep_rate", 0.0)) if owner_params.get("inc_d", False) else 0
+                cost = m + c + d if raw else 0
+            row[room] = f"${cost:,}" if raw else "—"
+        if any_value:
+            rows.append(row)
+
+    if not rows:
+        return None
+
+    return pd.DataFrame(rows, columns=["Season"] + room_types)
+
+# ==============================================================================
 # MAIN PAGE LOGIC
 # ==============================================================================
 def main() -> None:
@@ -996,14 +1088,8 @@ def main() -> None:
         )
 
     # Derive available room types from daily points for adjusted start
-    pts, _ = calc._get_daily_points(calc.repo.get_resort(r_name), adj_in)
-    if not pts:
-        rd = calc.repo.get_resort(r_name)
-        if rd and str(adj_in.year) in rd.years:
-            yd = rd.years[str(adj_in.year)]
-            if yd.seasons:
-                pts = yd.seasons[0].day_categories[0].room_points
-    room_types = sorted(pts.keys()) if pts else []
+    res_data = calc.repo.get_resort(r_name)
+    room_types = get_all_room_types_for_resort(res_data)
     if not room_types:
         st.error("❌ No room data available for selected dates.")
         return
@@ -1044,6 +1130,14 @@ def main() -> None:
         hide_index=True,
         height=min(400, (len(res.breakdown_df) + 1) * 35 + 50),
     )
+
+    # All Room Types – This Stay (below breakdown)
+    st.markdown("**All Room Types – This Stay**")
+    comp_data = []
+    for rm in room_types:
+        room_res = calc.calculate_breakdown(r_name, rm, adj_in, adj_n, mode, rate, policy, owner_params)
+        comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", "Cost": f"${room_res.financial_total:,.0f}"})
+    st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
 
     # Actions
     col1, col2, _ = st.columns([1, 1, 2])
@@ -1147,6 +1241,17 @@ def main() -> None:
                 height=500,
             )
             st.plotly_chart(gantt_fig, use_container_width=True)
+
+            # Rental/Cost table in expander
+            year = adj_in.year
+            cost_df = build_rental_cost_table(res_data, year, rate, disc_mul, mode, owner_params)
+            if cost_df is not None:
+                title = "7-Night Rental Costs" if mode == UserMode.RENTER else "7-Night Ownership Costs"
+                note = " — Discount applied" if disc_mul < 1 else ""
+                st.markdown(f"**{title}** @ ${rate:.2f}/pt{note}")
+                st.dataframe(cost_df, use_container_width=True, hide_index=True)
+            else:
+                st.info("No season or holiday pricing data available for this year.")
 
     # Help section
     if st.session_state.show_help:
