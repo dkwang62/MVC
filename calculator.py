@@ -907,16 +907,7 @@ def main() -> None:
     # 0) Load User Settings first
     settings = load_user_settings()
 
-    # Initialise session state (calculator-specific keys)
-    if "current_resort" not in st.session_state:
-        st.session_state.current_resort = None
-    if "current_resort_id" not in st.session_state:
-        # Try to use preferred resort from settings
-        st.session_state.current_resort_id = settings.get("preferred_resort_id", None)
-    if "show_help" not in st.session_state:
-        st.session_state.show_help = False
-
-    # 1) Shared data auto-load (no uploader here)
+    # 1) Shared data auto-load (must happen BEFORE session state init so we can check IDs)
     ensure_data_in_session()
 
     # 2) If no data, bail out early
@@ -928,7 +919,43 @@ def main() -> None:
         )
         return
 
-    # 3) Sidebar: user settings only
+    # 3) Initialize Resort Selection (with Fuzzy Matching for Preference)
+    repo = MVCRepository(st.session_state.data)
+    resorts_full = repo.get_resort_list_full()
+
+    if "current_resort_id" not in st.session_state or st.session_state.current_resort_id is None:
+        pref_id = settings.get("preferred_resort_id")
+        found_id = None
+        
+        if pref_id:
+            # A. Exact Match
+            for r in resorts_full:
+                if r.get("id") == pref_id:
+                    found_id = pref_id
+                    break
+            
+            # B. Fuzzy Match (if exact not found)
+            if not found_id:
+                for r in resorts_full:
+                    rid = r.get("id", "")
+                    # Check if preference is a substring of ID or vice versa
+                    if pref_id in rid or rid in pref_id:
+                        found_id = rid
+                        break
+        
+        # Set found ID, or fallback to first available
+        if found_id:
+            st.session_state.current_resort_id = found_id
+        elif resorts_full:
+            st.session_state.current_resort_id = resorts_full[0].get("id")
+
+    # Initialise other keys
+    if "current_resort" not in st.session_state:
+        st.session_state.current_resort = None
+    if "show_help" not in st.session_state:
+        st.session_state.show_help = False
+
+    # 4) Sidebar: user settings only
     with st.sidebar:
         st.divider()
         st.markdown("### 👤 User Settings")
@@ -1082,7 +1109,6 @@ def main() -> None:
             owner_params["disc_mul"] = disc_mul
 
     # ===== Core calculator objects =====
-    repo = MVCRepository(st.session_state.data)
     calc = MVCCalculator(repo)
 
     # ===== Main content =====
@@ -1092,18 +1118,6 @@ def main() -> None:
         icon="🏨",
         badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
     )
-
-    # Resorts list & current selection by id
-    resorts_full = repo.get_resort_list_full()  # list of resort dicts
-    
-    # Fallback if preferred resort ID is invalid/missing in loaded data
-    if resorts_full and st.session_state.current_resort_id is None:
-        st.session_state.current_resort_id = resorts_full[0].get("id")
-    
-    # If preferred resort ID is set but not found in data, reset to first
-    valid_ids = [r.get("id") for r in resorts_full]
-    if st.session_state.current_resort_id not in valid_ids and valid_ids:
-         st.session_state.current_resort_id = valid_ids[0]
 
     current_resort_id = st.session_state.current_resort_id
 
@@ -1131,7 +1145,6 @@ def main() -> None:
     st.divider()
 
     # ===== Booking details =====
-    # Title removed per request
     input_cols = st.columns([2, 1, 2, 2])
     with input_cols[0]:
         checkin = st.date_input(
@@ -1185,7 +1198,6 @@ def main() -> None:
     res = calc.calculate_breakdown(
         r_name, room_sel, adj_in, adj_n, mode, active_rate, policy, owner_params
     )
-    # "Results: ..." Title removed per request
     render_metrics_grid(res, mode, owner_params, policy)
 
     if res.discount_applied and mode == UserMode.RENTER:
