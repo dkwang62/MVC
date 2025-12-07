@@ -127,7 +127,7 @@ def render_resort_grid(
                     btn_type = "primary" if is_current else "secondary"
                     
                     if st.button(
-                        f"🏨 {name}", 
+                        f"{name}", 
                         key=f"resort_btn_{rid or name}",
                         type=btn_type,
                         use_container_width=True,
