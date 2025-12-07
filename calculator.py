@@ -32,100 +32,98 @@ def load_default_settings() -> Dict[str, Any]:
         try:
             with open(settings_path, "r") as f:
                 return json.load(f)
-        except Exception as e:
-            # Silent fail or log to console
-            print(f"Error loading settings: {e}")
+        except Exception:
+            pass
     return {}
 
 def apply_settings_from_dict(data: Dict[str, Any]):
     """
-    Update session state variables from a dictionary (uploaded file).
-    Direct assignment since variable names now match UI options.
+    Update session state variables directly from a dictionary.
     """
     if not data:
         return
 
+    # Helper to safely set state
+    def safe_set(key, val):
+        st.session_state[key] = val
+
     # Owner Params
     if "maintenance_rate" in data:
-        st.session_state.owner_maint_rate = float(data["maintenance_rate"])
+        safe_set("owner_maint_rate", float(data["maintenance_rate"]))
     if "purchase_price" in data:
-        st.session_state.owner_price = float(data["purchase_price"])
+        safe_set("owner_price", float(data["purchase_price"]))
     if "capital_cost_pct" in data:
-        st.session_state.owner_coc_pct = float(data["capital_cost_pct"])
+        safe_set("owner_coc_pct", float(data["capital_cost_pct"]))
     if "salvage_value" in data:
-        st.session_state.owner_salvage = float(data["salvage_value"])
+        safe_set("owner_salvage", float(data["salvage_value"]))
     if "useful_life" in data:
-        st.session_state.owner_life = int(data["useful_life"])
+        safe_set("owner_life", int(data["useful_life"]))
     
     # Tier String
     if "discount_tier" in data:
         val = data["discount_tier"]
         if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
-        st.session_state.owner_tier_sel = val
+        safe_set("owner_tier_sel", val)
     
     # Owner Checkboxes
     if "include_maintenance" in data:
-        st.session_state.owner_inc_m = bool(data["include_maintenance"])
+        safe_set("owner_inc_m", bool(data["include_maintenance"]))
     if "include_capital" in data:
-        st.session_state.owner_inc_c = bool(data["include_capital"])
+        safe_set("owner_inc_c", bool(data["include_capital"]))
     if "include_depreciation" in data:
-        st.session_state.owner_inc_d = bool(data["include_depreciation"])
+        safe_set("owner_inc_d", bool(data["include_depreciation"]))
 
     # Renter Params
     if "renter_rate" in data:
-        st.session_state.renter_price = float(data["renter_rate"])
+        safe_set("renter_price", float(data["renter_rate"]))
     if "renter_discount_tier" in data:
         val = data["renter_discount_tier"]
         if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
-        st.session_state.renter_tier_sel = val
+        safe_set("renter_tier_sel", val)
 
     # Preferred Resort
     if "preferred_resort_id" in data:
-        st.session_state.current_resort_id = data["preferred_resort_id"]
+        safe_set("current_resort_id", data["preferred_resort_id"])
 
-def initialize_session_variables(defaults: Dict[str, Any]):
+def initialize_session_variables(defaults: Dict[str, Any], force_reset: bool = False):
     """
-    Initialize session state.
-    CRITICAL: If this is the first run ('settings_loaded' not in state),
-    we FORCE overwrite existing keys with the file defaults.
-    This fixes the issue where 0.00 values get stuck in memory.
+    Ensure all widget keys exist in session state. 
+    This runs ONCE at startup (or on force reset) to populate the state 
+    before widgets are rendered.
     """
     
-    # Check if we have already initialized from file in this session
-    first_load = False
-    if "settings_loaded" not in st.session_state:
-        first_load = True
-        st.session_state.settings_loaded = True
-
-    def set_val(key, val):
-        # If it's the first load, we overwrite. 
-        # If not, we only set if missing (to preserve user edits across mode switch).
-        if first_load or key not in st.session_state:
-            st.session_state[key] = val
+    # Helper to initialize a key if missing
+    def init_key(key, default_val):
+        if force_reset or key not in st.session_state:
+            st.session_state[key] = default_val
 
     # 1. Owner Defaults
-    set_val("owner_maint_rate", float(defaults.get("maintenance_rate", 0.83)))
+    init_key("owner_maint_rate", float(defaults.get("maintenance_rate", 0.83)))
     
     raw_tier = defaults.get("discount_tier", "Ordinary Level")
     if raw_tier not in TIER_OPTIONS: raw_tier = TIER_OPTIONS[0]
-    set_val("owner_tier_sel", raw_tier)
+    init_key("owner_tier_sel", raw_tier)
     
-    set_val("owner_price", float(defaults.get("purchase_price", 3.5)))
-    set_val("owner_coc_pct", float(defaults.get("capital_cost_pct", 5.0)))
-    set_val("owner_life", int(defaults.get("useful_life", 20)))
-    set_val("owner_salvage", float(defaults.get("salvage_value", 3.0)))
+    init_key("owner_price", float(defaults.get("purchase_price", 3.5)))
+    init_key("owner_coc_pct", float(defaults.get("capital_cost_pct", 5.0)))
+    init_key("owner_life", int(defaults.get("useful_life", 20)))
+    init_key("owner_salvage", float(defaults.get("salvage_value", 3.0)))
     
     # Checkboxes
-    set_val("owner_inc_m", bool(defaults.get("include_maintenance", True)))
-    set_val("owner_inc_c", bool(defaults.get("include_capital", True)))
-    set_val("owner_inc_d", bool(defaults.get("include_depreciation", False)))
+    init_key("owner_inc_m", bool(defaults.get("include_maintenance", True)))
+    init_key("owner_inc_c", bool(defaults.get("include_capital", True)))
+    init_key("owner_inc_d", bool(defaults.get("include_depreciation", False)))
 
     # 2. Renter Defaults
-    set_val("renter_price", float(defaults.get("renter_rate", 0.83)))
+    init_key("renter_price", float(defaults.get("renter_rate", 0.83)))
     
     raw_renter = defaults.get("renter_discount_tier", "Ordinary Level")
     if raw_renter not in TIER_OPTIONS: raw_renter = TIER_OPTIONS[0]
-    set_val("renter_tier_sel", raw_renter)
+    init_key("renter_tier_sel", raw_renter)
+
+    # 3. Resort Preference (Only set if not already navigating)
+    if "current_resort_id" not in st.session_state:
+        st.session_state.current_resort_id = defaults.get("preferred_resort_id", None)
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS (Type-Safe Data Structures)
@@ -1057,15 +1055,6 @@ def main() -> None:
             st.info("**Save time by saving your profile.** Store your costs, membership tier, and resort preference to a file. Upload it anytime to instantly restore your setup.")
             st.markdown("###### Load/Save Settings")
             
-            # FORCE RESET BUTTON
-            if st.button("🔄 Reset to Defaults from File", use_container_width=True):
-                # Reload settings and force init (by removing the flag)
-                if "settings_loaded" in st.session_state:
-                    del st.session_state.settings_loaded
-                st.rerun()
-
-            st.markdown("---")
-
             # LOAD
             config_file = st.file_uploader("Load Settings (JSON)", type="json", key="user_cfg_upload")
             if config_file:
@@ -1438,8 +1427,8 @@ def main() -> None:
         st.divider()
         with st.expander("📅 Season and Holiday Calendar", expanded=False):
             gantt_fig = create_gantt_chart_from_resort_data(
-                resort_data=res_data,
-                year=year_str,
+                res_data,
+                year_str,
                 global_holidays=st.session_state.data.get("global_holidays", {}),
                 height=500,
             )
