@@ -84,13 +84,14 @@ def render_page_header(title: str, subtitle: str | None = None, icon: str | None
     )
     
 def render_resort_card(resort_name: str, timezone: str, address: str) -> None:
-    """Standard resort info card."""
+    """Standard resort info card with consolidated meta row."""
+    # Concatenate timezone and address into one line
+    meta_text = f"🕒 Timezone: {timezone} &nbsp;&nbsp;•&nbsp;&nbsp; 📍 {address}"
     st.markdown(
         f"""
         <div class="resort-card">
           <h2>🖖 {resort_name}</h2>
-          <div class="resort-meta">🕒 Timezone: {timezone}</div>
-          <div class="resort-meta">📍 {address}</div>
+          <div class="resort-meta">{meta_text}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -100,7 +101,7 @@ def render_resort_grid(
     resorts: List[Dict[str, Any]],
     current_resort_key: Optional[str],
     *,
-    title: str = "🏨 Resorts in Memory (West to East) • Select Resort", # Fixed emojis here
+    title: str = "🏨 Resorts in Memory (West to East) • Select Resort", 
 ) -> None:
     # Wrap the grid in an expander
     with st.expander(title, expanded=False):
@@ -125,7 +126,6 @@ def render_resort_grid(
                     is_current = current_resort_key in (rid, name)
                     btn_type = "primary" if is_current else "secondary"
                     
-                    # Fixed emoji here from "妾" to "🏨"
                     if st.button(
                         f"🏨 {name}", 
                         key=f"resort_btn_{rid or name}",
