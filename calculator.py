@@ -31,10 +31,10 @@ def load_default_settings() -> Dict[str, Any]:
     if os.path.exists(settings_path):
         try:
             with open(settings_path, "r") as f:
-                data = json.load(f)
-                return data
+                return json.load(f)
         except Exception as e:
-            st.error(f"Error loading settings file: {e}")
+            # Silent fail or log to console
+            print(f"Error loading settings: {e}")
     return {}
 
 def apply_settings_from_dict(data: Dict[str, Any]):
@@ -57,12 +57,10 @@ def apply_settings_from_dict(data: Dict[str, Any]):
     if "useful_life" in data:
         st.session_state.owner_life = int(data["useful_life"])
     
-    # Tier String (Direct)
+    # Tier String
     if "discount_tier" in data:
         val = data["discount_tier"]
-        # Safety fallback if file has old data
-        if val not in TIER_OPTIONS:
-            val = TIER_OPTIONS[0]
+        if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
         st.session_state.owner_tier_sel = val
     
     # Owner Checkboxes
@@ -78,22 +76,31 @@ def apply_settings_from_dict(data: Dict[str, Any]):
         st.session_state.renter_price = float(data["renter_rate"])
     if "renter_discount_tier" in data:
         val = data["renter_discount_tier"]
-        if val not in TIER_OPTIONS:
-            val = TIER_OPTIONS[0]
+        if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
         st.session_state.renter_tier_sel = val
 
     # Preferred Resort
     if "preferred_resort_id" in data:
         st.session_state.current_resort_id = data["preferred_resort_id"]
 
-def initialize_session_variables(defaults: Dict[str, Any], force_reset: bool = False):
+def initialize_session_variables(defaults: Dict[str, Any]):
     """
-    Ensure all widget keys exist in session state, using defaults if needed.
-    If force_reset is True, overwrite existing values with defaults.
+    Initialize session state.
+    CRITICAL: If this is the first run ('settings_loaded' not in state),
+    we FORCE overwrite existing keys with the file defaults.
+    This fixes the issue where 0.00 values get stuck in memory.
     """
     
+    # Check if we have already initialized from file in this session
+    first_load = False
+    if "settings_loaded" not in st.session_state:
+        first_load = True
+        st.session_state.settings_loaded = True
+
     def set_val(key, val):
-        if force_reset or key not in st.session_state:
+        # If it's the first load, we overwrite. 
+        # If not, we only set if missing (to preserve user edits across mode switch).
+        if first_load or key not in st.session_state:
             st.session_state[key] = val
 
     # 1. Owner Defaults
@@ -1052,14 +1059,10 @@ def main() -> None:
             
             # FORCE RESET BUTTON
             if st.button("🔄 Reset to Defaults from File", use_container_width=True):
-                # Reload settings and force init
-                fresh_settings = load_default_settings()
-                if fresh_settings:
-                    initialize_session_variables(fresh_settings, force_reset=True)
-                    st.toast("✅ Settings reset to file defaults!", icon="🔄")
-                    st.rerun()
-                else:
-                    st.error("Could not find mvc_owner_settings.json to reset.")
+                # Reload settings and force init (by removing the flag)
+                if "settings_loaded" in st.session_state:
+                    del st.session_state.settings_loaded
+                st.rerun()
 
             st.markdown("---")
 
