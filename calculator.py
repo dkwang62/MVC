@@ -14,27 +14,90 @@ from common.charts import create_gantt_chart_from_resort_data
 from common.data import ensure_data_in_session
 
 # ==============================================================================
-# LAYER 0: SETTINGS LOADER
+# LAYER 0: SETTINGS LOADER & HELPERS
 # ==============================================================================
-def load_user_settings() -> Dict[str, Any]:
+def load_default_settings() -> Dict[str, Any]:
     """Load defaults from mvc_owner_settings.json if it exists."""
     settings_path = "mvc_owner_settings.json"
     if os.path.exists(settings_path):
         try:
             with open(settings_path, "r") as f:
                 return json.load(f)
-        except Exception as e:
-            st.warning(f"Could not load settings file: {e}")
+        except Exception:
+            pass
     return {}
 
-def get_tier_index(tier_string: str) -> int:
-    """Map JSON string to UI Radio index."""
-    s = str(tier_string).lower()
-    if "presidential" in s or "chairman" in s:
-        return 2
-    if "executive" in s:
-        return 1
-    return 0  # Default to Ordinary Level
+def apply_settings_from_dict(data: Dict[str, Any]):
+    """
+    Update session state variables from a dictionary (uploaded file).
+    This maps the JSON keys to the specific widget keys we use.
+    """
+    if not data:
+        return
+
+    # Owner Params
+    if "maintenance_rate" in data:
+        st.session_state.owner_maint_rate = float(data["maintenance_rate"])
+    if "purchase_price" in data:
+        st.session_state.owner_price = float(data["purchase_price"])
+    if "capital_cost_pct" in data:
+        st.session_state.owner_coc_pct = float(data["capital_cost_pct"])
+    if "salvage_value" in data:
+        st.session_state.owner_salvage = float(data["salvage_value"])
+    if "useful_life" in data:
+        st.session_state.owner_life = int(data["useful_life"])
+    if "discount_tier" in data:
+        st.session_state.owner_tier_sel = data["discount_tier"]
+    
+    # Owner Checkboxes
+    if "include_maintenance" in data:
+        st.session_state.owner_inc_m = bool(data["include_maintenance"])
+    if "include_capital" in data:
+        st.session_state.owner_inc_c = bool(data["include_capital"])
+    if "include_depreciation" in data:
+        st.session_state.owner_inc_d = bool(data["include_depreciation"])
+
+    # Renter Params
+    if "renter_rate" in data:
+        st.session_state.renter_price = float(data["renter_rate"])
+    if "renter_discount_tier" in data:
+        st.session_state.renter_tier_sel = data["renter_discount_tier"]
+
+    # Preferred Resort
+    if "preferred_resort_id" in data:
+        # We handle the fuzzy match logic in the main body, but we set the ID here
+        st.session_state.current_resort_id = data["preferred_resort_id"]
+
+def initialize_session_variables(defaults: Dict[str, Any]):
+    """Ensure all widget keys exist in session state, using defaults if needed."""
+    
+    # 1. Owner Defaults
+    if "owner_maint_rate" not in st.session_state:
+        st.session_state.owner_maint_rate = float(defaults.get("maintenance_rate", 0.83))
+    if "owner_tier_sel" not in st.session_state:
+        st.session_state.owner_tier_sel = defaults.get("discount_tier", "Ordinary Level")
+    if "owner_price" not in st.session_state:
+        st.session_state.owner_price = float(defaults.get("purchase_price", 3.5))
+    if "owner_coc_pct" not in st.session_state:
+        st.session_state.owner_coc_pct = float(defaults.get("capital_cost_pct", 5.0))
+    if "owner_life" not in st.session_state:
+        st.session_state.owner_life = int(defaults.get("useful_life", 20))
+    if "owner_salvage" not in st.session_state:
+        st.session_state.owner_salvage = float(defaults.get("salvage_value", 3.0))
+    
+    # Checkboxes
+    if "owner_inc_m" not in st.session_state:
+        st.session_state.owner_inc_m = bool(defaults.get("include_maintenance", True))
+    if "owner_inc_c" not in st.session_state:
+        st.session_state.owner_inc_c = bool(defaults.get("include_capital", True))
+    if "owner_inc_d" not in st.session_state:
+        st.session_state.owner_inc_d = bool(defaults.get("include_depreciation", False))
+
+    # 2. Renter Defaults
+    if "renter_price" not in st.session_state:
+        st.session_state.renter_price = float(defaults.get("renter_rate", 0.83))
+    if "renter_tier_sel" not in st.session_state:
+        st.session_state.renter_tier_sel = defaults.get("renter_discount_tier", "Ordinary Level")
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS (Type-Safe Data Structures)
@@ -407,7 +470,7 @@ class MVCCalculator:
                 else:
                     day_cost = math.ceil(round(eff * rate, 8))
 
-                row = {
+                row: {
                     "Date": d_str,
                     "Day": day_str,
                     "Points": eff,
@@ -905,7 +968,7 @@ def build_rental_cost_table(
 # ==============================================================================
 def main() -> None:
     # 0) Load User Settings first
-    settings = load_user_settings()
+    default_settings = load_default_settings()
 
     # 1) Shared data auto-load (must happen BEFORE session state init so we can check IDs)
     ensure_data_in_session()
@@ -924,7 +987,7 @@ def main() -> None:
     resorts_full = repo.get_resort_list_full()
 
     if "current_resort_id" not in st.session_state or st.session_state.current_resort_id is None:
-        pref_id = settings.get("preferred_resort_id")
+        pref_id = default_settings.get("preferred_resort_id")
         found_id = None
         
         if pref_id:
@@ -947,15 +1010,55 @@ def main() -> None:
         elif resorts_full:
             st.session_state.current_resort_id = resorts_full[0].get("id")
 
-    # Initialise other keys
+    # Initialise other keys if missing
     if "current_resort" not in st.session_state:
         st.session_state.current_resort = None
     if "show_help" not in st.session_state:
         st.session_state.show_help = False
+        
+    # --- Initialize Variables for Calculator Inputs ---
+    # This ensures the Save button can always find these values in Session State
+    initialize_session_variables(default_settings)
 
     # 4) Sidebar: user settings only
     with st.sidebar:
         st.divider()
+
+        # --- NEW: SAVE/LOAD SETTINGS ---
+        with st.expander("Your Calculator Settings", expanded=False):
+            st.info("**Save time by saving your profile.** Store your costs, membership tier, and resort preference to a file. Upload it anytime to instantly restore your setup.")
+            st.markdown("###### Load/Save Settings")
+            
+            # LOAD
+            config_file = st.file_uploader("Load Settings (JSON)", type="json", key="user_cfg_upload")
+            if config_file:
+                file_sig = f"{config_file.name}_{config_file.size}"
+                if "last_loaded_cfg" not in st.session_state or st.session_state.last_loaded_cfg != file_sig:
+                    config_file.seek(0)
+                    data = json.load(config_file)
+                    apply_settings_from_dict(data)
+                    st.session_state.last_loaded_cfg = file_sig
+                    st.rerun()
+
+            # SAVE
+            # Construct dictionary from current session state
+            current_pref_resort = st.session_state.current_resort_id if st.session_state.current_resort_id else ""
+            current_settings = {
+                "maintenance_rate": st.session_state.owner_maint_rate,
+                "purchase_price": st.session_state.owner_price,
+                "capital_cost_pct": st.session_state.owner_coc_pct,
+                "salvage_value": st.session_state.owner_salvage,
+                "useful_life": st.session_state.owner_life,
+                "discount_tier": st.session_state.owner_tier_sel,
+                "include_maintenance": st.session_state.owner_inc_m,
+                "include_capital": st.session_state.owner_inc_c,
+                "include_depreciation": st.session_state.owner_inc_d,
+                "renter_rate": st.session_state.renter_price,
+                "renter_discount_tier": st.session_state.renter_tier_sel,
+                "preferred_resort_id": current_pref_resort
+            }
+            st.download_button("Save Settings", json.dumps(current_settings, indent=2), "mvc_owner_settings.json", "application/json", use_container_width=True)
+
         st.markdown("### 👤 User Settings")
         # --- User mode selection & parameters ---
         mode_sel = st.selectbox(
@@ -976,81 +1079,70 @@ def main() -> None:
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
             
-            # Defaults from settings
-            def_maint = float(settings.get("maintenance_rate", 0.83))
-            def_tier = settings.get("discount_tier", "")
-            def_price = float(settings.get("purchase_price", 3.5))
-            def_cap_pct = float(settings.get("capital_cost_pct", 5.0))
-            def_life = int(settings.get("useful_life", 20))
-            def_salvage = float(settings.get("salvage_value", 3.0))
-            def_inc_m = bool(settings.get("include_maintenance", True))
-            def_inc_c = bool(settings.get("include_capital", True))
-            def_inc_d = bool(settings.get("include_depreciation", False))
-
-            owner_maint_rate = st.number_input(
+            # Using key=... automatically binds to session state
+            st.number_input(
                 "Maintenance per Point ($)",
-                value=def_maint,
                 step=0.01,
                 min_value=0.0,
+                key="owner_maint_rate"
             )
             
-            # Map JSON tier string to index
-            owner_tier_idx = get_tier_index(def_tier)
-            opt_str = st.radio(
+            st.radio(
                 "Membership Tier",
                 [
                     "Ordinary Level",
                     "Executive: 25% Points Benefit (within 30 days)",
                     "Presidential: 30% Points Benefit (within 60 days)",
                 ],
-                index=owner_tier_idx,
+                key="owner_tier_sel",
                 help="Select membership tier.",
             )
             
             cap = st.number_input(
                 "Purchase Price per Point ($)",
-                value=def_price,
                 step=1.0,
                 min_value=0.0,
                 help="Initial purchase price per MVC point.",
+                key="owner_price"
             )
-            coc = (
-                st.number_input(
-                    "Cost of Capital (%)",
-                    value=def_cap_pct,
-                    step=0.5,
-                    min_value=0.0,
-                    help="Expected return on alternative investments.",
-                )
-                / 100.0
+            
+            coc_input = st.number_input(
+                "Cost of Capital (%)",
+                step=0.5,
+                min_value=0.0,
+                help="Expected return on alternative investments.",
+                key="owner_coc_pct"
             )
+            coc = coc_input / 100.0
+
             life = st.number_input(
-                "Useful Life (yrs)", value=def_life, min_value=1
+                "Useful Life (yrs)", min_value=1, key="owner_life"
             )
             salvage = st.number_input(
                 "Salvage ($/pt)",
-                value=def_salvage,
                 step=0.5,
                 min_value=0.0,
+                key="owner_salvage"
             )
             inc_m = st.checkbox(
                 "Include Maintenance",
-                value=def_inc_m,
                 help="Annual Maintenance.",
+                key="owner_inc_m"
             )
             inc_c = st.checkbox(
                 "Include Capital Cost",
-                value=def_inc_c,
                 help="Opportunity cost of capital invested.",
+                key="owner_inc_c"
             )
             inc_d = st.checkbox(
                 "Include Depreciation",
-                value=def_inc_d,
                 help="Asset depreciation over time.",
+                key="owner_inc_d"
             )
             
             # Set Active Rate for Owner
-            active_rate = owner_maint_rate
+            active_rate = st.session_state.owner_maint_rate
+            opt_str = st.session_state.owner_tier_sel
 
             owner_params = {
                 "disc_mul": 1.0,  # Will be set below
@@ -1064,31 +1156,27 @@ def main() -> None:
             # RENTER MODE
             st.markdown("#### 🏨 Rental Parameters")
             
-            # Defaults from settings
-            def_renter_rate = float(settings.get("renter_rate", 0.83))
-            def_renter_tier = settings.get("renter_discount_tier", "")
-
-            renter_price_point = st.number_input(
+            st.number_input(
                 "Renter Price per Point ($)",
-                value=def_renter_rate,
                 step=0.01,
                 min_value=0.0,
+                key="renter_price"
             )
             
-            renter_tier_idx = get_tier_index(def_renter_tier)
-            opt_str = st.radio(
+            st.radio(
                 "Membership Tier",
                 [
                     "Ordinary Level",
                     "Executive: 25% Points Benefit (within 30 days)",
                     "Presidential: 30% Points Benefit (within 60 days)",
                 ],
-                index=renter_tier_idx,
+                key="renter_tier_sel",
                 help="Select membership tier.",
             )
             
             # Set Active Rate for Renter
-            active_rate = renter_price_point
+            active_rate = st.session_state.renter_price
+            opt_str = st.session_state.renter_tier_sel
 
             if "Presidential" in opt_str:
                 policy = DiscountPolicy.PRESIDENTIAL
