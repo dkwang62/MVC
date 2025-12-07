@@ -487,39 +487,35 @@ TIER_OPTIONS = [TIER_NO_DISCOUNT, TIER_EXECUTIVE, TIER_PRESIDENTIAL]
 
 def apply_settings_from_dict(user_data: dict):
     """
-    Parses JSON data and applies it to the 'Flat State' variables.
-    IMPORTANT: We must update BOTH the Logic Variable AND the Widget Key.
+    Parses JSON data and applies it to the 'Source of Truth'.
+    CRITICAL: Deletes the 'Widget Key' to force Streamlit to re-render using the new value.
     """
     try:
+        # Helper to sync Truth + Clear Widget
+        def sync_and_reset(truth_key, widget_key, new_val):
+            st.session_state[truth_key] = new_val
+            if widget_key in st.session_state:
+                del st.session_state[widget_key]
+
         # 1. Maintenance Rate
         if "maintenance_rate" in user_data: 
-            val = float(user_data["maintenance_rate"])
-            st.session_state.pref_maint_rate = val
-            st.session_state.widget_maint_rate = val # SYNC WIDGET
+            sync_and_reset("pref_maint_rate", "widget_maint_rate", float(user_data["maintenance_rate"]))
         
         # 2. Purchase Price
         if "purchase_price" in user_data: 
-            val = float(user_data["purchase_price"])
-            st.session_state.pref_purchase_price = val
-            st.session_state.widget_purchase_price = val # SYNC WIDGET
+            sync_and_reset("pref_purchase_price", "widget_purchase_price", float(user_data["purchase_price"]))
 
         # 3. Capital Cost
         if "capital_cost_pct" in user_data: 
-            val = float(user_data["capital_cost_pct"])
-            st.session_state.pref_capital_cost = val
-            st.session_state.widget_capital_cost = val # SYNC WIDGET
+            sync_and_reset("pref_capital_cost", "widget_capital_cost", float(user_data["capital_cost_pct"]))
 
         # 4. Salvage
         if "salvage_value" in user_data: 
-            val = float(user_data["salvage_value"])
-            st.session_state.pref_salvage_value = val
-            st.session_state.widget_salvage_value = val # SYNC WIDGET
+            sync_and_reset("pref_salvage_value", "widget_salvage_value", float(user_data["salvage_value"]))
 
         # 5. Useful Life
         if "useful_life" in user_data: 
-            val = int(user_data["useful_life"])
-            st.session_state.pref_useful_life = val
-            st.session_state.widget_useful_life = val # SYNC WIDGET
+            sync_and_reset("pref_useful_life", "widget_useful_life", int(user_data["useful_life"]))
 
         # 6. Owner Discount Tier (Radio)
         if "discount_tier" in user_data:
@@ -527,39 +523,27 @@ def apply_settings_from_dict(user_data: dict):
             target_tier = TIER_NO_DISCOUNT
             if "Executive" in raw: target_tier = TIER_EXECUTIVE
             elif "Presidential" in raw or "Chairman" in raw: target_tier = TIER_PRESIDENTIAL
-            
-            st.session_state.pref_discount_tier = target_tier
-            st.session_state.widget_discount_tier = target_tier # SYNC RADIO WIDGET
+            sync_and_reset("pref_discount_tier", "widget_discount_tier", target_tier)
 
         # 7. Checkboxes
         if "include_maintenance" in user_data: 
-            val = bool(user_data["include_maintenance"])
-            st.session_state.pref_inc_m = val
-            st.session_state.widget_inc_m = val # SYNC WIDGET
+            sync_and_reset("pref_inc_m", "widget_inc_m", bool(user_data["include_maintenance"]))
         if "include_capital" in user_data: 
-            val = bool(user_data["include_capital"])
-            st.session_state.pref_inc_c = val
-            st.session_state.widget_inc_c = val # SYNC WIDGET
+            sync_and_reset("pref_inc_c", "widget_inc_c", bool(user_data["include_capital"]))
         if "include_depreciation" in user_data: 
-            val = bool(user_data["include_depreciation"])
-            st.session_state.pref_inc_d = val
-            st.session_state.widget_inc_d = val # SYNC WIDGET
+            sync_and_reset("pref_inc_d", "widget_inc_d", bool(user_data["include_depreciation"]))
 
         # 8. Renter Rate
         if "renter_rate" in user_data:
-            val = float(user_data["renter_rate"])
-            st.session_state.renter_rate_val = val
-            st.session_state.widget_renter_rate = val # SYNC WIDGET
+            sync_and_reset("renter_rate_val", "widget_renter_rate", float(user_data["renter_rate"]))
 
-        # 9. Renter Discount Tier (Radio) - THIS WAS YOUR BUG
+        # 9. Renter Discount Tier (Radio)
         if "renter_discount_tier" in user_data:
             raw_r = str(user_data["renter_discount_tier"])
             target_tier = TIER_NO_DISCOUNT
             if "Executive" in raw_r: target_tier = TIER_EXECUTIVE
             elif "Presidential" in raw_r or "Chairman" in raw_r: target_tier = TIER_PRESIDENTIAL
-            
-            st.session_state.renter_discount_tier = target_tier
-            st.session_state.widget_renter_discount_tier = target_tier # SYNC RADIO WIDGET
+            sync_and_reset("renter_discount_tier", "widget_renter_discount_tier", target_tier)
 
         # 10. Resort ID
         if "preferred_resort_id" in user_data:
