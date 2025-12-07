@@ -4,9 +4,6 @@ import sys
 
 import streamlit as st
 
-
-
-
 # Ensure local package imports work on Streamlit Cloud
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
@@ -17,19 +14,24 @@ from common.ui import setup_page
 # Set up base page config and styling
 setup_page()
 
-# --- App shell: choose which tool to run ---
+# --- Navigation Logic ---
+# 1. Default to 'calculator' if no state is set
+if "active_tool" not in st.session_state:
+    st.session_state.active_tool = "calculator"
+
 st.sidebar.markdown("### 🧰 MVC Tools")
-choice = st.sidebar.radio(
-    "Choose Tool",
-    ["Points & Rent Calculator", "Resort Data Editor"],
-    index=0,
-)
 
-if choice == "Points & Rent Calculator":
-    import calculator
-
-    calculator.run()
-else:
+if st.session_state.active_tool == "editor":
+    # While in Editor, show a back button in sidebar
+    with st.sidebar:
+        if st.button("⬅️ Back to Calculator", use_container_width=True):
+            st.session_state.active_tool = "calculator"
+            st.rerun()
+    
     import editor
-
     editor.run()
+
+else:
+    # Default: Calculator Mode
+    import calculator
+    calculator.run()
