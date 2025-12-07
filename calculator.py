@@ -14,6 +14,23 @@ from common.charts import create_gantt_chart_from_resort_data
 from common.data import ensure_data_in_session
 
 # ==============================================================================
+# CONSTANTS: UI Options & JSON Mapping
+# ==============================================================================
+# The text visible to the user on the screen
+TIER_OPTIONS = [
+    "Ordinary Level",                                      # Index 0
+    "Executive: 25% Points Benefit (within 30 days)",      # Index 1
+    "Presidential: 30% Points Benefit (within 60 days)",   # Index 2
+]
+
+# The text stored in the JSON file (Legacy/Specific format)
+JSON_TIER_STRINGS = [
+    "No Discount",                                         # Maps to Index 0
+    "Executive (25% off within 30 days)",                  # Maps to Index 1
+    "Presidential / Chairman (30% off within 60 days)",    # Maps to Index 2
+]
+
+# ==============================================================================
 # LAYER 0: SETTINGS LOADER & HELPERS
 # ==============================================================================
 def load_default_settings() -> Dict[str, Any]:
@@ -27,10 +44,37 @@ def load_default_settings() -> Dict[str, Any]:
             pass
     return {}
 
+def sanitize_tier_option(input_str: str) -> str:
+    """
+    Map JSON strings (e.g. "Presidential / Chairman...") to Valid UI Options.
+    """
+    s = str(input_str).lower()
+    
+    # Check for keywords to map to the correct UI string
+    if "presidential" in s or "chairman" in s:
+        return TIER_OPTIONS[2] # Presidential UI
+    if "executive" in s:
+        return TIER_OPTIONS[1] # Executive UI
+    
+    # "No Discount" or anything else defaults to Ordinary Level
+    return TIER_OPTIONS[0]
+
+def desanitize_tier_option(ui_str: str) -> str:
+    """
+    Map UI Options (e.g. "Ordinary Level") back to the specific JSON strings requested.
+    """
+    if ui_str == TIER_OPTIONS[0]:
+        return JSON_TIER_STRINGS[0] # "No Discount"
+    if ui_str == TIER_OPTIONS[1]:
+        return JSON_TIER_STRINGS[1] # "Executive..."
+    if ui_str == TIER_OPTIONS[2]:
+        return JSON_TIER_STRINGS[2] # "Presidential / Chairman..."
+    
+    return ui_str # Fallback
+
 def apply_settings_from_dict(data: Dict[str, Any]):
     """
     Update session state variables from a dictionary (uploaded file).
-    This maps the JSON keys to the specific widget keys we use.
     """
     if not data:
         return
@@ -46,8 +90,10 @@ def apply_settings_from_dict(data: Dict[str, Any]):
         st.session_state.owner_salvage = float(data["salvage_value"])
     if "useful_life" in data:
         st.session_state.owner_life = int(data["useful_life"])
+    
+    # Sanitize Tier String (JSON -> UI)
     if "discount_tier" in data:
-        st.session_state.owner_tier_sel = data["discount_tier"]
+        st.session_state.owner_tier_sel = sanitize_tier_option(data["discount_tier"])
     
     # Owner Checkboxes
     if "include_maintenance" in data:
@@ -61,11 +107,10 @@ def apply_settings_from_dict(data: Dict[str, Any]):
     if "renter_rate" in data:
         st.session_state.renter_price = float(data["renter_rate"])
     if "renter_discount_tier" in data:
-        st.session_state.renter_tier_sel = data["renter_discount_tier"]
+        st.session_state.renter_tier_sel = sanitize_tier_option(data["renter_discount_tier"])
 
     # Preferred Resort
     if "preferred_resort_id" in data:
-        # We handle the fuzzy match logic in the main body, but we set the ID here
         st.session_state.current_resort_id = data["preferred_resort_id"]
 
 def initialize_session_variables(defaults: Dict[str, Any]):
@@ -75,7 +120,9 @@ def initialize_session_variables(defaults: Dict[str, Any]):
     if "owner_maint_rate" not in st.session_state:
         st.session_state.owner_maint_rate = float(defaults.get("maintenance_rate", 0.83))
     if "owner_tier_sel" not in st.session_state:
-        st.session_state.owner_tier_sel = defaults.get("discount_tier", "Ordinary Level")
+        # Load raw string from JSON, convert to UI string immediately
+        raw_tier = defaults.get("discount_tier", "No Discount")
+        st.session_state.owner_tier_sel = sanitize_tier_option(raw_tier)
     if "owner_price" not in st.session_state:
         st.session_state.owner_price = float(defaults.get("purchase_price", 3.5))
     if "owner_coc_pct" not in st.session_state:
@@ -97,7 +144,8 @@ def initialize_session_variables(defaults: Dict[str, Any]):
     if "renter_price" not in st.session_state:
         st.session_state.renter_price = float(defaults.get("renter_rate", 0.83))
     if "renter_tier_sel" not in st.session_state:
-        st.session_state.renter_tier_sel = defaults.get("renter_discount_tier", "Ordinary Level")
+        raw_renter_tier = defaults.get("renter_discount_tier", "No Discount")
+        st.session_state.renter_tier_sel = sanitize_tier_option(raw_renter_tier)
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS (Type-Safe Data Structures)
@@ -470,7 +518,7 @@ class MVCCalculator:
                 else:
                     day_cost = math.ceil(round(eff * rate, 8))
 
-                row: {
+                row = {
                     "Date": d_str,
                     "Day": day_str,
                     "Points": eff,
@@ -1042,19 +1090,25 @@ def main() -> None:
 
             # SAVE
             # Construct dictionary from current session state
+            # IMPORTANT: We map UI "Ordinary Level" -> JSON "No Discount" here
             current_pref_resort = st.session_state.current_resort_id if st.session_state.current_resort_id else ""
+            
+            # Convert UI selection back to safe JSON string
+            json_owner_tier = desanitize_tier_option(st.session_state.owner_tier_sel)
+            json_renter_tier = desanitize_tier_option(st.session_state.renter_tier_sel)
+
             current_settings = {
                 "maintenance_rate": st.session_state.owner_maint_rate,
                 "purchase_price": st.session_state.owner_price,
                 "capital_cost_pct": st.session_state.owner_coc_pct,
                 "salvage_value": st.session_state.owner_salvage,
                 "useful_life": st.session_state.owner_life,
-                "discount_tier": st.session_state.owner_tier_sel,
+                "discount_tier": json_owner_tier,  # Transformed
                 "include_maintenance": st.session_state.owner_inc_m,
                 "include_capital": st.session_state.owner_inc_c,
                 "include_depreciation": st.session_state.owner_inc_d,
                 "renter_rate": st.session_state.renter_price,
-                "renter_discount_tier": st.session_state.renter_tier_sel,
+                "renter_discount_tier": json_renter_tier,  # Transformed
                 "preferred_resort_id": current_pref_resort
             }
             st.download_button("Save Settings", json.dumps(current_settings, indent=2), "mvc_owner_settings.json", "application/json", use_container_width=True)
@@ -1089,11 +1143,7 @@ def main() -> None:
             
             st.radio(
                 "Membership Tier",
-                [
-                    "Ordinary Level",
-                    "Executive: 25% Points Benefit (within 30 days)",
-                    "Presidential: 30% Points Benefit (within 60 days)",
-                ],
+                TIER_OPTIONS,
                 key="owner_tier_sel",
                 help="Select membership tier.",
             )
@@ -1165,11 +1215,7 @@ def main() -> None:
             
             st.radio(
                 "Membership Tier",
-                [
-                    "Ordinary Level",
-                    "Executive: 25% Points Benefit (within 30 days)",
-                    "Presidential: 30% Points Benefit (within 60 days)",
-                ],
+                TIER_OPTIONS,
                 key="renter_tier_sel",
                 help="Select membership tier.",
             )
