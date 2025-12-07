@@ -39,61 +39,54 @@ def load_default_settings() -> Dict[str, Any]:
 def apply_settings_from_dict(data: Dict[str, Any]):
     """
     Update session state variables directly from a dictionary.
+    This is used when a user uploads a config file manually.
     """
     if not data:
         return
 
-    # Helper to safely set state
-    def safe_set(key, val):
-        st.session_state[key] = val
-
-    # Owner Params
+    # Update session state with safe types
     if "maintenance_rate" in data:
-        safe_set("owner_maint_rate", float(data["maintenance_rate"]))
+        st.session_state.owner_maint_rate = float(data["maintenance_rate"])
     if "purchase_price" in data:
-        safe_set("owner_price", float(data["purchase_price"]))
+        st.session_state.owner_price = float(data["purchase_price"])
     if "capital_cost_pct" in data:
-        safe_set("owner_coc_pct", float(data["capital_cost_pct"]))
+        st.session_state.owner_coc_pct = float(data["capital_cost_pct"])
     if "salvage_value" in data:
-        safe_set("owner_salvage", float(data["salvage_value"]))
+        st.session_state.owner_salvage = float(data["salvage_value"])
     if "useful_life" in data:
-        safe_set("owner_life", int(data["useful_life"]))
+        st.session_state.owner_life = int(data["useful_life"])
     
-    # Tier String
     if "discount_tier" in data:
         val = data["discount_tier"]
         if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
-        safe_set("owner_tier_sel", val)
+        st.session_state.owner_tier_sel = val
     
-    # Owner Checkboxes
     if "include_maintenance" in data:
-        safe_set("owner_inc_m", bool(data["include_maintenance"]))
+        st.session_state.owner_inc_m = bool(data["include_maintenance"])
     if "include_capital" in data:
-        safe_set("owner_inc_c", bool(data["include_capital"]))
+        st.session_state.owner_inc_c = bool(data["include_capital"])
     if "include_depreciation" in data:
-        safe_set("owner_inc_d", bool(data["include_depreciation"]))
+        st.session_state.owner_inc_d = bool(data["include_depreciation"])
 
-    # Renter Params
     if "renter_rate" in data:
-        safe_set("renter_price", float(data["renter_rate"]))
+        st.session_state.renter_price = float(data["renter_rate"])
     if "renter_discount_tier" in data:
         val = data["renter_discount_tier"]
         if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
-        safe_set("renter_tier_sel", val)
+        st.session_state.renter_tier_sel = val
 
-    # Preferred Resort
     if "preferred_resort_id" in data:
-        safe_set("current_resort_id", data["preferred_resort_id"])
+        st.session_state.current_resort_id = data["preferred_resort_id"]
 
 def initialize_session_variables(defaults: Dict[str, Any], force_reset: bool = False):
     """
     Ensure all widget keys exist in session state. 
-    This runs ONCE at startup (or on force reset) to populate the state 
-    before widgets are rendered.
+    This runs ONCE at the top of the script to populate the state 
+    before widgets are rendered. This prevents data loss when switching modes.
     """
     
-    # Helper to initialize a key if missing
     def init_key(key, default_val):
+        # If the key is missing (because of mode switch cleanup) OR we are forcing a reset
         if force_reset or key not in st.session_state:
             st.session_state[key] = default_val
 
@@ -121,7 +114,7 @@ def initialize_session_variables(defaults: Dict[str, Any], force_reset: bool = F
     if raw_renter not in TIER_OPTIONS: raw_renter = TIER_OPTIONS[0]
     init_key("renter_tier_sel", raw_renter)
 
-    # 3. Resort Preference (Only set if not already navigating)
+    # 3. Resort Preference (Only set if not already present)
     if "current_resort_id" not in st.session_state:
         st.session_state.current_resort_id = defaults.get("preferred_resort_id", None)
 
@@ -1055,6 +1048,19 @@ def main() -> None:
             st.info("**Save time by saving your profile.** Store your costs, membership tier, and resort preference to a file. Upload it anytime to instantly restore your setup.")
             st.markdown("###### Load/Save Settings")
             
+            # FORCE RESET BUTTON
+            if st.button("🔄 Reset to Defaults from File", use_container_width=True):
+                # Reload settings and force init
+                fresh_settings = load_default_settings()
+                if fresh_settings:
+                    initialize_session_variables(fresh_settings, force_reset=True)
+                    st.toast("✅ Settings reset to file defaults!", icon="🔄")
+                    st.rerun()
+                else:
+                    st.error("Could not find mvc_owner_settings.json to reset.")
+
+            st.markdown("---")
+
             # LOAD
             config_file = st.file_uploader("Load Settings (JSON)", type="json", key="user_cfg_upload")
             if config_file:
@@ -1112,7 +1118,8 @@ def main() -> None:
                 "Maintenance per Point ($)",
                 step=0.01,
                 min_value=0.0,
-                key="owner_maint_rate"
+                key="owner_maint_rate",
+                value=st.session_state.owner_maint_rate
             )
             
             st.radio(
@@ -1127,7 +1134,8 @@ def main() -> None:
                 step=1.0,
                 min_value=0.0,
                 help="Initial purchase price per MVC point.",
-                key="owner_price"
+                key="owner_price",
+                value=st.session_state.owner_price
             )
             
             coc_input = st.number_input(
@@ -1135,33 +1143,38 @@ def main() -> None:
                 step=0.5,
                 min_value=0.0,
                 help="Expected return on alternative investments.",
-                key="owner_coc_pct"
+                key="owner_coc_pct",
+                value=st.session_state.owner_coc_pct
             )
             coc = coc_input / 100.0
 
             life = st.number_input(
-                "Useful Life (yrs)", min_value=1, key="owner_life"
+                "Useful Life (yrs)", min_value=1, key="owner_life", value=st.session_state.owner_life
             )
             salvage = st.number_input(
                 "Salvage ($/pt)",
                 step=0.5,
                 min_value=0.0,
-                key="owner_salvage"
+                key="owner_salvage",
+                value=st.session_state.owner_salvage
             )
             inc_m = st.checkbox(
                 "Include Maintenance",
                 help="Annual Maintenance.",
-                key="owner_inc_m"
+                key="owner_inc_m",
+                value=st.session_state.owner_inc_m
             )
             inc_c = st.checkbox(
                 "Include Capital Cost",
                 help="Opportunity cost of capital invested.",
-                key="owner_inc_c"
+                key="owner_inc_c",
+                value=st.session_state.owner_inc_c
             )
             inc_d = st.checkbox(
                 "Include Depreciation",
                 help="Asset depreciation over time.",
-                key="owner_inc_d"
+                key="owner_inc_d",
+                value=st.session_state.owner_inc_d
             )
             
             # Set Active Rate for Owner
@@ -1184,7 +1197,8 @@ def main() -> None:
                 "Renter Price per Point ($)",
                 step=0.01,
                 min_value=0.0,
-                key="renter_price"
+                key="renter_price",
+                value=st.session_state.renter_price
             )
             
             st.radio(
