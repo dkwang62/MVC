@@ -754,20 +754,20 @@ def render_metrics_grid(
                 st.metric(
                     label="📊 Total Points",
                     value=f"{result.total_points:,}",
-                    help="Discounted points required",
+                    help="Tier-adjusted points required",
                 )
             with cols[1]:
                 st.metric(
                     label="💰 Total Rent",
                     value=f"${result.financial_total:,.0f}",
-                    help="Total rental cost (based on discounted points)",
+                    help="Total rental cost (based on tier benefits)",
                 )
             with cols[2]:
                 st.metric(
-                    label="🎉 Discount Applied",
+                    label="🎉 Membership Tier",
                     value=pct,
                     delta=f"{len(result.discounted_days)} days",
-                    help="Points discount for last-minute booking",
+                    help="Points benefit for membership tier",
                 )
         else:
             cols = st.columns(2)
@@ -781,7 +781,7 @@ def render_metrics_grid(
                 st.metric(
                     label="💰 Total Rent",
                     value=f"${result.financial_total:,.0f}",
-                    help="Total rental cost (no points discount)",
+                    help="Total rental cost (standard points)",
                 )
 
 # ==============================================================================
@@ -916,7 +916,7 @@ def main() -> None:
         policy: DiscountPolicy = DiscountPolicy.NONE
         # Temporarily set rate; may be overridden later based on mode + year
         rate = 0.50
-        opt = "No Discount"  # Default
+        opt = "Ordinary Level"  # Default
 
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
@@ -927,13 +927,13 @@ def main() -> None:
                 min_value=0.0,
             )
             opt = st.radio(
-                "Discount Option",
+                "Membership Tier",
                 [
-                    "No Discount",
-                    "Executive: 25% Points Discount (within 30 days)",
-                    "Presidential: 30% Points Discount (within 60 days)",
+                    "Ordinary Level",
+                    "Executive: 25% Points Benefit (within 30 days)",
+                    "Presidential: 30% Points Benefit (within 60 days)",
                 ],
-                help="Select discount options.",
+                help="Select membership tier.",
             )
             cap = st.number_input(
                 "Purchase Price per Point ($)",
@@ -993,13 +993,13 @@ def main() -> None:
                 min_value=0.0,
             )
             opt = st.radio(
-                "Discount Option",
+                "Membership Tier",
                 [
-                    "No Discount",
-                    "Executive: 25% Points Discount (within 30 days)",
-                    "Presidential: 30% Points Discount (within 60 days)",
+                    "Ordinary Level",
+                    "Executive: 25% Points Benefit (within 30 days)",
+                    "Presidential: 30% Points Benefit (within 60 days)",
                 ],
-                help="Select discount options.",
+                help="Select membership tier.",
             )
             if "Presidential" in opt:
                 policy = DiscountPolicy.PRESIDENTIAL
@@ -1118,7 +1118,7 @@ def main() -> None:
     if res.discount_applied and mode == UserMode.RENTER:
         pct = "30%" if policy == DiscountPolicy.PRESIDENTIAL else "25%"
         st.success(
-            f"🎉 **Discount Applied!** {pct} off points for {len(res.discounted_days)} day(s)."
+            f"🎉 **Tier Benefit Applied!** {pct} off points for {len(res.discounted_days)} day(s)."
         )
     st.divider()
 
@@ -1247,7 +1247,7 @@ def main() -> None:
             cost_df = build_rental_cost_table(res_data, year, rate, disc_mul, mode, owner_params)
             if cost_df is not None:
                 title = "7-Night Rental Costs" if mode == UserMode.RENTER else "7-Night Ownership Costs"
-                note = " — Discount applied" if disc_mul < 1 else ""
+                note = " — Tier benefit applied" if disc_mul < 1 else ""
                 st.markdown(f"**{title}** @ ${rate:.2f}/pt{note}")
                 st.dataframe(cost_df, use_container_width=True, hide_index=True)
             else:
@@ -1272,30 +1272,30 @@ def main() -> None:
                     - Formula: (Purchase price − salvage value) ÷ useful life × points used
                     - Represents: Asset value decline over time
                     **Points Calculation**
-                    - Effective points may be reduced by last-minute owner discounts.
+                    - Effective points may be adjusted by membership tier benefits.
                     - Holiday periods are priced as whole blocks rather than per-night averages.
                     """
                 )
             else:
                 if policy == DiscountPolicy.PRESIDENTIAL:
                     discount_text = (
-                        "**Presidential last-minute 30% points discount:** when booked "
+                        "**Presidential 30% points benefit:** when booked "
                         "within 60 days of check-in."
                     )
                 elif policy == DiscountPolicy.EXECUTIVE:
                     discount_text = (
-                        "**Executive last-minute 25% points discount:** when booked "
+                        "**Executive 25% points benefit:** when booked "
                         "within 30 days of check-in."
                     )
                 else:
-                    discount_text = "**Standard points applied (no discount).**"
+                    discount_text = "**Standard points applied (Ordinary Level).**"
                 st.markdown(
                     f"""
                     ### 🏨 Rent Calculation
                     **Current Maintenance:** **${rate:.2f}** per point.
                     {discount_text}
-                    - The **Points** column may show reduced points if last-minute discounts apply.
-                    - 💰 Rent is always computed from the **discounted** points.
+                    - The **Points** column may show adjusted points if tier benefits apply.
+                    - 💰 Rent is always computed from the **adjusted** points.
                     - Holiday periods are treated as full blocks for pricing.
                     """
                 )
