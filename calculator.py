@@ -14,51 +14,62 @@ from common.charts import create_gantt_chart_from_resort_data
 from common.data import ensure_data_in_session
 
 # ==============================================================================
-# LAYER 0: SETTINGS PERSISTENCE (Shadow Key + Manual Load/Save)
+# LAYER 0: SETTINGS PERSISTENCE (Pure External Config)
 # ==============================================================================
-DEFAULT_SETTINGS_FILE = "mvc_owner_settings.json"
+SETTINGS_FILE = "mvc_owner_settings.json"
 
-DEFAULT_SETTINGS = {
-    "maintenance_rate": 0.56,
-    "purchase_price": 18.0,
-    "capital_cost_pct": 5.0,
-    "salvage_value": 3.0,
-    "useful_life": 20,
+# GENERIC SKELETON - NO SPECIFIC USER DATA
+# These are only used if the JSON file is deleted/missing.
+DEFAULT_SCHEMA = {
+    "maintenance_rate": 0.0,
+    "purchase_price": 0.0,
+    "capital_cost_pct": 0.0,
+    "salvage_value": 0.0,
+    "useful_life": 10,
     "discount_tier": "No Discount",
     "include_maintenance": True,
     "include_capital": False,
     "include_depreciation": False,
-    "renter_rate": 0.817,
+    "renter_rate": 0.0,
     "renter_discount_tier": "No Discount",
-    "preferred_resort_id": "surfers-paradise"
+    "preferred_resort_id": None
 }
 
-def load_initial_settings():
+def load_settings_into_state():
     """
-    Initial Load: Only runs once at startup to populate session state
-    from the default file or hardcoded defaults.
+    Load settings from disk into Session State (The Source of Truth).
+    If file exists, it OVERWRITES the generic schema.
     """
     if "user_settings" not in st.session_state:
-        # Start with defaults
-        settings = DEFAULT_SETTINGS.copy()
+        # 1. Start with the generic skeleton
+        settings = DEFAULT_SCHEMA.copy()
         
-        # Try loading default file if exists
-        if os.path.exists(DEFAULT_SETTINGS_FILE):
+        # 2. Load the actual file (The Source of Truth)
+        if os.path.exists(SETTINGS_FILE):
             try:
-                with open(DEFAULT_SETTINGS_FILE, "r") as f:
+                with open(SETTINGS_FILE, "r") as f:
                     file_data = json.load(f)
+                    # Update skeleton with file data
                     settings.update(file_data)
             except Exception as e:
-                # Fail silently on initial load, just use defaults
-                pass
+                st.error(f"Error loading settings file: {e}")
         
         st.session_state.user_settings = settings
 
 def update_setting(key: str, widget_key: str):
     """
-    Callback: Syncs a specific widget value TO the Source of Truth.
+    Callback: Syncs a specific widget value TO the Source of Truth and SAVES to disk.
     """
-    st.session_state.user_settings[key] = st.session_state[widget_key]
+    # 1. Update State
+    new_value = st.session_state[widget_key]
+    st.session_state.user_settings[key] = new_value
+    
+    # 2. Save to Disk immediately
+    try:
+        with open(SETTINGS_FILE, "w") as f:
+            json.dump(st.session_state.user_settings, f, indent=2)
+    except Exception as e:
+        st.error(f"Failed to save settings: {e}")
 
 def get_tier_index(tier_string: str) -> int:
     """Map JSON string to UI Radio index."""
@@ -764,7 +775,7 @@ def build_rental_cost_table(
 # ==============================================================================
 def main() -> None:
     # 0) LOAD SETTINGS (Source of Truth)
-    load_initial_settings()
+    load_settings_into_state()
     settings = st.session_state.user_settings 
 
     # 1) Shared data
@@ -777,6 +788,7 @@ def main() -> None:
     resorts_full = repo.get_resort_list_full()
 
     # Resort Persistence using Shadow Key
+    # NOTE: "ko-olina-beach" comes from JSON file, not hardcoded logic here.
     if "current_resort_id" not in st.session_state or st.session_state.current_resort_id is None:
         pref_id = settings.get("preferred_resort_id")
         found_id = None
@@ -816,16 +828,17 @@ def main() -> None:
         # 2. UPLOAD (Import with Override)
         uploaded_file = st.file_uploader("📂 Load Settings", type=["json"], help="Upload a settings JSON to override current values.")
         if uploaded_file is not None:
-            # Check if we already processed this specific file upload instance
-            # Streamlit re-uploads the file on every interaction unless we clear it or check ID
-            # Simpler approach: Load -> Update Session -> Rerun to refresh widgets
             try:
                 data = json.load(uploaded_file)
-                # Verify it looks like a settings file (simple check)
+                # Verify structure simple check
                 if "maintenance_rate" in data:
                     st.session_state.user_settings.update(data)
+                    
+                    # PERSIST: Write to disk immediately so it remembers next reload
+                    with open(SETTINGS_FILE, "w") as f:
+                        json.dump(st.session_state.user_settings, f, indent=2)
+
                     st.success("Settings loaded! Refreshing...")
-                    # Force rerun so all widgets in the next block pick up the new values from session_state
                     st.rerun()
                 else:
                     st.error("Invalid settings file.")
@@ -843,13 +856,16 @@ def main() -> None:
         active_rate = 0.0
         opt_str = "Ordinary Level"
 
-        # --- SYNC FUNCTIONS (UI -> Source of Truth) ---
+        # --- SYNC FUNCTIONS (UI -> Source of Truth -> Disk) ---
         def sync_tier_owner():
             val = st.session_state.widget_owner_tier
             simple = "No Discount"
             if "Executive" in val: simple = "Executive"
             elif "Presidential" in val: simple = "Presidential"
             st.session_state.user_settings["discount_tier"] = simple
+            # Trigger save
+            with open(SETTINGS_FILE, "w") as f:
+                json.dump(st.session_state.user_settings, f, indent=2)
 
         def sync_tier_renter():
             val = st.session_state.widget_renter_tier
@@ -857,6 +873,9 @@ def main() -> None:
             if "Executive" in val: simple = "Executive"
             elif "Presidential" in val: simple = "Presidential"
             st.session_state.user_settings["renter_discount_tier"] = simple
+            # Trigger save
+            with open(SETTINGS_FILE, "w") as f:
+                json.dump(st.session_state.user_settings, f, indent=2)
 
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
@@ -987,8 +1006,11 @@ def main() -> None:
     render_resort_grid(resorts_full, current_resort_id)
 
     # Check if preference changed implicitly via Grid click
+    # This updates the JSON file if user clicks a different resort
     if st.session_state.current_resort_id != settings.get("preferred_resort_id"):
          st.session_state.user_settings["preferred_resort_id"] = st.session_state.current_resort_id
+         with open(SETTINGS_FILE, "w") as f:
+             json.dump(st.session_state.user_settings, f, indent=2)
 
     resort_obj = next((r for r in resorts_full if r.get("id") == current_resort_id), None)
     if not resort_obj: return
