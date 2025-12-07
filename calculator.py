@@ -1059,7 +1059,7 @@ def main() -> None:
     st.divider()
 
     # ===== Booking details =====
-    st.markdown("### 📅 Booking Details")
+    # Title removed per request
     input_cols = st.columns([2, 1, 2, 2])
     with input_cols[0]:
         checkin = st.date_input(
@@ -1112,7 +1112,7 @@ def main() -> None:
     res = calc.calculate_breakdown(
         r_name, room_sel, adj_in, adj_n, mode, rate, policy, owner_params
     )
-    st.markdown(f"### 📊 Results: {room_sel}")
+    # "Results: ..." Title removed per request
     render_metrics_grid(res, mode, owner_params, policy)
 
     if res.discount_applied and mode == UserMode.RENTER:
@@ -1122,14 +1122,14 @@ def main() -> None:
         )
     st.divider()
 
-    # Detailed breakdown
-    st.markdown("### 📋 Detailed Breakdown")
-    st.dataframe(
-        res.breakdown_df,
-        use_container_width=True,
-        hide_index=True,
-        height=min(400, (len(res.breakdown_df) + 1) * 35 + 50),
-    )
+    # Detailed breakdown (renamed and expanded)
+    with st.expander("📋 Daily Breakdown", expanded=False):
+        st.dataframe(
+            res.breakdown_df,
+            use_container_width=True,
+            hide_index=True,
+            height=min(400, (len(res.breakdown_df) + 1) * 35 + 50),
+        )
 
     # All Room Types – This Stay (below breakdown)
     st.markdown("**All Room Types – This Stay**")
@@ -1299,6 +1299,16 @@ def main() -> None:
                     - Holiday periods are treated as full blocks for pricing.
                     """
                 )
+                
+    # --- Bottom of Owner Mode: Access to Editor ---
+    if mode == UserMode.OWNER:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.divider()
+        col_e1, col_e2 = st.columns([4, 1])
+        with col_e2:
+            if st.button("🔧 Open Resort Editor", use_container_width=True):
+                st.session_state.active_tool = "editor"
+                st.rerun()
 
 def run() -> None:
     main()
