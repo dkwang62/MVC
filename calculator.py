@@ -928,20 +928,18 @@ def main() -> None:
         found_id = None
         
         if pref_id:
-            # A. Exact Match
-            for r in resorts_full:
-                if r.get("id") == pref_id:
-                    found_id = pref_id
-                    break
+            # Normalize preference
+            norm_pref = str(pref_id).lower().strip()
             
-            # B. Fuzzy Match (if exact not found)
-            if not found_id:
-                for r in resorts_full:
-                    rid = r.get("id", "")
-                    # Check if preference is a substring of ID or vice versa
-                    if pref_id in rid or rid in pref_id:
-                        found_id = rid
-                        break
+            # Fuzzy Search through all loaded resorts
+            for r in resorts_full:
+                rid_raw = r.get("id", "")
+                rid_norm = str(rid_raw).lower().strip()
+                
+                # Check for substring match in either direction
+                if norm_pref == rid_norm or norm_pref in rid_norm or rid_norm in norm_pref:
+                    found_id = rid_raw  # Grab the ACTUAL ID from the data
+                    break
         
         # Set found ID, or fallback to first available
         if found_id:
