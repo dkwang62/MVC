@@ -31,9 +31,10 @@ def load_default_settings() -> Dict[str, Any]:
     if os.path.exists(settings_path):
         try:
             with open(settings_path, "r") as f:
-                return json.load(f)
-        except Exception:
-            pass
+                data = json.load(f)
+                return data
+        except Exception as e:
+            st.error(f"Error loading settings file: {e}")
     return {}
 
 def apply_settings_from_dict(data: Dict[str, Any]):
@@ -85,43 +86,39 @@ def apply_settings_from_dict(data: Dict[str, Any]):
     if "preferred_resort_id" in data:
         st.session_state.current_resort_id = data["preferred_resort_id"]
 
-def initialize_session_variables(defaults: Dict[str, Any]):
+def initialize_session_variables(defaults: Dict[str, Any], force_reset: bool = False):
     """
     Ensure all widget keys exist in session state, using defaults if needed.
-    This guarantees values persist when switching between User Modes.
+    If force_reset is True, overwrite existing values with defaults.
     """
     
+    def set_val(key, val):
+        if force_reset or key not in st.session_state:
+            st.session_state[key] = val
+
     # 1. Owner Defaults
-    if "owner_maint_rate" not in st.session_state:
-        st.session_state.owner_maint_rate = float(defaults.get("maintenance_rate", 0.83))
-    if "owner_tier_sel" not in st.session_state:
-        val = defaults.get("discount_tier", "Ordinary Level")
-        if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
-        st.session_state.owner_tier_sel = val
-    if "owner_price" not in st.session_state:
-        st.session_state.owner_price = float(defaults.get("purchase_price", 3.5))
-    if "owner_coc_pct" not in st.session_state:
-        st.session_state.owner_coc_pct = float(defaults.get("capital_cost_pct", 5.0))
-    if "owner_life" not in st.session_state:
-        st.session_state.owner_life = int(defaults.get("useful_life", 20))
-    if "owner_salvage" not in st.session_state:
-        st.session_state.owner_salvage = float(defaults.get("salvage_value", 3.0))
+    set_val("owner_maint_rate", float(defaults.get("maintenance_rate", 0.83)))
+    
+    raw_tier = defaults.get("discount_tier", "Ordinary Level")
+    if raw_tier not in TIER_OPTIONS: raw_tier = TIER_OPTIONS[0]
+    set_val("owner_tier_sel", raw_tier)
+    
+    set_val("owner_price", float(defaults.get("purchase_price", 3.5)))
+    set_val("owner_coc_pct", float(defaults.get("capital_cost_pct", 5.0)))
+    set_val("owner_life", int(defaults.get("useful_life", 20)))
+    set_val("owner_salvage", float(defaults.get("salvage_value", 3.0)))
     
     # Checkboxes
-    if "owner_inc_m" not in st.session_state:
-        st.session_state.owner_inc_m = bool(defaults.get("include_maintenance", True))
-    if "owner_inc_c" not in st.session_state:
-        st.session_state.owner_inc_c = bool(defaults.get("include_capital", True))
-    if "owner_inc_d" not in st.session_state:
-        st.session_state.owner_inc_d = bool(defaults.get("include_depreciation", False))
+    set_val("owner_inc_m", bool(defaults.get("include_maintenance", True)))
+    set_val("owner_inc_c", bool(defaults.get("include_capital", True)))
+    set_val("owner_inc_d", bool(defaults.get("include_depreciation", False)))
 
     # 2. Renter Defaults
-    if "renter_price" not in st.session_state:
-        st.session_state.renter_price = float(defaults.get("renter_rate", 0.83))
-    if "renter_tier_sel" not in st.session_state:
-        val = defaults.get("renter_discount_tier", "Ordinary Level")
-        if val not in TIER_OPTIONS: val = TIER_OPTIONS[0]
-        st.session_state.renter_tier_sel = val
+    set_val("renter_price", float(defaults.get("renter_rate", 0.83)))
+    
+    raw_renter = defaults.get("renter_discount_tier", "Ordinary Level")
+    if raw_renter not in TIER_OPTIONS: raw_renter = TIER_OPTIONS[0]
+    set_val("renter_tier_sel", raw_renter)
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS (Type-Safe Data Structures)
@@ -1053,6 +1050,19 @@ def main() -> None:
             st.info("**Save time by saving your profile.** Store your costs, membership tier, and resort preference to a file. Upload it anytime to instantly restore your setup.")
             st.markdown("###### Load/Save Settings")
             
+            # FORCE RESET BUTTON
+            if st.button("🔄 Reset to Defaults from File", use_container_width=True):
+                # Reload settings and force init
+                fresh_settings = load_default_settings()
+                if fresh_settings:
+                    initialize_session_variables(fresh_settings, force_reset=True)
+                    st.toast("✅ Settings reset to file defaults!", icon="🔄")
+                    st.rerun()
+                else:
+                    st.error("Could not find mvc_owner_settings.json to reset.")
+
+            st.markdown("---")
+
             # LOAD
             config_file = st.file_uploader("Load Settings (JSON)", type="json", key="user_cfg_upload")
             if config_file:
@@ -1062,6 +1072,7 @@ def main() -> None:
                     data = json.load(config_file)
                     apply_settings_from_dict(data)
                     st.session_state.last_loaded_cfg = file_sig
+                    st.toast("✅ Settings loaded successfully!", icon="📂")
                     st.rerun()
 
             # SAVE
