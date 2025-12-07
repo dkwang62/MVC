@@ -14,9 +14,9 @@ from common.charts import create_gantt_chart_from_resort_data
 from common.data import ensure_data_in_session
 
 # ==============================================================================
-# LAYER 0: SETTINGS PERSISTENCE (The "Shadow Key" Implementation)
+# LAYER 0: SETTINGS PERSISTENCE (Shadow Key + Manual Load/Save)
 # ==============================================================================
-SETTINGS_FILE = "mvc_owner_settings.json"
+DEFAULT_SETTINGS_FILE = "mvc_owner_settings.json"
 
 DEFAULT_SETTINGS = {
     "maintenance_rate": 0.56,
@@ -33,42 +33,32 @@ DEFAULT_SETTINGS = {
     "preferred_resort_id": "surfers-paradise"
 }
 
-def load_settings_into_state():
+def load_initial_settings():
     """
-    Load settings from disk into Session State (The Source of Truth).
-    Only runs once per session to initialize.
+    Initial Load: Only runs once at startup to populate session state
+    from the default file or hardcoded defaults.
     """
     if "user_settings" not in st.session_state:
         # Start with defaults
         settings = DEFAULT_SETTINGS.copy()
         
-        # Override with file data if exists
-        if os.path.exists(SETTINGS_FILE):
+        # Try loading default file if exists
+        if os.path.exists(DEFAULT_SETTINGS_FILE):
             try:
-                with open(SETTINGS_FILE, "r") as f:
+                with open(DEFAULT_SETTINGS_FILE, "r") as f:
                     file_data = json.load(f)
                     settings.update(file_data)
             except Exception as e:
-                st.warning(f"Could not load settings file: {e}")
+                # Fail silently on initial load, just use defaults
+                pass
         
         st.session_state.user_settings = settings
 
-def save_setting_callback(setting_key: str, widget_key: str):
+def update_setting(key: str, widget_key: str):
     """
-    The Sync Function.
-    1. Reads the 'Shadow Widget' value.
-    2. Updates the 'Source of Truth'.
-    3. Persists to Disk.
+    Callback: Syncs a specific widget value TO the Source of Truth.
     """
-    new_value = st.session_state[widget_key]
-    st.session_state.user_settings[setting_key] = new_value
-    
-    # Write to disk immediately
-    try:
-        with open(SETTINGS_FILE, "w") as f:
-            json.dump(st.session_state.user_settings, f, indent=2)
-    except Exception as e:
-        st.error(f"Failed to save settings: {e}")
+    st.session_state.user_settings[key] = st.session_state[widget_key]
 
 def get_tier_index(tier_string: str) -> int:
     """Map JSON string to UI Radio index."""
@@ -77,7 +67,7 @@ def get_tier_index(tier_string: str) -> int:
         return 2
     if "executive" in s:
         return 1
-    return 0  # Default to Ordinary Level
+    return 0 
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS
@@ -88,8 +78,8 @@ class UserMode(Enum):
 
 class DiscountPolicy(Enum):
     NONE = "None"
-    EXECUTIVE = "within_30_days"  # 25%
-    PRESIDENTIAL = "within_60_days"  # 30%
+    EXECUTIVE = "within_30_days"
+    PRESIDENTIAL = "within_60_days"
 
 @dataclass
 class Holiday:
@@ -773,9 +763,9 @@ def build_rental_cost_table(
 # MAIN PAGE LOGIC
 # ==============================================================================
 def main() -> None:
-    # 0) LOAD SETTINGS FIRST
-    load_settings_into_state()
-    settings = st.session_state.user_settings # Access Source of Truth
+    # 0) LOAD SETTINGS (Source of Truth)
+    load_initial_settings()
+    settings = st.session_state.user_settings 
 
     # 1) Shared data
     ensure_data_in_session()
@@ -786,7 +776,7 @@ def main() -> None:
     repo = MVCRepository(st.session_state.data)
     resorts_full = repo.get_resort_list_full()
 
-    # Resort Persistence using Shadow Key pattern for Resort ID as well
+    # Resort Persistence using Shadow Key
     if "current_resort_id" not in st.session_state or st.session_state.current_resort_id is None:
         pref_id = settings.get("preferred_resort_id")
         found_id = None
@@ -803,20 +793,47 @@ def main() -> None:
         elif resorts_full:
             st.session_state.current_resort_id = resorts_full[0].get("id")
 
-    # Helper to save resort preference
-    def save_resort_preference():
-        new_id = st.session_state.widget_resort_select
-        st.session_state.current_resort_id = new_id
-        save_setting_callback("preferred_resort_id", "widget_resort_select")
-
     # Initialize generic UI state
     if "show_help" not in st.session_state:
         st.session_state.show_help = False
 
-    # 4) Sidebar: WIDGETS WITH SHADOW KEYS
+    # 4) SIDEBAR: Settings & File IO
     with st.sidebar:
         st.divider()
-        st.markdown("### 👤 User Settings")
+        st.markdown("### 💾 Config Management")
+        
+        # --- EXPORT / IMPORT LOGIC ---
+        # 1. DOWNLOAD (Export)
+        current_conf_json = json.dumps(settings, indent=2)
+        st.download_button(
+            label="⬇️ Download Settings",
+            data=current_conf_json,
+            file_name="mvc_owner_settings.json",
+            mime="application/json",
+            help="Save current configuration to a JSON file."
+        )
+
+        # 2. UPLOAD (Import with Override)
+        uploaded_file = st.file_uploader("📂 Load Settings", type=["json"], help="Upload a settings JSON to override current values.")
+        if uploaded_file is not None:
+            # Check if we already processed this specific file upload instance
+            # Streamlit re-uploads the file on every interaction unless we clear it or check ID
+            # Simpler approach: Load -> Update Session -> Rerun to refresh widgets
+            try:
+                data = json.load(uploaded_file)
+                # Verify it looks like a settings file (simple check)
+                if "maintenance_rate" in data:
+                    st.session_state.user_settings.update(data)
+                    st.success("Settings loaded! Refreshing...")
+                    # Force rerun so all widgets in the next block pick up the new values from session_state
+                    st.rerun()
+                else:
+                    st.error("Invalid settings file.")
+            except Exception as e:
+                st.error(f"Error parsing file: {e}")
+
+        st.divider()
+        st.markdown("### 👤 User Parameters")
         
         mode_sel = st.selectbox("User Mode", [m.value for m in UserMode], index=0)
         mode = UserMode(mode_sel)
@@ -826,15 +843,13 @@ def main() -> None:
         active_rate = 0.0
         opt_str = "Ordinary Level"
 
-        # --- SPECIAL TIER SYNC FUNCTION ---
-        # We need this because the Radio returns a full string, but we store a simple string in JSON
+        # --- SYNC FUNCTIONS (UI -> Source of Truth) ---
         def sync_tier_owner():
             val = st.session_state.widget_owner_tier
             simple = "No Discount"
             if "Executive" in val: simple = "Executive"
             elif "Presidential" in val: simple = "Presidential"
             st.session_state.user_settings["discount_tier"] = simple
-            save_setting_callback("discount_tier", "widget_owner_tier") # Just to trigger file save
 
         def sync_tier_renter():
             val = st.session_state.widget_renter_tier
@@ -842,21 +857,18 @@ def main() -> None:
             if "Executive" in val: simple = "Executive"
             elif "Presidential" in val: simple = "Presidential"
             st.session_state.user_settings["renter_discount_tier"] = simple
-            save_setting_callback("renter_discount_tier", "widget_renter_tier")
 
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
             
-            # Maintenance Rate
             owner_maint_rate = st.number_input(
                 "Maintenance per Point ($)",
                 value=float(settings["maintenance_rate"]),
                 step=0.01, min_value=0.0,
                 key="widget_maint_rate",
-                on_change=save_setting_callback, args=("maintenance_rate", "widget_maint_rate")
+                on_change=update_setting, args=("maintenance_rate", "widget_maint_rate")
             )
             
-            # Tier Selection
             tier_options = [
                 "Ordinary Level",
                 "Executive: 25% Points Benefit (within 30 days)",
@@ -870,58 +882,54 @@ def main() -> None:
                 on_change=sync_tier_owner 
             )
             
-            # Purchase Price
             cap = st.number_input(
                 "Purchase Price per Point ($)",
                 value=float(settings["purchase_price"]),
                 step=1.0, min_value=0.0,
                 key="widget_pp",
-                on_change=save_setting_callback, args=("purchase_price", "widget_pp")
+                on_change=update_setting, args=("purchase_price", "widget_pp")
             )
 
-            # Cost of Capital
             coc_val = st.number_input(
                 "Cost of Capital (%)",
                 value=float(settings["capital_cost_pct"]),
                 step=0.5, min_value=0.0,
                 key="widget_coc",
-                on_change=save_setting_callback, args=("capital_cost_pct", "widget_coc")
+                on_change=update_setting, args=("capital_cost_pct", "widget_coc")
             )
             coc = coc_val / 100.0
 
-            # Life & Salvage
             life = st.number_input(
                 "Useful Life (yrs)", 
                 value=int(settings["useful_life"]), min_value=1,
                 key="widget_life",
-                on_change=save_setting_callback, args=("useful_life", "widget_life")
+                on_change=update_setting, args=("useful_life", "widget_life")
             )
             salvage = st.number_input(
                 "Salvage ($/pt)",
                 value=float(settings["salvage_value"]),
                 step=0.5, min_value=0.0,
                 key="widget_salvage",
-                on_change=save_setting_callback, args=("salvage_value", "widget_salvage")
+                on_change=update_setting, args=("salvage_value", "widget_salvage")
             )
 
-            # Checkboxes
             inc_m = st.checkbox(
                 "Include Maintenance",
                 value=bool(settings["include_maintenance"]),
                 key="widget_inc_m",
-                on_change=save_setting_callback, args=("include_maintenance", "widget_inc_m")
+                on_change=update_setting, args=("include_maintenance", "widget_inc_m")
             )
             inc_c = st.checkbox(
                 "Include Capital Cost",
                 value=bool(settings["include_capital"]),
                 key="widget_inc_c",
-                on_change=save_setting_callback, args=("include_capital", "widget_inc_c")
+                on_change=update_setting, args=("include_capital", "widget_inc_c")
             )
             inc_d = st.checkbox(
                 "Include Depreciation",
                 value=bool(settings["include_depreciation"]),
                 key="widget_inc_d",
-                on_change=save_setting_callback, args=("include_depreciation", "widget_inc_d")
+                on_change=update_setting, args=("include_depreciation", "widget_inc_d")
             )
             
             active_rate = owner_maint_rate
@@ -940,7 +948,7 @@ def main() -> None:
                 value=float(settings["renter_rate"]),
                 step=0.01, min_value=0.0,
                 key="widget_renter_rate",
-                on_change=save_setting_callback, args=("renter_rate", "widget_renter_rate")
+                on_change=update_setting, args=("renter_rate", "widget_renter_rate")
             )
             
             tier_options = [
@@ -974,20 +982,13 @@ def main() -> None:
         badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
     )
 
-    # Resort Grid with Preference Save
-    # We construct a custom grid or use the common one. 
-    # To support the shadow key logic on the resort grid, we need to extract the ID manually
-    # But common.ui.render_resort_grid uses buttons. 
-    # Let's trust render_resort_grid for layout, but update preference if changed.
+    # RESORT GRID PREFERENCE SYNC
     current_resort_id = st.session_state.current_resort_id
     render_resort_grid(resorts_full, current_resort_id)
 
-    # Check if the grid update changed the ID, if so, save it
+    # Check if preference changed implicitly via Grid click
     if st.session_state.current_resort_id != settings.get("preferred_resort_id"):
          st.session_state.user_settings["preferred_resort_id"] = st.session_state.current_resort_id
-         # Silent save
-         with open(SETTINGS_FILE, "w") as f:
-            json.dump(st.session_state.user_settings, f, indent=2)
 
     resort_obj = next((r for r in resorts_full if r.get("id") == current_resort_id), None)
     if not resort_obj: return
