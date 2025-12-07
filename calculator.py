@@ -86,7 +86,10 @@ def apply_settings_from_dict(data: Dict[str, Any]):
         st.session_state.current_resort_id = data["preferred_resort_id"]
 
 def initialize_session_variables(defaults: Dict[str, Any]):
-    """Ensure all widget keys exist in session state, using defaults if needed."""
+    """
+    Ensure all widget keys exist in session state, using defaults if needed.
+    This guarantees values persist when switching between User Modes.
+    """
     
     # 1. Owner Defaults
     if "owner_maint_rate" not in st.session_state:
@@ -1063,26 +1066,20 @@ def main() -> None:
 
             # SAVE
             # Construct dictionary from current session state
-            # IMPORTANT: We map UI "Ordinary Level" -> JSON "No Discount" here
             current_pref_resort = st.session_state.current_resort_id if st.session_state.current_resort_id else ""
             
-            # Convert UI selection back to the specific JSON strings
-            # This ensures your file format remains consistent
-            json_owner_tier = st.session_state.owner_tier_sel
-            json_renter_tier = st.session_state.renter_tier_sel
-
             current_settings = {
                 "maintenance_rate": st.session_state.owner_maint_rate,
                 "purchase_price": st.session_state.owner_price,
                 "capital_cost_pct": st.session_state.owner_coc_pct,
                 "salvage_value": st.session_state.owner_salvage,
                 "useful_life": st.session_state.owner_life,
-                "discount_tier": json_owner_tier,  # Transformed
+                "discount_tier": st.session_state.owner_tier_sel,
                 "include_maintenance": st.session_state.owner_inc_m,
                 "include_capital": st.session_state.owner_inc_c,
                 "include_depreciation": st.session_state.owner_inc_d,
                 "renter_rate": st.session_state.renter_price,
-                "renter_discount_tier": json_renter_tier,  # Transformed
+                "renter_discount_tier": st.session_state.renter_tier_sel,
                 "preferred_resort_id": current_pref_resort
             }
             st.download_button("Save Settings", json.dumps(current_settings, indent=2), "mvc_owner_settings.json", "application/json", use_container_width=True)
