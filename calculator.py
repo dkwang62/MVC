@@ -915,14 +915,14 @@ def main() -> None:
         owner_params: Optional[dict] = None
         policy: DiscountPolicy = DiscountPolicy.NONE
         # Temporarily set rate; may be overridden later based on mode + year
-        rate = 0.50
+        rate = 0.83
         opt = "Ordinary Level"  # Default
 
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
             rate = st.number_input(
                 "Maintenance per Point ($)",
-                value=0.50,
+                value=0.52,
                 step=0.01,
                 min_value=0.0,
             )
@@ -988,7 +988,7 @@ def main() -> None:
             st.markdown("#### 🏨 Rental Parameters")
             rate = st.number_input(
                 "Maintenance per Point ($)",
-                value=0.50,
+                value=0.52,
                 step=0.01,
                 min_value=0.0,
             )
