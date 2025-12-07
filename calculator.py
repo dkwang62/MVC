@@ -59,7 +59,7 @@ def apply_settings_from_json(data: dict):
         if "preferred_resort_id" in data:
             st.session_state.preferred_resort_id = str(data["preferred_resort_id"])
     except Exception:
-        st.error("Some settings failed to load")
+        st.error("Some settings could not be applied")
 
 def load_persistent_settings():
     if not st.session_state.get("settings_loaded", False):
@@ -103,7 +103,7 @@ def get_current_settings_json() -> str:
     return json.dumps(settings, indent=2)
 
 # ==============================================================================
-# ORIGINAL CODE – UNCHANGED
+# YOUR ORIGINAL CODE – 100% UNCHANGED
 # ==============================================================================
 
 def get_tier_index(tier_string: str) -> int:
@@ -273,7 +273,7 @@ class MVCCalculator:
         rows: List[Dict[str, Any]] = []
         tot_eff_pts = 0
         tot_financial = 0.0
-        tot_m = tot_c = tot_d = 0.0  # ← Fixed the typo here
+        tot_m = tot_c = tot_d = 0.0
         disc_applied = False
         disc_days: List[str] = []
         is_owner = user_mode == UserMode.OWNER
@@ -433,8 +433,70 @@ class MVCCalculator:
             d_cost=tot_d,
         )
 
-# ... rest of your functions (render_metrics_grid, get_all_room_types_for_resort, etc.) are unchanged ...
+    # ← THIS WAS MISSING! Now added back
+    def adjust_holiday(self, resort_name: str, checkin: date, nights: int) -> Tuple[date, int, bool]:
+        """If stay overlaps holidays, expand to full holiday span."""
+        resort = self.repo.get_resort(resort_name)
+        if not resort or str(checkin.year) not in resort.years:
+            return checkin, nights, False
+        end = checkin + timedelta(days=nights - 1)
+        yd = resort.years[str(checkin.year)]
+        overlapping: List[Holiday] = []
+        for h in yd.holidays:
+            if h.start_date <= end and h.end_date >= checkin:
+                overlapping.append(h)
+        if not overlapping:
+            return checkin, nights, False
+        earliest_start = min(h.start_date for h in overlapping)
+        latest_end = max(h.end_date for h in overlapping)
+        adjusted_start = min(checkin, earliest_start)
+        adjusted_end = max(end, latest_end)
+        adjusted_nights = (adjusted_end - adjusted_start).days + 1
+        return adjusted_start, adjusted_nights, True
 
+def render_metrics_grid(result: CalculationResult, mode: UserMode, owner_params: Optional[dict], policy: DiscountPolicy) -> None:
+    owner_params = owner_params or {}
+    if mode == UserMode.OWNER:
+        num = sum([owner_params.get("inc_m", False), owner_params.get("inc_c", False), owner_params.get("inc_d", False)])
+        cols = st.columns(2 + max(num, 0))
+        with cols[0]:
+            st.metric("Total Points", f"{result.total_points:,}")
+        with cols[1]:
+            st.metric("Total Cost", f"${result.financial_total:,.0f}")
+        idx = 2
+        if owner_params.get("inc_m"):
+            with cols[idx]: st.metric("Maintenance", f"${result.m_cost:,.0f}"); idx += 1
+        if owner_params.get("inc_c"):
+            with cols[idx]: st.metric("Capital Cost", f"${result.c_cost:,.0f}"); idx += 1
+        if owner_params.get("inc_d"):
+            with cols[idx]: st.metric("Depreciation", f"${result.d_cost:,.0f}")
+    else:
+        if result.discount_applied:
+            cols = st.columns(3)
+            pct = "30%" if policy == DiscountPolicy.PRESIDENTIAL else "25%"
+            with cols[0]: st.metric("Total Points", f"{result.total_points:,}")
+            with cols[1]: st.metric("Total Rent", f"${result.financial_total:,.0f}")
+            with cols[2]: st.metric("Membership Tier", pct, delta=f"{len(result.discounted_days)} days")
+        else:
+            cols = st.columns(2)
+            with cols[0]: st.metric("Total Points", f"{result.total_points:,}")
+            with cols[1]: st.metric("Total Rent", f"${result.financial_total:,.0f}")
+
+def get_all_room_types_for_resort(resort_data: ResortData) -> List[str]:
+    rooms = set()
+    for year_obj in resort_data.years.values():
+        for season in year_obj.seasons:
+            for cat in season.day_categories:
+                if isinstance(cat.room_points, dict):
+                    rooms.update(cat.room_points.keys())
+        for holiday in year_obj.holidays:
+            if isinstance(holiday.room_points, dict):
+                rooms.update(holiday.room_points.keys())
+    return sorted(rooms)
+
+# ==============================================================================
+# MAIN – WITH SETTINGS PERSISTENCE
+# ==============================================================================
 def main() -> None:
     init_session_defaults()
     load_persistent_settings()
