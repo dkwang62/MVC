@@ -1108,7 +1108,7 @@ def main(forced_mode: str = "Renter") -> None:
                     "include_maintenance": inc_m,
                     "include_capital": inc_c,
                     "include_depreciation": inc_d,
-                    "renter_rate": st.session_state.get("renter_rate_val", 0.817),
+                    "renter_rate": st.session_state.get("renter_rate_val", 0.82),
                     "renter_discount_tier": st.session_state.get("renter_discount_tier", "No Discount"),
                     "preferred_resort_id": st.session_state.get("current_resort_id", "")
                 }
