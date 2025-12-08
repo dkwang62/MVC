@@ -1161,7 +1161,6 @@ def main(forced_mode: str = "Renter") -> None:
         resort_info["timezone"],
         resort_info["address"],
     )
-    st.divider()
 
     # ===== Booking details =====
     input_cols = st.columns([2, 1, 2, 2])
@@ -1340,7 +1339,6 @@ def main(forced_mode: str = "Renter") -> None:
     year_str = str(adj_in.year)
     res_data = calc.repo.get_resort(r_name)
     if res_data and year_str in res_data.years:
-        st.divider()
         with st.expander("📅 Season and Holiday Calendar", expanded=False):
             gantt_fig = create_gantt_chart_from_resort_data(
                 resort_data=res_data,
