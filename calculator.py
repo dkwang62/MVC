@@ -1001,8 +1001,8 @@ def main(forced_mode: str = "Renter") -> None:
     disc_mul = 1.0
 
     render_page_header(
-        "Calculator",
-        f"👤 {mode.value} Mode: {'Ownership' if mode == UserMode.OWNER else 'Rental'} Cost Analysis",
+        title="Calculator",
+        subtitle=f" {mode.value}
         icon="🏨",
         badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
     )
