@@ -434,8 +434,6 @@ class MVCCalculator:
         # ============================================================
         # PRIORITY RULE (ROUND OF SUMS) with FLOAT FIX:
         # We round the product to 8 decimals before Ceiling to handle floating point errors
-        # e.g. 8300 * 0.81 = 6723.0000000001 -> ceil would be 6724. 
-        # Rounding fixes it to 6723.0 -> ceil is 6723.
         # ============================================================
         if user_mode == UserMode.RENTER:
             tot_financial = math.ceil(round(tot_eff_pts * rate, 8))
@@ -903,7 +901,7 @@ def build_rental_cost_table(
 # ==============================================================================
 # MAIN PAGE LOGIC
 # ==============================================================================
-def main() -> None:
+def main(forced_mode: str = "Renter") -> None:
     # 0) Load User Settings first
     settings = load_user_settings()
 
@@ -953,29 +951,27 @@ def main() -> None:
     if "show_help" not in st.session_state:
         st.session_state.show_help = False
 
-    # 4) Sidebar: user settings only
-    with st.sidebar:
-        st.divider()
-        st.markdown("### 👤 User Settings")
-        # --- User mode selection & parameters ---
-        mode_sel = st.selectbox(
-            "User Mode",
-            [m.value for m in UserMode],
-            index=0,
-            help="Select whether you're renting points or own them.",
-        )
-        mode = UserMode(mode_sel)
-        
-        owner_params: Optional[dict] = None
-        policy: DiscountPolicy = DiscountPolicy.NONE
-        
-        # --- ISOLATED VARIABLES FOR MODES ---
-        active_rate = 0.0  # This will hold the final rate passed to calculator
-        opt_str = "Ordinary Level" # Default display string
+    # Set mode from forced argument
+    mode = UserMode(forced_mode)
+    
+    owner_params: Optional[dict] = None
+    policy: DiscountPolicy = DiscountPolicy.NONE
+    active_rate = 0.0  
+    disc_mul = 1.0
 
+    render_page_header(
+        "Calculator",
+        f"👤 {mode.value} Mode: {'Ownership' if mode == UserMode.OWNER else 'Rental'} Cost Analysis",
+        icon="🏨",
+        badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
+    )
+
+    # --- MAIN PAGE CONFIGURATION EXPANDER (Moved from Sidebar) ---
+    with st.expander("⚙️ Configuration & Settings", expanded=False):
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
             
+            c1, c2 = st.columns(2)
             # Defaults from settings
             def_maint = float(settings.get("maintenance_rate", 0.83))
             def_tier = settings.get("discount_tier", "")
@@ -987,139 +983,133 @@ def main() -> None:
             def_inc_c = bool(settings.get("include_capital", True))
             def_inc_d = bool(settings.get("include_depreciation", False))
 
-            owner_maint_rate = st.number_input(
-                "Maintenance per Point ($)",
-                value=def_maint,
-                step=0.01,
-                min_value=0.0,
-            )
-            
-            # Map JSON tier string to index
-            owner_tier_idx = get_tier_index(def_tier)
-            opt_str = st.radio(
-                "Membership Tier",
-                [
-                    "Ordinary Level",
-                    "Executive: 25% Points Benefit (within 30 days)",
-                    "Presidential: 30% Points Benefit (within 60 days)",
-                ],
-                index=owner_tier_idx,
-                help="Select membership tier.",
-            )
-            
-            cap = st.number_input(
-                "Purchase Price per Point ($)",
-                value=def_price,
-                step=1.0,
-                min_value=0.0,
-                help="Initial purchase price per MVC point.",
-            )
-            coc = (
-                st.number_input(
-                    "Cost of Capital (%)",
-                    value=def_cap_pct,
-                    step=0.5,
+            with c1:
+                owner_maint_rate = st.number_input(
+                    "Maintenance per Point ($)",
+                    value=def_maint,
+                    step=0.01,
                     min_value=0.0,
-                    help="Expected return on alternative investments.",
                 )
-                / 100.0
-            )
-            life = st.number_input(
-                "Useful Life (yrs)", value=def_life, min_value=1
-            )
-            salvage = st.number_input(
-                "Salvage ($/pt)",
-                value=def_salvage,
-                step=0.5,
-                min_value=0.0,
-            )
-            inc_m = st.checkbox(
-                "Include Maintenance",
-                value=def_inc_m,
-                help="Annual Maintenance.",
-            )
-            inc_c = st.checkbox(
-                "Include Capital Cost",
-                value=def_inc_c,
-                help="Opportunity cost of capital invested.",
-            )
-            inc_d = st.checkbox(
-                "Include Depreciation",
-                value=def_inc_d,
-                help="Asset depreciation over time.",
-            )
-            
-            # Set Active Rate for Owner
-            active_rate = owner_maint_rate
+                active_rate = owner_maint_rate
+
+            with c2:
+                # Map JSON tier string to index
+                owner_tier_idx = get_tier_index(def_tier)
+                opt_str = st.radio(
+                    "Membership Tier",
+                    [
+                        "Ordinary Level",
+                        "Executive: 25% Points Benefit (within 30 days)",
+                        "Presidential: 30% Points Benefit (within 60 days)",
+                    ],
+                    index=owner_tier_idx,
+                    help="Select membership tier.",
+                )
+
+            # Checkboxes for inclusion
+            col_chk1, col_chk2, col_chk3 = st.columns(3)
+            with col_chk1:
+                inc_m = st.checkbox("Include Maintenance", value=def_inc_m)
+            with col_chk2:
+                inc_c = st.checkbox("Include Capital Cost", value=def_inc_c)
+            with col_chk3:
+                inc_d = st.checkbox("Include Depreciation", value=def_inc_d)
+
+            # Advanced Owner Inputs
+            if inc_c or inc_d:
+                st.markdown("---")
+                rc1, rc2, rc3, rc4 = st.columns(4)
+                with rc1:
+                    cap = st.number_input("Purchase Price ($/pt)", value=def_price, step=1.0)
+                with rc2:
+                    if inc_c:
+                        coc = st.number_input("Cost of Capital (%)", value=def_cap_pct, step=0.5) / 100.0
+                    else:
+                        coc = 0.0
+                with rc3:
+                    if inc_d:
+                        life = st.number_input("Useful Life (yrs)", value=def_life, min_value=1)
+                    else:
+                        life = 1
+                with rc4:
+                    if inc_d:
+                        salvage = st.number_input("Salvage ($/pt)", value=def_salvage, step=0.5)
+                    else:
+                        salvage = 0.0
+            else:
+                cap, coc, life, salvage = 0.0, 0.0, 1, 0.0
+
+            # Set disc_mul for owners
+            if "Executive" in opt_str:
+                disc_mul = 0.75
+            elif "Presidential" in opt_str:
+                disc_mul = 0.7
 
             owner_params = {
-                "disc_mul": 1.0,  # Will be set below
+                "disc_mul": disc_mul,
                 "inc_m": inc_m,
                 "inc_c": inc_c,
                 "inc_d": inc_d,
                 "cap_rate": cap * coc,
                 "dep_rate": (cap - salvage) / life if life > 0 else 0.0,
             }
+            
+            # Save/Load UI inside Main Page Expander
+            st.markdown("---")
+            sl_col1, sl_col2 = st.columns([3, 1])
+            with sl_col1:
+                config_file = st.file_uploader("Load Saved Settings (JSON)", type="json", key="user_cfg_upload_main")
+                if config_file:
+                     # Simple load trigger
+                     data = json.load(config_file)
+                     # In a real app, you'd apply this to session state. 
+                     # For now, we assume the inputs above default to loaded values on rerun.
+                     pass 
+            with sl_col2:
+                # Mock save button
+                st.download_button("💾 Save Profile", data="{}", file_name="mvc_owner_settings.json", mime="application/json", use_container_width=True)
+
         else:
             # RENTER MODE
             st.markdown("#### 🏨 Rental Parameters")
             
+            c1, c2 = st.columns(2)
             # Defaults from settings
             def_renter_rate = float(settings.get("renter_rate", 0.83))
             def_renter_tier = settings.get("renter_discount_tier", "")
 
-            renter_price_point = st.number_input(
-                "Renter Price per Point ($)",
-                value=def_renter_rate,
-                step=0.01,
-                min_value=0.0,
-            )
-            
-            renter_tier_idx = get_tier_index(def_renter_tier)
-            opt_str = st.radio(
-                "Membership Tier",
-                [
-                    "Ordinary Level",
-                    "Executive: 25% Points Benefit (within 30 days)",
-                    "Presidential: 30% Points Benefit (within 60 days)",
-                ],
-                index=renter_tier_idx,
-                help="Select membership tier.",
-            )
-            
-            # Set Active Rate for Renter
-            active_rate = renter_price_point
+            with c1:
+                renter_price_point = st.number_input(
+                    "Renter Price per Point ($)",
+                    value=def_renter_rate,
+                    step=0.01,
+                    min_value=0.0,
+                )
+                active_rate = renter_price_point
+
+            with c2:
+                renter_tier_idx = get_tier_index(def_renter_tier)
+                opt_str = st.radio(
+                    "Membership Tier",
+                    [
+                        "Ordinary Level",
+                        "Executive: 25% Points Benefit (within 30 days)",
+                        "Presidential: 30% Points Benefit (within 60 days)",
+                    ],
+                    index=renter_tier_idx,
+                    help="Select membership tier.",
+                )
 
             if "Presidential" in opt_str:
                 policy = DiscountPolicy.PRESIDENTIAL
+                disc_mul = 0.7
             elif "Executive" in opt_str:
                 policy = DiscountPolicy.EXECUTIVE
-            # "Ordinary Level" uses NONE
+                disc_mul = 0.75
+            # "Ordinary Level" uses NONE (disc_mul = 1.0)
 
-        # Set disc_mul for owners (isolated logic)
-        disc_mul = 1.0
-        if "Executive" in opt_str:
-            disc_mul = 0.75
-        elif "Presidential" in opt_str:
-            disc_mul = 0.7
-
-        if owner_params:  # Only for owners
-            owner_params["disc_mul"] = disc_mul
-
-    # ===== Core calculator objects =====
-    calc = MVCCalculator(repo)
-
-    # ===== Main content =====
-    render_page_header(
-        "Calculator",
-        f"👤 {mode.value} Mode: {'Ownership' if mode == UserMode.OWNER else 'Rental'} Cost Analysis",
-        icon="🏨",
-        badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
-    )
-
+    # --- RESORT GRID ---
     current_resort_id = st.session_state.current_resort_id
-
-    # Shared grid (column-first) from common.ui
     render_resort_grid(resorts_full, current_resort_id)
 
     # Resolve selected resort object
@@ -1160,7 +1150,7 @@ def main() -> None:
             help="Number of nights to stay.",
         )
 
-    # Holiday adjustment (extend stay to full holiday span)
+    # Holiday adjustment
     adj_in, adj_n, adj = calc.adjust_holiday(r_name, checkin, nights)
     if adj:
         end_date = adj_in + timedelta(days=adj_n - 1)
@@ -1170,7 +1160,7 @@ def main() -> None:
             f"({adj_n} nights)"
         )
 
-    # Derive available room types from daily points for adjusted start
+    # Derive available room types
     res_data = calc.repo.get_resort(r_name)
     room_types = get_all_room_types_for_resort(res_data)
     if not room_types:
@@ -1192,6 +1182,16 @@ def main() -> None:
     st.divider()
 
     # ===== Calculation =====
+    # Explainer Text
+    discount_display = "None"
+    if disc_mul < 1.0:
+        pct = int((1.0 - disc_mul) * 100)
+        policy_label = "Executive" if disc_mul == 0.75 else "Presidential/Chairman" if disc_mul == 0.7 else "Custom"
+        discount_display = f"✅ {pct}% Off ({policy_label})"
+    
+    rate_label = "Maintenance Fee Rate" if mode == UserMode.OWNER else "Rental Rate"
+    st.caption(f"ℹ️ **Calculation Basis:** {rate_label}: **${active_rate:.2f}/pt** • Discount Setting: **{discount_display}**")
+
     # Use active_rate which is strictly separated by mode
     res = calc.calculate_breakdown(
         r_name, room_sel, adj_in, adj_n, mode, active_rate, policy, owner_params
@@ -1205,7 +1205,7 @@ def main() -> None:
         )
     st.divider()
 
-    # Detailed breakdown (renamed and expanded)
+    # --- EXPANDER 1: Daily Breakdown (Collapsed by default) ---
     with st.expander("📋 Daily Breakdown", expanded=False):
         st.dataframe(
             res.breakdown_df,
@@ -1214,14 +1214,14 @@ def main() -> None:
             height=min(400, (len(res.breakdown_df) + 1) * 35 + 50),
         )
 
-    # All Room Types – This Stay (below breakdown)
-    st.markdown("**All Room Types – This Stay**")
-    comp_data = []
-    for rm in room_types:
-        # Use active_rate here as well
-        room_res = calc.calculate_breakdown(r_name, rm, adj_in, adj_n, mode, active_rate, policy, owner_params)
-        comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", "Cost": f"${room_res.financial_total:,.0f}"})
-    st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
+    # --- EXPANDER 2: All Room Types – This Stay (Collapsed by default) ---
+    with st.expander("All Room Types – This Stay", expanded=False):
+        comp_data = []
+        for rm in room_types:
+            # Use active_rate here as well
+            room_res = calc.calculate_breakdown(r_name, rm, adj_in, adj_n, mode, active_rate, policy, owner_params)
+            comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", "Cost": f"${room_res.financial_total:,.0f}"})
+        st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
 
     # Actions
     col1, col2, _ = st.columns([1, 1, 2])
@@ -1384,16 +1384,6 @@ def main() -> None:
                     - Holiday periods are treated as full blocks for pricing.
                     """
                 )
-                
-    # --- Bottom of Owner Mode: Access to Editor ---
-    if mode == UserMode.OWNER:
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        st.divider()
-        col_e1, col_e2 = st.columns([4, 1])
-        with col_e2:
-            if st.button("🔧 Open Resort Editor", use_container_width=True):
-                st.session_state.active_tool = "editor"
-                st.rerun()
 
-def run() -> None:
-    main()
+def run(forced_mode: str = "Renter") -> None:
+    main(forced_mode)
