@@ -34,7 +34,7 @@ def get_tier_index(tier_string: str) -> int:
         return 2
     if "executive" in s:
         return 1
-    return 0  # Default to Ordinary Level
+    return 0  # Default to Ordinary
 
 def get_short_tier_name(tier_string: str) -> str:
     """Map UI Radio string back to short JSON value."""
@@ -1039,7 +1039,7 @@ def main(forced_mode: str = "Renter") -> None:
                 opt_str = st.radio(
                     "Membership Tier",
                     [
-                        "Ordinary Level",
+                        "Ordinary",
                         "Executive",
                         "Presidential",
                     ],
@@ -1156,7 +1156,7 @@ def main(forced_mode: str = "Renter") -> None:
                 opt_str = st.radio(
                     "Membership Tier",
                     [
-                        "Ordinary Level",
+                        "Ordinary",
                         "Executive",
                         "Presidential",
                     ],
@@ -1171,7 +1171,7 @@ def main(forced_mode: str = "Renter") -> None:
             elif "Executive" in opt_str:
                 policy = DiscountPolicy.EXECUTIVE
                 disc_mul = 0.75
-            # "Ordinary Level" uses NONE (disc_mul = 1.0)
+            # "Ordinary" uses NONE (disc_mul = 1.0)
 
     # --- RESORT GRID ---
     current_resort_id = st.session_state.current_resort_id
@@ -1195,7 +1195,7 @@ def main(forced_mode: str = "Renter") -> None:
         resort_info["timezone"],
         resort_info["address"],
     )
-    st.divider()
+
 
     # ===== Booking details =====
     input_cols = st.columns([2, 1, 2, 2])
@@ -1244,7 +1244,7 @@ def main(forced_mode: str = "Renter") -> None:
             [r for r in room_types if r != room_sel],
             help="Select additional room types to compare.",
         )
-    st.divider()
+
 
     # ===== Calculation =====
     # Explainer Text
@@ -1268,7 +1268,7 @@ def main(forced_mode: str = "Renter") -> None:
         st.success(
             f"🎉 **Tier Benefit Applied!** {pct} off points for {len(res.discounted_days)} day(s)."
         )
-    st.divider()
+    
 
     # --- EXPANDER 1: Daily Breakdown (Collapsed by default, Download inside) ---
     with st.expander("📋 Daily Breakdown", expanded=False):
@@ -1298,7 +1298,6 @@ def main(forced_mode: str = "Renter") -> None:
 
     # Comparison section
     if comp_rooms:
-        st.divider()
         st.markdown("### 🔍 Room Type Comparison")
         all_rooms = [room_sel] + comp_rooms
         comp_res = calc.compare_stays(
@@ -1374,7 +1373,6 @@ def main(forced_mode: str = "Renter") -> None:
     year_str = str(adj_in.year)
     res_data = calc.repo.get_resort(r_name)
     if res_data and year_str in res_data.years:
-        st.divider()
         with st.expander("📅 Season and Holiday Calendar", expanded=False):
             gantt_fig = create_gantt_chart_from_resort_data(
                 resort_data=res_data,
