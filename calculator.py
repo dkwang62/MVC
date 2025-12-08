@@ -1008,7 +1008,7 @@ def main(forced_mode: str = "Renter") -> None:
     )
 
     # --- MAIN PAGE CONFIGURATION EXPANDER (Moved from Sidebar) ---
-    with st.expander("⚙️ Configuration & Settings", expanded=False):
+    with st.expander("⚙️ Settings", expanded=False):
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
             
@@ -1255,7 +1255,7 @@ def main(forced_mode: str = "Renter") -> None:
         discount_display = f"✅ {pct}% Off ({policy_label})"
     st.divider()
     rate_label = "Maintenance Fee Rate" if mode == UserMode.OWNER else "Rental Rate"
-    st.caption(f"ℹ️ **Calculation Basis:** {rate_label}: **${active_rate:.2f}/pt** • Discount Setting: **{discount_display}**")
+    st.caption(f"⚙️ Settings: {rate_label}: **${active_rate:.2f}/pt** • Discount Setting: **{discount_display}**")
 
     # Use active_rate which is strictly separated by mode
     res = calc.calculate_breakdown(
