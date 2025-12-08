@@ -993,7 +993,7 @@ def main(forced_mode: str = "Renter") -> None:
 
     render_page_header(
         "Calculator",
-        f" {mode.value} {'Ownership' if mode == UserMode.OWNER else 'Rental'}",
+        f" {mode.value},
         icon="🏨",
         badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
     )
