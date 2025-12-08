@@ -901,6 +901,34 @@ def build_rental_cost_table(
 # ==============================================================================
 # MAIN PAGE LOGIC
 # ==============================================================================
+def apply_settings_from_dict(user_data: dict):
+    try:
+        if "maintenance_rate" in user_data: st.session_state.pref_maint_rate = float(user_data["maintenance_rate"])
+        if "purchase_price" in user_data: st.session_state.pref_purchase_price = float(user_data["purchase_price"])
+        if "capital_cost_pct" in user_data: st.session_state.pref_capital_cost = float(user_data["capital_cost_pct"])
+        if "salvage_value" in user_data: st.session_state.pref_salvage_value = float(user_data["salvage_value"])
+        if "useful_life" in user_data: st.session_state.pref_useful_life = int(user_data["useful_life"])
+        if "discount_tier" in user_data:
+            raw = str(user_data["discount_tier"])
+            if "Executive" in raw: st.session_state.pref_discount_tier = TIER_EXECUTIVE
+            elif "Presidential" in raw or "Chairman" in raw: st.session_state.pref_discount_tier = TIER_PRESIDENTIAL
+            else: st.session_state.pref_discount_tier = TIER_NO_DISCOUNT
+        if "include_capital" in user_data: st.session_state.pref_inc_c = bool(user_data["include_capital"])
+        if "include_depreciation" in user_data: st.session_state.pref_inc_d = bool(user_data["include_depreciation"])
+        if "renter_rate" in user_data:
+            st.session_state.renter_rate_val = float(user_data["renter_rate"])
+        if "renter_discount_tier" in user_data:
+            raw_r = str(user_data["renter_discount_tier"])
+            if "Executive" in raw_r: st.session_state.renter_discount_tier = TIER_EXECUTIVE
+            elif "Presidential" in raw_r or "Chairman" in raw_r: st.session_state.renter_discount_tier = TIER_PRESIDENTIAL
+            else: st.session_state.renter_discount_tier = TIER_NO_DISCOUNT
+        if "preferred_resort_id" in user_data:
+            rid = str(user_data["preferred_resort_id"])
+            st.session_state.pref_resort_id = rid
+            st.session_state.current_resort_id = rid
+    except Exception as e:
+        st.error(f"Error applying settings: {e}")
+
 def main(forced_mode: str = "Renter") -> None:
     # 0) Load User Settings first
     settings = load_user_settings()
@@ -919,6 +947,10 @@ def main(forced_mode: str = "Renter") -> None:
 
     # 3) Initialize Resort Selection (with Fuzzy Matching for Preference)
     repo = MVCRepository(st.session_state.data)
+    # --- FIX: Instantiate Calculator HERE so it is defined before use ---
+    calc = MVCCalculator(repo) 
+    # -------------------------------------------------------------------
+    
     resorts_full = repo.get_resort_list_full()
 
     if "current_resort_id" not in st.session_state or st.session_state.current_resort_id is None:
@@ -1063,7 +1095,6 @@ def main(forced_mode: str = "Renter") -> None:
                      # Simple load trigger
                      data = json.load(config_file)
                      # In a real app, you'd apply this to session state. 
-                     # For now, we assume the inputs above default to loaded values on rerun.
                      pass 
             with sl_col2:
                 # Mock save button
@@ -1384,6 +1415,16 @@ def main(forced_mode: str = "Renter") -> None:
                     - Holiday periods are treated as full blocks for pricing.
                     """
                 )
+                
+    # --- Bottom of Owner Mode: Access to Editor ---
+    if mode == UserMode.OWNER:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.divider()
+        col_e1, col_e2 = st.columns([4, 1])
+        with col_e2:
+            if st.button("🔧 Open Resort Editor", use_container_width=True):
+                st.session_state.app_phase = "editor"
+                st.rerun()
 
 def run(forced_mode: str = "Renter") -> None:
     main(forced_mode)
