@@ -1040,8 +1040,8 @@ def main(forced_mode: str = "Renter") -> None:
                     "Membership Tier",
                     [
                         "Ordinary Level",
-                        "Executive: 25% Points Benefit (within 30 days)",
-                        "Presidential: 30% Points Benefit (within 60 days)",
+                        "Executive",
+                        "Presidential",
                     ],
                     index=owner_tier_idx,
                     help="Select membership tier.",
@@ -1157,8 +1157,8 @@ def main(forced_mode: str = "Renter") -> None:
                     "Membership Tier",
                     [
                         "Ordinary Level",
-                        "Executive: 25% Points Benefit (within 30 days)",
-                        "Presidential: 30% Points Benefit (within 60 days)",
+                        "Executive",
+                        "Presidential",
                     ],
                     index=renter_tier_idx,
                     help="Select membership tier.",
