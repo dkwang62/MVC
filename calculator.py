@@ -1244,7 +1244,7 @@ def main(forced_mode: str = "Renter") -> None:
             [r for r in room_types if r != room_sel],
             help="Select additional room types to compare.",
         )
-
+        st.divider()
 
     # ===== Calculation =====
     # Explainer Text
@@ -1397,7 +1397,6 @@ def main(forced_mode: str = "Renter") -> None:
     # --- Bottom of Owner Mode: Access to Editor ---
     if mode == UserMode.OWNER:
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.divider()
         col_e1, col_e2 = st.columns([4, 1])
         with col_e2:
             if st.button("🔧 Open Resort Editor", use_container_width=True):
