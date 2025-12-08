@@ -1244,7 +1244,7 @@ def main(forced_mode: str = "Renter") -> None:
             [r for r in room_types if r != room_sel],
             help="Select additional room types to compare.",
         )
-        st.divider()
+
 
     # ===== Calculation =====
     # Explainer Text
@@ -1253,7 +1253,7 @@ def main(forced_mode: str = "Renter") -> None:
         pct = int((1.0 - disc_mul) * 100)
         policy_label = "Executive" if disc_mul == 0.75 else "Presidential/Chairman" if disc_mul == 0.7 else "Custom"
         discount_display = f"✅ {pct}% Off ({policy_label})"
-    
+    st.divider()
     rate_label = "Maintenance Fee Rate" if mode == UserMode.OWNER else "Rental Rate"
     st.caption(f"ℹ️ **Calculation Basis:** {rate_label}: **${active_rate:.2f}/pt** • Discount Setting: **{discount_display}**")
 
