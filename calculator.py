@@ -992,13 +992,14 @@ def main(forced_mode: str = "Renter") -> None:
     disc_mul = 1.0
 
     render_page_header(
-        title="Calculator",
-        subtitle=f"{mode.value}",
+        "Calculator",
+        f"👤 {mode.value} Mode: {'Ownership' if mode == UserMode.OWNER else 'Rental'} Cost Analysis",
         icon="🏨",
         badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
     )
+
     # --- MAIN PAGE CONFIGURATION EXPANDER (Moved from Sidebar) ---
-    with st.expander("⚙️ Settings", expanded=False):
+    with st.expander("⚙️ Configuration & Settings", expanded=False):
         if mode == UserMode.OWNER:
             st.markdown("#### 💰 Ownership Parameters")
             
@@ -1085,19 +1086,40 @@ def main(forced_mode: str = "Renter") -> None:
                 "dep_rate": (cap - salvage) / life if life > 0 else 0.0,
             }
             
-            # Save/Load UI inside Main Page Expander
+            # --- FIXED SAVE BUTTON ---
+            # This constructs the JSON object from the current variables
+            # and passes it to the download button
             st.markdown("---")
             sl_col1, sl_col2 = st.columns([3, 1])
             with sl_col1:
                 config_file = st.file_uploader("Load Saved Settings (JSON)", type="json", key="user_cfg_upload_main")
                 if config_file:
-                     # Simple load trigger
                      data = json.load(config_file)
-                     # In a real app, you'd apply this to session state. 
-                     pass 
+                     pass # In real use, apply to session state
             with sl_col2:
-                # Mock save button
-                st.download_button("💾 Save Profile", data="{}", file_name="mvc_owner_settings.json", mime="application/json", use_container_width=True)
+                # Construct current configuration dictionary
+                current_config = {
+                    "maintenance_rate": owner_maint_rate,
+                    "purchase_price": cap,
+                    "capital_cost_pct": coc * 100.0, # Store as percentage
+                    "salvage_value": salvage,
+                    "useful_life": life,
+                    "discount_tier": opt_str,
+                    "include_maintenance": inc_m,
+                    "include_capital": inc_c,
+                    "include_depreciation": inc_d,
+                    "renter_rate": st.session_state.get("renter_rate_val", 0.817),
+                    "renter_discount_tier": st.session_state.get("renter_discount_tier", "No Discount"),
+                    "preferred_resort_id": st.session_state.get("current_resort_id", "")
+                }
+                
+                st.download_button(
+                    "💾 Save Profile", 
+                    data=json.dumps(current_config, indent=2), 
+                    file_name="mvc_owner_settings.json", 
+                    mime="application/json", 
+                    use_container_width=True
+                )
 
         else:
             # RENTER MODE
@@ -1160,6 +1182,7 @@ def main(forced_mode: str = "Renter") -> None:
         resort_info["timezone"],
         resort_info["address"],
     )
+    st.divider()
 
     # ===== Booking details =====
     input_cols = st.columns([2, 1, 2, 2])
@@ -1219,7 +1242,7 @@ def main(forced_mode: str = "Renter") -> None:
         discount_display = f"✅ {pct}% Off ({policy_label})"
     
     rate_label = "Maintenance Fee Rate" if mode == UserMode.OWNER else "Rental Rate"
-    st.caption(f"⚙️ Settings: {rate_label}: **${active_rate:.2f}/pt** • Discount Setting: **{discount_display}**")
+    st.caption(f"ℹ️ **Calculation Basis:** {rate_label}: **${active_rate:.2f}/pt** • Discount Setting: **{discount_display}**")
 
     # Use active_rate which is strictly separated by mode
     res = calc.calculate_breakdown(
@@ -1232,7 +1255,7 @@ def main(forced_mode: str = "Renter") -> None:
         st.success(
             f"🎉 **Tier Benefit Applied!** {pct} off points for {len(res.discounted_days)} day(s)."
         )
-    
+    st.divider()
 
     # --- EXPANDER 1: Daily Breakdown (Collapsed by default, Download inside) ---
     with st.expander("📋 Daily Breakdown", expanded=False):
@@ -1338,6 +1361,7 @@ def main(forced_mode: str = "Renter") -> None:
     year_str = str(adj_in.year)
     res_data = calc.repo.get_resort(r_name)
     if res_data and year_str in res_data.years:
+        st.divider()
         with st.expander("📅 Season and Holiday Calendar", expanded=False):
             gantt_fig = create_gantt_chart_from_resort_data(
                 resort_data=res_data,
@@ -1358,6 +1382,16 @@ def main(forced_mode: str = "Renter") -> None:
                 st.dataframe(cost_df, use_container_width=True, hide_index=True)
             else:
                 st.info("No season or holiday pricing data available for this year.")
+
+    # --- Bottom of Owner Mode: Access to Editor ---
+    if mode == UserMode.OWNER:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.divider()
+        col_e1, col_e2 = st.columns([4, 1])
+        with col_e2:
+            if st.button("🔧 Open Resort Editor", use_container_width=True):
+                st.session_state.app_phase = "editor"
+                st.rerun()
 
 def run(forced_mode: str = "Renter") -> None:
     main(forced_mode)
