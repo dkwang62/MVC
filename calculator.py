@@ -1233,7 +1233,7 @@ def main(forced_mode: str = "Renter") -> None:
         st.success(
             f"🎉 **Tier Benefit Applied!** {pct} off points for {len(res.discounted_days)} day(s)."
         )
-    st.divider()
+    
 
     # --- EXPANDER 1: Daily Breakdown (Collapsed by default, Download inside) ---
     with st.expander("📋 Daily Breakdown", expanded=False):
