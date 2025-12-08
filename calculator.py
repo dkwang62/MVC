@@ -1236,13 +1236,21 @@ def main(forced_mode: str = "Renter") -> None:
         )
     st.divider()
 
-    # --- EXPANDER 1: Daily Breakdown (Collapsed by default) ---
+    # --- EXPANDER 1: Daily Breakdown (Collapsed by default, Download inside) ---
     with st.expander("📋 Daily Breakdown", expanded=False):
         st.dataframe(
             res.breakdown_df,
             use_container_width=True,
             hide_index=True,
             height=min(400, (len(res.breakdown_df) + 1) * 35 + 50),
+        )
+        csv_data = res.breakdown_df.to_csv(index=False)
+        st.download_button(
+            "⬇️ Download CSV",
+            csv_data,
+            f"{r_name}_{room_sel}_{'rental' if mode == UserMode.RENTER else 'cost'}.csv",
+            mime="text/csv",
+            use_container_width=True,
         )
 
     # --- EXPANDER 2: All Room Types – This Stay (Collapsed by default) ---
@@ -1253,21 +1261,6 @@ def main(forced_mode: str = "Renter") -> None:
             room_res = calc.calculate_breakdown(r_name, rm, adj_in, adj_n, mode, active_rate, policy, owner_params)
             comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", "Cost": f"${room_res.financial_total:,.0f}"})
         st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
-
-    # Actions
-    col1, col2, _ = st.columns([1, 1, 2])
-    with col1:
-        csv_data = res.breakdown_df.to_csv(index=False)
-        st.download_button(
-            "⬇️ Download CSV",
-            csv_data,
-            f"{r_name}_{room_sel}_{'rental' if mode == UserMode.RENTER else 'cost'}.csv",
-            mime="text/csv",
-            use_container_width=True,
-        )
-    with col2:
-        if st.button("ℹ️ How it is calculated", use_container_width=True):
-            st.session_state.show_help = not st.session_state.show_help
 
     # Comparison section
     if comp_rooms:
@@ -1368,63 +1361,6 @@ def main(forced_mode: str = "Renter") -> None:
                 st.dataframe(cost_df, use_container_width=True, hide_index=True)
             else:
                 st.info("No season or holiday pricing data available for this year.")
-
-    # Help section
-    if st.session_state.show_help:
-        st.divider()
-        with st.expander("ℹ️ How the Calculation Works", expanded=True):
-            if mode == UserMode.OWNER:
-                st.markdown(
-                    f"""
-                    ### 💰 Owner Cost Calculation
-                    **Maintenance**
-                    - Formula: Maintenance per point × points used
-                    - Current Maintenance: **${active_rate:.2f}** per point
-                    - Covers: Property upkeep, utilities, staff, amenities
-                    **Capital Cost**
-                    - Formula: Purchase price × cost of capital rate × points used
-                    - Represents: Opportunity cost of capital invested in ownership
-                    **Depreciation Cost**
-                    - Formula: (Purchase price − salvage value) ÷ useful life × points used
-                    - Represents: Asset value decline over time
-                    **Points Calculation**
-                    - Effective points may be adjusted by membership tier benefits.
-                    - Holiday periods are priced as whole blocks rather than per-night averages.
-                    """
-                )
-            else:
-                if policy == DiscountPolicy.PRESIDENTIAL:
-                    discount_text = (
-                        "**Presidential 30% points benefit:** when booked "
-                        "within 60 days of check-in."
-                    )
-                elif policy == DiscountPolicy.EXECUTIVE:
-                    discount_text = (
-                        "**Executive 25% points benefit:** when booked "
-                        "within 30 days of check-in."
-                    )
-                else:
-                    discount_text = "**Standard points applied (Ordinary Level).**"
-                st.markdown(
-                    f"""
-                    ### 🏨 Rent Calculation
-                    **Current Maintenance:** **${active_rate:.2f}** per point.
-                    {discount_text}
-                    - The **Points** column may show adjusted points if tier benefits apply.
-                    - 💰 Rent is always computed from the **adjusted** points.
-                    - Holiday periods are treated as full blocks for pricing.
-                    """
-                )
-                
-    # --- Bottom of Owner Mode: Access to Editor ---
-    if mode == UserMode.OWNER:
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        st.divider()
-        col_e1, col_e2 = st.columns([4, 1])
-        with col_e2:
-            if st.button("🔧 Open Resort Editor", use_container_width=True):
-                st.session_state.app_phase = "editor"
-                st.rerun()
 
 def run(forced_mode: str = "Renter") -> None:
     main(forced_mode)
