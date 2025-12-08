@@ -28,13 +28,22 @@ def load_user_settings() -> Dict[str, Any]:
     return {}
 
 def get_tier_index(tier_string: str) -> int:
-    """Map JSON string to UI Radio index."""
+    """Map JSON string (Short or Long) to UI Radio index."""
     s = str(tier_string).lower()
     if "presidential" in s or "chairman" in s:
         return 2
     if "executive" in s:
         return 1
     return 0  # Default to Ordinary Level
+
+def get_short_tier_name(tier_string: str) -> str:
+    """Map UI Radio string back to short JSON value."""
+    s = str(tier_string).lower()
+    if "presidential" in s or "chairman" in s:
+        return "Presidential"
+    if "executive" in s:
+        return "Executive"
+    return "Ordinary"
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS (Type-Safe Data Structures)
@@ -1094,22 +1103,24 @@ def main(forced_mode: str = "Renter") -> None:
             with sl_col1:
                 config_file = st.file_uploader("Load Saved Settings (JSON)", type="json", key="user_cfg_upload_main")
                 if config_file:
+                     # Simple load trigger
                      data = json.load(config_file)
-                     pass # In real use, apply to session state
+                     # In a real app, you'd apply this to session state. 
+                     pass 
             with sl_col2:
                 # Construct current configuration dictionary
                 current_config = {
-                    "maintenance_rate": owner_maint_rate,
+                    "maintenance_rate": round(owner_maint_rate, 2), # Round to 2dp
                     "purchase_price": cap,
                     "capital_cost_pct": coc * 100.0, # Store as percentage
                     "salvage_value": salvage,
                     "useful_life": life,
-                    "discount_tier": opt_str,
+                    "discount_tier": get_short_tier_name(opt_str), # Short name
                     "include_maintenance": inc_m,
                     "include_capital": inc_c,
                     "include_depreciation": inc_d,
-                    "renter_rate": st.session_state.get("renter_rate_val", 0.82),
-                    "renter_discount_tier": st.session_state.get("renter_discount_tier", "No Discount"),
+                    "renter_rate": round(st.session_state.get("renter_rate_val", 0.817), 2), # Round to 2dp
+                    "renter_discount_tier": get_short_tier_name(st.session_state.get("renter_discount_tier", "No Discount")), # Short name
                     "preferred_resort_id": st.session_state.get("current_resort_id", "")
                 }
                 
@@ -1138,6 +1149,7 @@ def main(forced_mode: str = "Renter") -> None:
                     min_value=0.0,
                 )
                 active_rate = renter_price_point
+                st.session_state.renter_rate_val = renter_price_point
 
             with c2:
                 renter_tier_idx = get_tier_index(def_renter_tier)
@@ -1151,6 +1163,7 @@ def main(forced_mode: str = "Renter") -> None:
                     index=renter_tier_idx,
                     help="Select membership tier.",
                 )
+                st.session_state.renter_discount_tier = opt_str
 
             if "Presidential" in opt_str:
                 policy = DiscountPolicy.PRESIDENTIAL
