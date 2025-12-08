@@ -1144,7 +1144,7 @@ def main(forced_mode: str = "Renter") -> None:
 
             with c1:
                 renter_price_point = st.number_input(
-                    "Renter Price per Point ($)",
+                    "Rent per Point ($)",
                     value=def_renter_rate,
                     step=0.01,
                     min_value=0.0,
