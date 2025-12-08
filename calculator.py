@@ -1002,7 +1002,7 @@ def main(forced_mode: str = "Renter") -> None:
 
     render_page_header(
         title="Calculator",
-        subtitle=f" {mode.value}
+        subtitle=f" {mode.value},
         icon="🏨",
         badge_color="#059669" if mode == UserMode.OWNER else "#2563eb"
     )
