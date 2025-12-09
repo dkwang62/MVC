@@ -138,12 +138,6 @@ def create_gantt_chart_from_resort_data(
     df["Start"] = pd.to_datetime(df["Start"])
     df["Finish"] = pd.to_datetime(df["Finish"])
 
-    # --- SORT BY DATE ---
-    df.sort_values(by="Start", inplace=True)
-    
-    # Ensure tasks render in sorted order on Y-axis
-    sorted_tasks = df["Task"].unique().tolist()
-
     fig = px.timeline(
         df,
         x_start="Start",
@@ -153,7 +147,6 @@ def create_gantt_chart_from_resort_data(
         title=f"{getattr(resort_data, 'name', 'Resort')} – {year} Timeline",
         height=height if height is not None else max(400, len(df) * 35),
         color_discrete_map=COLOR_MAP,
-        category_orders={"Task": sorted_tasks}  # Explicit sorting for Y-axis
     )
 
     fig.update_yaxes(autorange="reversed")
@@ -267,13 +260,6 @@ def create_gantt_chart_from_working(
     df["Start"] = pd.to_datetime(df["Start"])
     df["Finish"] = pd.to_datetime(df["Finish"])
 
-    # --- SORT BY DATE ---
-    df.sort_values(by="Start", inplace=True)
-    
-    # Get unique tasks in order of their appearance (which is now date sorted)
-    # Using dict.fromkeys to preserve order and remove duplicates
-    sorted_tasks = list(dict.fromkeys(df["Task"]))
-
     fig_height = height if height is not None else max(400, len(df) * 35)
 
     fig = px.timeline(
@@ -285,7 +271,6 @@ def create_gantt_chart_from_working(
         title=f"{working.get('display_name', 'Resort')} – {year} Timeline",
         height=fig_height,
         color_discrete_map=COLOR_MAP,
-        category_orders={"Task": sorted_tasks}  # Explicitly set the Y-axis order
     )
 
     fig.update_yaxes(autorange="reversed")
