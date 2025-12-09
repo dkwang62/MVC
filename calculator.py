@@ -14,81 +14,73 @@ from common.charts import create_gantt_chart_from_resort_data
 from common.data import ensure_data_in_session
 
 # ==============================================================================
-# CONSTANTS
+# PERSISTENT SESSION KEYS + DEFAULTS
 # ==============================================================================
 TIER_NO_DISCOUNT = "Ordinary"
 TIER_EXECUTIVE = "Executive"
 TIER_PRESIDENTIAL = "Presidential"
 
-# ==============================================================================
-# INITIALIZATION (Moved inside a function to run on every script execution)
-# ==============================================================================
-def initialize_state():
-    """Ensure all session state variables exist before the app runs."""
-    
-    # 1. Define Defaults
-    defaults = {
-        "pref_maint_rate": 0.83,
-        "pref_purchase_price": 3.5,
-        "pref_capital_cost_pct": 5.0,
-        "pref_salvage_value": 3.0,
-        "pref_useful_life": 20,
-        "pref_discount_tier": TIER_NO_DISCOUNT,
-        "pref_inc_m": True,
-        "pref_inc_c": True,
-        "pref_inc_d": False,
-        "renter_rate_val": 0.83,
-        "renter_discount_tier": TIER_NO_DISCOUNT,
-        "preferred_resort_id": None,
-        # Calculator specific
-        "calc_checkin": datetime.now().date() + timedelta(days=1),
-        "calc_initial_default": datetime.now().date() + timedelta(days=1),
-        "calc_checkin_user_set": False
-    }
-
-    # 2. Apply Defaults (if key missing)
-    for k, v in defaults.items():
-        if k not in st.session_state:
-            st.session_state[k] = v
-
-    # 3. Auto-load Local Settings (Only once per session)
-    if "profile_auto_loaded" not in st.session_state:
-        local_path = "mvc_owner_settings.json"
-        if os.path.exists(local_path):
-            try:
-                with open(local_path, "r") as f:
-                    data = json.load(f)
-                    
-                    if "maintenance_rate" in data: st.session_state.pref_maint_rate = float(data["maintenance_rate"])
-                    if "purchase_price" in data: st.session_state.pref_purchase_price = float(data["purchase_price"])
-                    if "capital_cost_pct" in data: st.session_state.pref_capital_cost_pct = float(data["capital_cost_pct"])
-                    if "salvage_value" in data: st.session_state.pref_salvage_value = float(data["salvage_value"])
-                    if "useful_life" in data: st.session_state.pref_useful_life = int(data["useful_life"])
-                    
-                    if "discount_tier" in data:
-                        t = str(data["discount_tier"])
-                        st.session_state.pref_discount_tier = TIER_EXECUTIVE if "Exec" in t else TIER_PRESIDENTIAL if "Pres" in t or "Chair" in t else TIER_NO_DISCOUNT
-                    
-                    if "include_maintenance" in data: st.session_state.pref_inc_m = bool(data["include_maintenance"])
-                    if "include_capital" in data: st.session_state.pref_inc_c = bool(data["include_capital"])
-                    if "include_depreciation" in data: st.session_state.pref_inc_d = bool(data["include_depreciation"])
-                    
-                    if "renter_rate" in data: st.session_state.renter_rate_val = float(data["renter_rate"])
-                    
-                    if "renter_discount_tier" in data:
-                        t = str(data["renter_discount_tier"])
-                        st.session_state.renter_discount_tier = TIER_EXECUTIVE if "Exec" in t else TIER_PRESIDENTIAL if "Pres" in t or "Chair" in t else TIER_NO_DISCOUNT
-                    
-                    if "preferred_resort_id" in data:
-                        st.session_state.preferred_resort_id = str(data["preferred_resort_id"])
-                        st.session_state.current_resort_id = str(data["preferred_resort_id"])
-                        
+# Auto-load local settings once (First run only)
+if "settings_auto_loaded" not in st.session_state:
+    settings_path = "mvc_owner_settings.json"
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, "r") as f:
+                data = json.load(f)
+                st.session_state._loaded_settings = data
                 st.toast("Auto-loaded mvc_owner_settings.json", icon="⚙️")
-            except Exception as e:
-                st.warning(f"Failed to auto-load settings: {e}")
+        except Exception as e:
+            st.warning(f"Could not read local settings: {e}")
+    st.session_state.settings_auto_loaded = True
+
+# Initialize defaults if not present
+defaults = {
+    "pref_maint_rate": 0.83,
+    "pref_purchase_price": 3.5,
+    "pref_capital_cost_pct": 5.0,
+    "pref_salvage_value": 3.0,
+    "pref_useful_life": 20,
+    "pref_discount_tier": TIER_NO_DISCOUNT,
+    "pref_inc_m": True,
+    "pref_inc_c": True,
+    "pref_inc_d": False,
+    "renter_rate_val": 0.83,
+    "renter_discount_tier": TIER_NO_DISCOUNT,
+    "preferred_resort_id": None,
+}
+for k, v in defaults.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+# Apply loaded settings if pending
+if hasattr(st.session_state, "_loaded_settings"):
+    loaded = st.session_state._loaded_settings
+    
+    if "maintenance_rate" in loaded: st.session_state.pref_maint_rate = float(loaded["maintenance_rate"])
+    if "purchase_price" in loaded: st.session_state.pref_purchase_price = float(loaded["purchase_price"])
+    if "capital_cost_pct" in loaded: st.session_state.pref_capital_cost_pct = float(loaded["capital_cost_pct"])
+    if "salvage_value" in loaded: st.session_state.pref_salvage_value = float(loaded["salvage_value"])
+    if "useful_life" in loaded: st.session_state.pref_useful_life = int(loaded["useful_life"])
+    
+    if "discount_tier" in loaded:
+        t = str(loaded["discount_tier"])
+        st.session_state.pref_discount_tier = TIER_EXECUTIVE if "Exec" in t else TIER_PRESIDENTIAL if "Pres" in t or "Chair" in t else TIER_NO_DISCOUNT
         
-        # Mark as loaded so we don't overwrite user changes on next rerun
-        st.session_state.profile_auto_loaded = True
+    if "include_maintenance" in loaded: st.session_state.pref_inc_m = bool(loaded["include_maintenance"])
+    if "include_capital" in loaded: st.session_state.pref_inc_c = bool(loaded["include_capital"])
+    if "include_depreciation" in loaded: st.session_state.pref_inc_d = bool(loaded["include_depreciation"])
+    
+    if "renter_rate" in loaded: st.session_state.renter_rate_val = float(loaded["renter_rate"])
+    
+    if "renter_discount_tier" in loaded:
+        t = str(loaded["renter_discount_tier"])
+        st.session_state.renter_discount_tier = TIER_EXECUTIVE if "Exec" in t else TIER_PRESIDENTIAL if "Pres" in t or "Chair" in t else TIER_NO_DISCOUNT
+        
+    if "preferred_resort_id" in loaded:
+        st.session_state.preferred_resort_id = str(loaded["preferred_resort_id"])
+        st.session_state.current_resort_id = str(loaded["preferred_resort_id"])
+        
+    del st.session_state._loaded_settings
 
 # ==============================================================================
 # LAYER 1: DOMAIN MODELS
@@ -307,6 +299,7 @@ class MVCCalculator:
 
         while i < nights:
             d = checkin + timedelta(days=i)
+            # Define date strings BEFORE using them in discount logic
             d_str = d.strftime("%Y-%m-%d")
             day_str = d.strftime("%a")
             
@@ -383,7 +376,7 @@ class MVCCalculator:
             elif not holiday:
                 raw = pts_map.get(room, 0)
                 eff = raw
-                is_disc_day = False
+                is_disc = False
                 days_out = (d - today).days
 
                 if is_owner:
@@ -424,7 +417,7 @@ class MVCCalculator:
                 else:
                     day_cost = math.ceil(round(eff * rate, 8))
 
-                row = {"Date": d_str, "Day": day_str, "Points": eff}
+                row = {"Date": d.strftime("%Y-%m-%d"), "Day": d.strftime("%a"), "Points": eff}
 
                 if is_owner:
                     if owner_config and owner_config.get("inc_m", False):
@@ -747,7 +740,11 @@ def get_short_tier_name(tier_string: str) -> str:
 
 def main(forced_mode: str = "Renter") -> None:
     # --- 1. INITIALIZE SESSION STATE ---
-    initialize_state()
+    if "calc_checkin" not in st.session_state:
+        default_date = datetime.now().date() + timedelta(days=1)
+        st.session_state.calc_checkin = default_date
+        st.session_state.calc_initial_default = default_date
+        st.session_state.calc_checkin_user_set = False
 
     ensure_data_in_session()
     if not st.session_state.data:
@@ -839,25 +836,32 @@ def main(forced_mode: str = "Renter") -> None:
         with col_load:
             uploaded = st.file_uploader("Load Profile", type="json", key="profile_upload")
             if uploaded:
-                try:
-                    data = json.load(uploaded)
-                    # Manually update session keys
-                    if "maintenance_rate" in data: st.session_state.pref_maint_rate = float(data["maintenance_rate"])
-                    if "purchase_price" in data: st.session_state.pref_purchase_price = float(data["purchase_price"])
-                    if "capital_cost_pct" in data: st.session_state.pref_capital_cost_pct = float(data["capital_cost_pct"])
-                    if "salvage_value" in data: st.session_state.pref_salvage_value = float(data["salvage_value"])
-                    if "useful_life" in data: st.session_state.pref_useful_life = int(data["useful_life"])
-                    if "discount_tier" in data: st.session_state.pref_discount_tier = str(data["discount_tier"])
-                    if "include_maintenance" in data: st.session_state.pref_inc_m = bool(data["include_maintenance"])
-                    if "include_capital" in data: st.session_state.pref_inc_c = bool(data["include_capital"])
-                    if "include_depreciation" in data: st.session_state.pref_inc_d = bool(data["include_depreciation"])
-                    if "renter_rate" in data: st.session_state.renter_rate_val = float(data["renter_rate"])
-                    if "renter_discount_tier" in data: st.session_state.renter_discount_tier = str(data["renter_discount_tier"])
-                    if "preferred_resort_id" in data: st.session_state.preferred_resort_id = str(data["preferred_resort_id"])
-                    st.success("Profile loaded!")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Invalid file: {e}")
+                # --- FIX: CHECK IF FILE IS NEW TO AVOID INFINITE LOOP ---
+                file_sig = f"{uploaded.name}_{uploaded.size}"
+                if "last_loaded_cfg" not in st.session_state or st.session_state.last_loaded_cfg != file_sig:
+                    try:
+                        data = json.load(uploaded)
+                        # Manually update session keys
+                        if "maintenance_rate" in data: st.session_state.pref_maint_rate = float(data["maintenance_rate"])
+                        if "purchase_price" in data: st.session_state.pref_purchase_price = float(data["purchase_price"])
+                        if "capital_cost_pct" in data: st.session_state.pref_capital_cost_pct = float(data["capital_cost_pct"])
+                        if "salvage_value" in data: st.session_state.pref_salvage_value = float(data["salvage_value"])
+                        if "useful_life" in data: st.session_state.pref_useful_life = int(data["useful_life"])
+                        if "discount_tier" in data: st.session_state.pref_discount_tier = str(data["discount_tier"])
+                        if "include_maintenance" in data: st.session_state.pref_inc_m = bool(data["include_maintenance"])
+                        if "include_capital" in data: st.session_state.pref_inc_c = bool(data["include_capital"])
+                        if "include_depreciation" in data: st.session_state.pref_inc_d = bool(data["include_depreciation"])
+                        if "renter_rate" in data: st.session_state.renter_rate_val = float(data["renter_rate"])
+                        if "renter_discount_tier" in data: st.session_state.renter_discount_tier = str(data["renter_discount_tier"])
+                        if "preferred_resort_id" in data: 
+                            st.session_state.preferred_resort_id = str(data["preferred_resort_id"])
+                            st.session_state.current_resort_id = str(data["preferred_resort_id"])
+                        
+                        st.session_state.last_loaded_cfg = file_sig  # MARK AS DONE
+                        st.success("Profile loaded!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Invalid file: {e}")
 
         with col_save:
             config = {
@@ -950,7 +954,7 @@ def main(forced_mode: str = "Renter") -> None:
         for rm in all_room_types:
             room_res = calc.calculate_breakdown(r_name, rm, adj_in, adj_n, mode, active_rate, policy, owner_params)
             cost_label = "Rent" if mode == UserMode.RENTER else "Cost"
-            comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", "Cost": f"${room_res.financial_total:,.0f}"})
+            comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", cost_label: f"${room_res.financial_total:,.0f}"})
         st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
 
     if comp_rooms:
@@ -980,10 +984,8 @@ def main(forced_mode: str = "Renter") -> None:
             else:
                 st.info("No season or holiday pricing data available for this year.")
 
-    # --- Bottom of Owner Mode: Access to Editor ---
     if mode == UserMode.OWNER:
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.divider()
         col_e1, col_e2 = st.columns([4, 1])
         with col_e2:
             if st.button("🔧 Open Resort Editor", use_container_width=True):
