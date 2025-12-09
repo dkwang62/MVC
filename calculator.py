@@ -299,6 +299,11 @@ class MVCCalculator:
 
         while i < nights:
             d = checkin + timedelta(days=i)
+            # --- FIX: MOVED DEFINITIONS UP ---
+            d_str = d.strftime("%Y-%m-%d")
+            day_str = d.strftime("%a")
+            # ---------------------------------
+            
             pts_map, holiday = self._get_daily_points(resort, d)
 
             if holiday and holiday.name not in processed_holidays:
@@ -412,7 +417,7 @@ class MVCCalculator:
                 else:
                     day_cost = math.ceil(round(eff * rate, 8))
 
-                row = {"Date": d.strftime("%Y-%m-%d"), "Day": d.strftime("%a"), "Points": eff}
+                row = {"Date": d_str, "Day": day_str, "Points": eff}
 
                 if is_owner:
                     if owner_config and owner_config.get("inc_m", False):
@@ -626,7 +631,7 @@ def build_rental_cost_table(
     # Seasons
     for season in yd.seasons:
         name = season.name.strip() or "Unnamed Season"
-        weekly_totals = {}
+        weekly = {}
         has_data = False
 
         for dow in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]:
@@ -637,13 +642,13 @@ def build_rental_cost_table(
                         pts = rp.get(room, 0)
                         if pts:
                             has_data = True
-                        weekly_totals[room] = weekly_totals.get(room, 0) + pts
+                        weekly[room] = weekly.get(room, 0) + pts
                     break
 
         if has_data:
             row = {"Season": name}
             for room in room_types:
-                raw_pts = weekly_totals.get(room, 0)
+                raw_pts = weekly.get(room, 0)
                 eff_pts = math.floor(raw_pts * discount_mul) if discount_mul < 1 else raw_pts
                 if mode == UserMode.RENTER:
                     cost = math.ceil(eff_pts * rate)
@@ -656,31 +661,27 @@ def build_rental_cost_table(
             rows.append(row)
 
     # Holidays
-    for holiday in yd.holidays:
-        hname = holiday.name.strip() or "Unnamed Holiday"
-        rp = holiday.room_points or {}
-        row = {"Season": f"Holiday – {hname}"}
-        any_value = False
+    for h in yd.holidays:
+        name = h.name.strip() or "Holiday"
+        rp = h.room_points
+        row = {"Season": f"Holiday – {name}"}
         for room in room_types:
             raw = rp.get(room, 0)
-            if raw:
-                any_value = True
+            if not raw:
+                row[room] = "—"
+                continue
             eff = math.floor(raw * discount_mul) if discount_mul < 1 else raw
             if mode == UserMode.RENTER:
-                cost = math.ceil(eff * rate) if raw else 0
+                cost = math.ceil(eff * rate)
             else:
                 m = math.ceil(eff * rate) if owner_params.get("inc_m", False) else 0
                 c = math.ceil(eff * owner_params.get("cap_rate", 0.0)) if owner_params.get("inc_c", False) else 0
                 d = math.ceil(eff * owner_params.get("dep_rate", 0.0)) if owner_params.get("inc_d", False) else 0
-                cost = m + c + d if raw else 0
-            row[room] = f"${cost:,}" if raw else "—"
-        if any_value:
-            rows.append(row)
+                cost = m + c + d
+            row[room] = f"${cost:,}"
+        rows.append(row)
 
-    if not rows:
-        return None
-
-    return pd.DataFrame(rows, columns=["Season"] + room_types)
+    return pd.DataFrame(rows, columns=["Season"] + room_types) if rows else None
 
 # ==============================================================================
 # UI HELPERS
@@ -719,8 +720,26 @@ def render_metrics_grid(result: CalculationResult, mode: UserMode, owner_params:
 # ==============================================================================
 # MAIN PAGE LOGIC
 # ==============================================================================
-# --- 1. SET THE INITIAL VALUES HERE (Fixes the AttributeError) ---
+def get_tier_index(tier_string: str) -> int:
+    """Map JSON string (Short or Long) to UI Radio index."""
+    s = str(tier_string).lower()
+    if "presidential" in s or "chairman" in s:
+        return 2
+    if "executive" in s:
+        return 1
+    return 0
+
+def get_short_tier_name(tier_string: str) -> str:
+    """Map UI Radio string back to short JSON value."""
+    s = str(tier_string).lower()
+    if "presidential" in s or "chairman" in s:
+        return "Presidential"
+    if "executive" in s:
+        return "Executive"
+    return "Ordinary"
+
 def main(forced_mode: str = "Renter") -> None:
+    # --- 1. INITIALIZE SESSION STATE ---
     if "calc_checkin" not in st.session_state:
         default_date = datetime.now().date() + timedelta(days=1)
         st.session_state.calc_checkin = default_date
@@ -761,7 +780,7 @@ def main(forced_mode: str = "Renter") -> None:
                 active_rate = maint_rate
             with c2:
                 tier = st.radio("Membership Tier", ["Ordinary", "Executive", "Presidential"],
-                                index=["Ordinary", "Executive", "Presidential"].index(st.session_state.pref_discount_tier),
+                                index=get_tier_index(st.session_state.pref_discount_tier),
                                 key="owner_tier")
                 st.session_state.pref_discount_tier = tier
 
@@ -802,7 +821,7 @@ def main(forced_mode: str = "Renter") -> None:
                 active_rate = renter_rate
             with c2:
                 tier = st.radio("Membership Tier", ["Ordinary", "Executive", "Presidential"],
-                                index=["Ordinary", "Executive", "Presidential"].index(st.session_state.renter_discount_tier),
+                                index=get_tier_index(st.session_state.renter_discount_tier),
                                 key="renter_tier")
                 st.session_state.renter_discount_tier = tier
 
@@ -842,12 +861,12 @@ def main(forced_mode: str = "Renter") -> None:
                 "capital_cost_pct": st.session_state.pref_capital_cost_pct,
                 "salvage_value": st.session_state.pref_salvage_value,
                 "useful_life": st.session_state.pref_useful_life,
-                "discount_tier": st.session_state.pref_discount_tier, # Already Short
+                "discount_tier": get_short_tier_name(st.session_state.pref_discount_tier),
                 "include_maintenance": st.session_state.pref_inc_m,
                 "include_capital": st.session_state.pref_inc_c,
                 "include_depreciation": st.session_state.pref_inc_d,
                 "renter_rate": round(st.session_state.renter_rate_val, 2),
-                "renter_discount_tier": st.session_state.renter_discount_tier, # Already Short
+                "renter_discount_tier": get_short_tier_name(st.session_state.renter_discount_tier),
                 "preferred_resort_id": st.session_state.current_resort_id or ""
             }
             st.download_button("💾 Save Profile", data=json.dumps(config, indent=2), file_name="mvc_owner_settings.json", mime="application/json", use_container_width=True)
@@ -898,7 +917,7 @@ def main(forced_mode: str = "Renter") -> None:
     discount_display = "None"
     if disc_mul < 1.0:
         pct = int((1.0 - disc_mul) * 100)
-        policy_label = "Executive" if disc_mul == 0.75 else "Presidential/Chairman" if disc_mul == 0.7 else "Custom"
+        policy_label = "Executive" if disc_mul == 0.75 else "Presidential" if disc_mul == 0.7 else "Custom"
         discount_display = f"✅ {pct}% Off ({policy_label})"
     
     rate_label = "Maintenance Fee Rate" if mode == UserMode.OWNER else "Rental Rate"
@@ -925,8 +944,7 @@ def main(forced_mode: str = "Renter") -> None:
         all_room_types = get_all_room_types_for_resort(calc.repo.get_resort(r_name))
         for rm in all_room_types:
             room_res = calc.calculate_breakdown(r_name, rm, adj_in, adj_n, mode, active_rate, policy, owner_params)
-            cost_label = "Rent" if mode == UserMode.RENTER else "Cost"
-            comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", cost_label: f"${room_res.financial_total:,.0f}"})
+            comp_data.append({"Room Type": rm, "Points": f"{room_res.total_points:,}", "Cost": f"${room_res.financial_total:,.0f}"})
         st.dataframe(pd.DataFrame(comp_data), use_container_width=True, hide_index=True)
 
     if comp_rooms:
