@@ -1214,6 +1214,26 @@ def render_holiday_management_v2(
 
     current_holidays = get_all_holidays_for_resort(working)
 
+    # --- SORT HOLIDAYS BY DATE ---
+    def get_sort_key(h_obj):
+        ref = h_obj.get("global_reference")
+        # Try finding start date in base_year
+        gh_data = data.get("global_holidays", {}).get(base_year, {}).get(ref)
+        if gh_data and "start_date" in gh_data:
+            return gh_data["start_date"]
+        
+        # Fallback: try any year
+        for y in data.get("global_holidays", {}):
+            gh_data = data.get("global_holidays", {}).get(y, {}).get(ref)
+            if gh_data and "start_date" in gh_data:
+                return gh_data["start_date"]
+        
+        # Fallback: put at end
+        return "9999-99-99"
+
+    current_holidays.sort(key=get_sort_key)
+    # -----------------------------
+
     if current_holidays:
         st.markdown("**Current Holidays:**")
         for h in current_holidays:
