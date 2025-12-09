@@ -20,7 +20,7 @@ TIER_NO_DISCOUNT = "Ordinary"
 TIER_EXECUTIVE = "Executive"
 TIER_PRESIDENTIAL = "Presidential"
 
-# Auto-load local settings once (First run only)
+# Auto-load local settings once
 if "settings_auto_loaded" not in st.session_state:
     settings_path = "mvc_owner_settings.json"
     if os.path.exists(settings_path):
@@ -376,7 +376,8 @@ class MVCCalculator:
             elif not holiday:
                 raw = pts_map.get(room, 0)
                 eff = raw
-                is_disc = False
+                # --- FIX: Correct variable name initialization ---
+                is_disc_day = False 
                 days_out = (d - today).days
 
                 if is_owner:
