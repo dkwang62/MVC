@@ -1169,6 +1169,37 @@ def render_holiday_management_v2(
     sync_holiday_room_points_across_years(working, base_year=base_year)
 
 # ----------------------------------------------------------------------
+# GANTT CHART
+# ----------------------------------------------------------------------
+def render_gantt_charts_v2(
+    working: Dict[str, Any], years: List[str], data: Dict[str, Any]
+):
+    from common.charts import create_gantt_chart_from_working
+    st.markdown(
+        "<div class='section-header'>📊 Visual Timeline</div>",
+        unsafe_allow_html=True,
+    )
+    
+    sort_holidays_chronologically(working, data)
+    
+    tabs = st.tabs([f"📅 {year}" for year in years])
+    for tab, year in zip(tabs, years):
+        with tab:
+            year_data = working.get("years", {}).get(year, {})
+            n_seasons = len(year_data.get("seasons", []))
+            n_holidays = len(year_data.get("holidays", []))
+            
+            total_rows = n_seasons + n_holidays
+
+            fig = create_gantt_chart_from_working(
+                working,
+                year,
+                data,
+                height=max(400, total_rows * 35 + 150),
+            )
+            st.plotly_chart(fig, width="stretch")
+
+# ----------------------------------------------------------------------
 # RESORT SUMMARY HELPERS
 # ----------------------------------------------------------------------
 def compute_weekly_totals_for_season_v2(
@@ -1286,6 +1317,23 @@ def render_holidays_summary_table(working: Dict[str, Any]):
         st.info("💡 No holiday data available")
 
 # ----------------------------------------------------------------------
+# WORKING RESORT LOADER
+# ----------------------------------------------------------------------
+def load_resort(
+    data: Dict[str, Any], current_resort_id: Optional[str]
+) -> Optional[Dict[str, Any]]:
+    if not current_resort_id:
+        return None
+    working_resorts = st.session_state.working_resorts
+    if current_resort_id not in working_resorts:
+        if resort_obj := find_resort_by_id(data, current_resort_id):
+            working_resorts[current_resort_id] = copy.deepcopy(resort_obj)
+    working = working_resorts.get(current_resort_id)
+    if not working:
+        return None
+    return working
+
+# ----------------------------------------------------------------------
 # GLOBAL SETTINGS (Maintenance Fees Removed)
 # ----------------------------------------------------------------------
 def render_global_holiday_dates_editor_v2(
@@ -1378,150 +1426,6 @@ def render_global_settings_v2(data: Dict[str, Any], years: List[str]):
     )
     with st.expander("🎅 Global Holiday Calendar", expanded=False):
         render_global_holiday_dates_editor_v2(data, years)
-
-# ----------------------------------------------------------------------
-# SIDEBAR ACTIONS (Merge, Clone, Delete, Create)
-# ----------------------------------------------------------------------
-def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str]):
-    st.sidebar.markdown("### 🛠️ Manage Resorts")
-    with st.sidebar.expander("Operations", expanded=False):
-        tab_import, tab_current = st.tabs(["Import/New", "Current"])
-        
-        # --- TAB 1: IMPORT / NEW ---
-        with tab_import:
-            # 1. CREATE NEW
-            st.caption("Create New")
-            new_name = st.text_input("Resort Name", key="sb_new_resort_name", placeholder="e.g. Pulse NYC")
-            if st.button("✨ Create Blank", key="sb_btn_create_new", width="stretch"):
-                if not new_name.strip():
-                    st.error("Name required")
-                else:
-                    resorts = data.setdefault("resorts", [])
-                    if is_duplicate_resort_name(new_name, resorts):
-                        st.error("Name exists")
-                    else:
-                        base_id = generate_resort_id(new_name)
-                        rid = make_unique_resort_id(base_id, resorts)
-                        new_resort = {
-                            "id": rid,
-                            "display_name": new_name,
-                            "code": generate_resort_code(new_name),
-                            "resort_name": get_resort_full_name(rid, new_name),
-                            "address": "",
-                            "timezone": "UTC",
-                            "years": {},
-                        }
-                        resorts.append(new_resort)
-                        st.session_state.current_resort_id = rid
-                        save_data()
-                        st.success("Created!")
-                        st.rerun()
-            
-            st.divider()
-            
-            # 2. MERGE
-            st.caption("Merge from File")
-            merge_upload = st.file_uploader("Select JSON", type="json", key="sb_merge_uploader")
-            if merge_upload:
-                try:
-                    merge_data = json.load(merge_upload)
-                    if "resorts" in merge_data:
-                        merge_resorts = merge_data.get("resorts", [])
-                        target_resorts = data.setdefault("resorts", [])
-                        existing_ids = {r.get("id") for r in target_resorts}
-                        
-                        display_map = {f"{r.get('display_name')}": r for r in merge_resorts}
-                        sel = st.multiselect("Select", list(display_map.keys()), key="sb_merge_select")
-                        
-                        if sel and st.button("🔀 Merge Selected", key="sb_merge_btn", width="stretch"):
-                            count = 0
-                            for label in sel:
-                                r_obj = display_map[label]
-                                if r_obj.get("id") not in existing_ids:
-                                    target_resorts.append(copy.deepcopy(r_obj))
-                                    existing_ids.add(r_obj.get("id"))
-                                    count += 1
-                            save_data()
-                            st.success(f"Merged {count} resorts")
-                            st.rerun()
-                except Exception as e:
-                    st.error("Invalid file")
-
-        # --- TAB 2: CURRENT RESORT ACTIONS ---
-        with tab_current:
-            if not current_resort_id:
-                st.info("Select a resort from the grid first.")
-            else:
-                curr_resort = find_resort_by_id(data, current_resort_id)
-                if curr_resort:
-                    st.markdown(f"**{curr_resort.get('display_name')}**")
-                    
-                    # CLONE
-                    if st.button("📋 Clone Resort", key="sb_clone_btn", width="stretch"):
-                        resorts = data.get("resorts", [])
-                        orig_name = curr_resort.get("display_name", "Resort")
-                        new_name = f"{orig_name} (Copy)"
-                        counter = 1
-                        while is_duplicate_resort_name(new_name, resorts):
-                            counter += 1
-                            new_name = f"{orig_name} (Copy {counter})"
-                        
-                        rid = make_unique_resort_id(generate_resort_id(new_name), resorts)
-                        cloned = copy.deepcopy(curr_resort)
-                        cloned.update({
-                            "id": rid,
-                            "display_name": new_name,
-                            "code": generate_resort_code(new_name),
-                            "resort_name": get_resort_full_name(rid, new_name)
-                        })
-                        resorts.append(cloned)
-                        st.session_state.current_resort_id = rid
-                        save_data()
-                        st.success(f"Cloned to {new_name}")
-                        st.rerun()
-                    
-                    st.divider()
-                    
-                    # DELETE
-                    if not st.session_state.delete_confirm:
-                        if st.button("🗑️ Delete Resort", key="sb_del_init", type="secondary", width="stretch"):
-                            st.session_state.delete_confirm = True
-                            st.rerun()
-                    else:
-                        st.warning("Are you sure?")
-                        c1, c2 = st.columns(2)
-                        with c1:
-                            if st.button("Yes, Delete", key="sb_del_conf", type="primary", width="stretch"):
-                                idx = find_resort_index(data, current_resort_id)
-                                if idx is not None:
-                                    data.get("resorts", []).pop(idx)
-                                st.session_state.current_resort_id = None
-                                st.session_state.delete_confirm = False
-                                st.session_state.working_resorts.pop(current_resort_id, None)
-                                save_data()
-                                st.success("Deleted")
-                                st.rerun()
-                        with c2:
-                            if st.button("Cancel", key="sb_del_cancel", width="stretch"):
-                                st.session_state.delete_confirm = False
-                                st.rerun()
-
-# ----------------------------------------------------------------------
-# WORKING RESORT LOADER
-# ----------------------------------------------------------------------
-def load_resort(
-    data: Dict[str, Any], current_resort_id: Optional[str]
-) -> Optional[Dict[str, Any]]:
-    if not current_resort_id:
-        return None
-    working_resorts = st.session_state.working_resorts
-    if current_resort_id not in working_resorts:
-        if resort_obj := find_resort_by_id(data, current_resort_id):
-            working_resorts[current_resort_id] = copy.deepcopy(resort_obj)
-    working = working_resorts.get(current_resort_id)
-    if not working:
-        return None
-    return working
 
 # ----------------------------------------------------------------------
 # MAIN APPLICATION
