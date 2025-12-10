@@ -293,31 +293,51 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
             else:
                 curr_resort = find_resort_by_id(data, current_resort_id)
                 if curr_resort:
-                    st.markdown(f"**{curr_resort.get('display_name')}**")
+                    st.markdown(f"**Source:** {curr_resort.get('display_name')}")
+                    
+                    # --- Clone Logic with Manual ID/Name Input ---
+                    # Calculate defaults
+                    default_name = f"{curr_resort.get('display_name')} (Copy)"
+                    default_id = generate_resort_id(default_name)
+                    
+                    # Ensure default ID is unique to start with
+                    resorts = data.get("resorts", [])
+                    existing_ids = {r.get("id") for r in resorts}
+                    if default_id in existing_ids:
+                        base_def_id = default_id
+                        c = 1
+                        while default_id in existing_ids:
+                            c += 1
+                            default_id = f"{base_def_id}-{c}"
+                            
+                    # Inputs
+                    new_clone_name = st.text_input("New Name", value=default_name, key=f"clone_name_{current_resort_id}")
+                    new_clone_id = st.text_input("New ID", value=default_id, key=f"clone_id_{current_resort_id}")
+
                     if st.button("📋 Clone Resort", key="sb_clone_btn", width="stretch"):
-                        resorts = data.get("resorts", [])
-                        orig_name = curr_resort.get("display_name", "Resort")
-                        new_name = f"{orig_name} (Copy)"
-                        counter = 1
-                        while is_duplicate_resort_name(new_name, resorts):
-                            counter += 1
-                            new_name = f"{orig_name} (Copy {counter})"
-                        
-                        rid = make_unique_resort_id(generate_resort_id(new_name), resorts)
-                        cloned = copy.deepcopy(curr_resort)
-                        cloned.update({
-                            "id": rid,
-                            "display_name": new_name,
-                            "code": generate_resort_code(new_name),
-                            "resort_name": get_resort_full_name(rid, new_name)
-                        })
-                        resorts.append(cloned)
-                        st.session_state.current_resort_id = rid
-                        save_data()
-                        st.success(f"Cloned to {new_name}")
-                        st.rerun()
+                        if not new_clone_name.strip():
+                            st.error("Name required")
+                        elif not new_clone_id.strip():
+                            st.error("ID required")
+                        elif new_clone_id in existing_ids:
+                            st.error(f"ID '{new_clone_id}' already exists")
+                        else:
+                            cloned = copy.deepcopy(curr_resort)
+                            cloned.update({
+                                "id": new_clone_id.strip(),
+                                "display_name": new_clone_name.strip(),
+                                "code": generate_resort_code(new_clone_name),
+                                "resort_name": get_resort_full_name(new_clone_id, new_clone_name)
+                            })
+                            resorts.append(cloned)
+                            st.session_state.current_resort_id = new_clone_id
+                            save_data()
+                            st.success(f"Cloned to {new_clone_name}")
+                            st.rerun()
                     
                     st.divider()
+                    
+                    # DELETE
                     if not st.session_state.delete_confirm:
                         if st.button("🗑️ Delete Resort", key="sb_del_init", type="secondary", width="stretch"):
                             st.session_state.delete_confirm = True
@@ -1315,168 +1335,6 @@ def render_holidays_summary_table(working: Dict[str, Any]):
         st.dataframe(df_holidays, width="stretch", hide_index=True)
     else:
         st.info("💡 No holiday data available")
-
-# ----------------------------------------------------------------------
-# VALIDATION
-# ----------------------------------------------------------------------
-def validate_resort_data_v2(
-    working: Dict[str, Any], data: Dict[str, Any], years: List[str]
-) -> List[str]:
-    issues = []
-    all_days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
-    all_rooms = set(get_all_room_types_for_resort(working))
-    global_holidays = data.get("global_holidays", {})
-    for year in years:
-        year_obj = working.get("years", {}).get(year, {})
-        # Day pattern coverage
-        for season in year_obj.get("seasons", []):
-            sname = season.get("name", "(Unnamed)")
-            covered_days = set()
-            for cat in season.get("day_categories", {}).values():
-                pattern_days = {
-                    d for d in cat.get("day_pattern", []) if d in all_days
-                }
-                if overlap := covered_days & pattern_days:
-                    issues.append(
-                        f"[{year}] Season '{sname}' has overlapping days: {', '.join(sorted(overlap))}"
-                    )
-                covered_days |= pattern_days
-            if missing := all_days - covered_days:
-                issues.append(
-                    f"[{year}] Season '{sname}' missing days: {', '.join(sorted(missing))}"
-                )
-            if all_rooms:
-                season_rooms = set()
-                for cat in season.get("day_categories", {}).values():
-                    if isinstance(rp := cat.get("room_points", {}), dict):
-                        season_rooms |= set(rp.keys())
-                if missing_rooms := all_rooms - season_rooms:
-                    issues.append(
-                        f"[{year}] Season '{sname}' missing rooms: {', '.join(sorted(missing_rooms))}"
-                    )
-        # Holiday references and room coverage
-        for h in year_obj.get("holidays", []):
-            hname = h.get("name", "(Unnamed)")
-            global_ref = h.get("global_reference") or hname
-            if global_ref not in global_holidays.get(year, {}):
-                issues.append(
-                    f"[{year}] Holiday '{hname}' references missing global holiday '{global_ref}'"
-                )
-            if all_rooms and isinstance(
-                rp := h.get("room_points", {}), dict
-            ):
-                if missing_rooms := all_rooms - set(rp.keys()):
-                    issues.append(
-                        f"[{year}] Holiday '{hname}' missing rooms: {', '.join(sorted(missing_rooms))}"
-                    )
-        # GAP detection
-        try:
-            year_start = date(int(year), 1, 1)
-            year_end = date(int(year), 12, 31)
-        except Exception:
-            continue
-        covered_ranges = []
-        gh_year = global_holidays.get(year, {})
-        # Season ranges
-        for season in year_obj.get("seasons", []):
-            for period in season.get("periods", []):
-                try:
-                    start = datetime.strptime(
-                        period.get("start", ""), "%Y-%m-%d"
-                    ).date()
-                    end = datetime.strptime(
-                        period.get("end", ""), "%Y-%m-%d"
-                    ).date()
-                    if start <= end:
-                        covered_ranges.append(
-                            (
-                                start,
-                                end,
-                                f"Season '{season.get('name', '(Unnamed)')}'",
-                            )
-                        )
-                except Exception:
-                    continue
-        # Holiday ranges (from global calendar)
-        for h in year_obj.get("holidays", []):
-            global_ref = h.get("global_reference") or h.get("name")
-            if gh := gh_year.get(global_ref):
-                try:
-                    start = datetime.strptime(
-                        gh.get("start_date", ""), "%Y-%m-%d"
-                    ).date()
-                    end = datetime.strptime(
-                        gh.get("end_date", ""), "%Y-%m-%d"
-                    ).date()
-                    if start <= end:
-                        covered_ranges.append(
-                            (
-                                start,
-                                end,
-                                f"Holiday '{h.get('name', '(Unnamed)')}'",
-                            )
-                        )
-                except Exception:
-                    continue
-        covered_ranges.sort(key=lambda x: x[0])
-        if covered_ranges:
-            if covered_ranges[0][0] > year_start:
-                gap_days = (covered_ranges[0][0] - year_start).days
-                issues.append(
-                    f"[{year}] GAP: {gap_days} days from {year_start} to "
-                    f"{covered_ranges[0][0] - timedelta(days=1)} (before first range)"
-                )
-            for i in range(len(covered_ranges) - 1):
-                current_end = covered_ranges[i][1]
-                next_start = covered_ranges[i + 1][0]
-                if next_start > current_end + timedelta(days=1):
-                    gap_start = current_end + timedelta(days=1)
-                    gap_end = next_start - timedelta(days=1)
-                    gap_days = (next_start - current_end - timedelta(days=1)).days
-                    issues.append(
-                        f"[{year}] GAP: {gap_days} days from {gap_start} to {gap_end} "
-                        f"(between {covered_ranges[i][2]} and {covered_ranges[i+1][2]})"
-                    )
-            if covered_ranges[-1][1] < year_end:
-                gap_days = (year_end - covered_ranges[-1][1]).days
-                issues.append(
-                    f"[{year}] GAP: {gap_days} days from "
-                    f"{covered_ranges[-1][1] + timedelta(days=1)} to {year_end} (after last range)"
-                )
-        else:
-            issues.append(
-                f"[{year}] No date ranges defined (entire year is uncovered)"
-            )
-    return issues
-
-def render_validation_panel_v2(
-    working: Dict[str, Any], data: Dict[str, Any], years: List[str]
-):
-    with st.expander("🔍 Data Validation", expanded=False):
-        issues = validate_resort_data_v2(working, data, years)
-        if issues:
-            st.error(f"**Found {len(issues)} issue(s):**")
-            for issue in issues:
-                st.write(f"• {issue}")
-        else:
-            st.success("✅ All validation checks passed!")
-
-# ----------------------------------------------------------------------
-# WORKING RESORT LOADER
-# ----------------------------------------------------------------------
-def load_resort(
-    data: Dict[str, Any], current_resort_id: Optional[str]
-) -> Optional[Dict[str, Any]]:
-    if not current_resort_id:
-        return None
-    working_resorts = st.session_state.working_resorts
-    if current_resort_id not in working_resorts:
-        if resort_obj := find_resort_by_id(data, current_resort_id):
-            working_resorts[current_resort_id] = copy.deepcopy(resort_obj)
-    working = working_resorts.get(current_resort_id)
-    if not working:
-        return None
-    return working
 
 # ----------------------------------------------------------------------
 # GLOBAL SETTINGS (Maintenance Fees Removed)
