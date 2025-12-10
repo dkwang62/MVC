@@ -44,7 +44,6 @@ def initialize_session_state():
             st.session_state[k] = v
 
 def save_data():
-    # Only update local state timestamp (no disk write)
     st.session_state.last_save_time = datetime.now()
 
 def reset_state_for_new_file():
@@ -156,8 +155,6 @@ def create_download_button_v2(data: Dict[str, Any]):
     if "download_verified" not in st.session_state:
         st.session_state.download_verified = False
     with st.sidebar.expander("💾 Save & Download", expanded=False):
-       
-        # 1. Detect unsaved changes
         current_id = st.session_state.get("current_resort_id")
         working_resorts = st.session_state.get("working_resorts", {})
         has_unsaved_changes = False
@@ -168,7 +165,6 @@ def create_download_button_v2(data: Dict[str, Any]):
             if committed_copy != working_copy:
                 has_unsaved_changes = True
         
-        # 2. State Machine
         if has_unsaved_changes:
             st.session_state.download_verified = False
             st.warning("⚠️ Unsaved changes pending.")
@@ -215,7 +211,6 @@ def handle_file_verification():
                 uploaded_data = json.load(verify_upload)
                 current_json = json.dumps(st.session_state.data, sort_keys=True)
                 uploaded_json = json.dumps(uploaded_data, sort_keys=True)
-               
                 if current_json == uploaded_json:
                     st.success("✅ File matches memory exactly.")
                 else:
@@ -233,16 +228,11 @@ def is_duplicate_resort_name(name: str, resorts: List[Dict[str, Any]]) -> bool:
     )
 
 def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str]):
-    """Grouped Sidebar Actions: Import, New, Clone, Delete"""
     st.sidebar.markdown("### 🛠️ Manage Resorts")
-    
-    # We use a single expander or tabs for organization
     with st.sidebar.expander("Operations", expanded=False):
         tab_import, tab_current = st.tabs(["Import/New", "Current"])
         
-        # --- TAB 1: IMPORT / NEW ---
         with tab_import:
-            # 1. CREATE NEW
             st.caption("Create New")
             new_name = st.text_input("Resort Name", key="sb_new_resort_name", placeholder="e.g. Pulse NYC")
             if st.button("✨ Create Blank", key="sb_btn_create_new", width="stretch"):
@@ -271,8 +261,6 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
                         st.rerun()
             
             st.divider()
-            
-            # 2. MERGE
             st.caption("Merge from File")
             merge_upload = st.file_uploader("Select JSON", type="json", key="sb_merge_uploader")
             if merge_upload:
@@ -282,7 +270,6 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
                         merge_resorts = merge_data.get("resorts", [])
                         target_resorts = data.setdefault("resorts", [])
                         existing_ids = {r.get("id") for r in target_resorts}
-                        
                         display_map = {f"{r.get('display_name')}": r for r in merge_resorts}
                         sel = st.multiselect("Select", list(display_map.keys()), key="sb_merge_select")
                         
@@ -300,7 +287,6 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
                 except Exception as e:
                     st.error("Invalid file")
 
-        # --- TAB 2: CURRENT RESORT ACTIONS ---
         with tab_current:
             if not current_resort_id:
                 st.info("Select a resort from the grid first.")
@@ -308,8 +294,6 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
                 curr_resort = find_resort_by_id(data, current_resort_id)
                 if curr_resort:
                     st.markdown(f"**{curr_resort.get('display_name')}**")
-                    
-                    # CLONE
                     if st.button("📋 Clone Resort", key="sb_clone_btn", width="stretch"):
                         resorts = data.get("resorts", [])
                         orig_name = curr_resort.get("display_name", "Resort")
@@ -334,8 +318,6 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
                         st.rerun()
                     
                     st.divider()
-                    
-                    # DELETE
                     if not st.session_state.delete_confirm:
                         if st.button("🗑️ Delete Resort", key="sb_del_init", type="secondary", width="stretch"):
                             st.session_state.delete_confirm = True
@@ -850,7 +832,6 @@ def render_reference_points_editor_v2(
                 room_points = cat.setdefault("room_points", {})
                 rooms_here = canonical_rooms or sorted(room_points.keys())
                
-                # --- Use Data Editor for Points ---
                 pts_data = []
                 for room in rooms_here:
                     pts_data.append({
@@ -877,7 +858,6 @@ def render_reference_points_editor_v2(
                         cat["room_points"] = new_rp
                         st.success("Points saved!")
                         st.rerun()
-                # -------------------------------------------
     st.markdown("---")
     st.markdown("**🏠 Manage Room Types**")
     col1, col2 = st.columns(2)
@@ -1525,6 +1505,23 @@ def render_sidebar_actions(data: Dict[str, Any], current_resort_id: Optional[str
                             if st.button("Cancel", key="sb_del_cancel", width="stretch"):
                                 st.session_state.delete_confirm = False
                                 st.rerun()
+
+# ----------------------------------------------------------------------
+# WORKING RESORT LOADER
+# ----------------------------------------------------------------------
+def load_resort(
+    data: Dict[str, Any], current_resort_id: Optional[str]
+) -> Optional[Dict[str, Any]]:
+    if not current_resort_id:
+        return None
+    working_resorts = st.session_state.working_resorts
+    if current_resort_id not in working_resorts:
+        if resort_obj := find_resort_by_id(data, current_resort_id):
+            working_resorts[current_resort_id] = copy.deepcopy(resort_obj)
+    working = working_resorts.get(current_resort_id)
+    if not working:
+        return None
+    return working
 
 # ----------------------------------------------------------------------
 # MAIN APPLICATION
