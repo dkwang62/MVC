@@ -262,11 +262,7 @@ class MVCCalculator:
                         renter_disc_mul = 0.7
                     elif discount_policy == DiscountPolicy.EXECUTIVE:
                         renter_disc_mul = 0.75
-                    if (
-                        discount_policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
-                    ) or (
-                        discount_policy == DiscountPolicy.EXECUTIVE and days_out <= 30
-                    ):
+                    if discount_policy != DiscountPolicy.NONE:
                         eff = math.floor(raw * renter_disc_mul)
                         is_disc_holiday = True
 
@@ -328,13 +324,9 @@ class MVCCalculator:
                         renter_disc_mul = 0.7
                     elif discount_policy == DiscountPolicy.EXECUTIVE:
                         renter_disc_mul = 0.75
-                    if (
-                        discount_policy == DiscountPolicy.PRESIDENTIAL and days_out <= 60
-                    ) or (
-                        discount_policy == DiscountPolicy.EXECUTIVE and days_out <= 30
-                    ):
+                    if discount_policy != DiscountPolicy.NONE:
                         eff = math.floor(raw * renter_disc_mul)
-                        is_disc_day = True
+                        is_disc_holiday = True
 
                 if is_disc_day:
                     disc_applied = True
