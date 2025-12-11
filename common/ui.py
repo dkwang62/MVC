@@ -273,22 +273,31 @@ def render_page_header(
     description: str | None = None
 ):
     """Enhanced page header with optional description."""
-    icon_html = f'<span style="font-size: 2.5rem; margin-right: 0.5rem;">{icon}</span>' if icon else ""
+    # Build the header components
+    header_parts = []
     
+    # Add icon if provided
+    if icon:
+        header_parts.append(f'<span style="font-size: 2.5rem; margin-right: 0.5rem;">{icon}</span>')
+    
+    # Add title
+    header_parts.append(f'<h1 style="color: #0f172a; margin: 0; font-size: 2.5rem; display: inline;">{title}</h1>')
+    
+    # Add subtitle/badge if provided
     if subtitle:
         if badge_color:
-            subtitle_html = f'''
+            header_parts.append(f'''
                 <div style="display: inline-block; background-color: {badge_color}; 
                      color: white; padding: 0.5rem 1rem; border-radius: 2rem; 
-                     font-weight: 600; font-size: 1rem; margin-left: 1rem;">
+                     font-weight: 600; font-size: 1rem; margin-left: 1rem; 
+                     vertical-align: middle;">
                     {subtitle}
                 </div>
-            '''
+            ''')
         else:
-            subtitle_html = f"<p style='color: #64748b; margin: 0.5rem 0 0 0; font-size: 1.125rem;'>{subtitle}</p>"
-    else:
-        subtitle_html = ""
+            header_parts.append(f'<span style="color: #64748b; margin-left: 1rem; font-size: 1.125rem; vertical-align: middle;">{subtitle}</span>')
     
+    # Build description if provided
     description_html = ""
     if description:
         description_html = f'''
@@ -298,13 +307,12 @@ def render_page_header(
             </p>
         '''
     
+    # Render the complete header
     st.markdown(
         f"""
         <div style='margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #E5E7EB;'>
-            <div style='display: flex; align-items: center; margin-bottom: 0.5rem;'>
-                {icon_html}
-                <h1 style='color: #0f172a; margin: 0; font-size: 2.5rem;'>{title}</h1>
-                {subtitle_html}
+            <div style='display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;'>
+                {''.join(header_parts)}
             </div>
             {description_html}
         </div>
