@@ -13,8 +13,7 @@ def setup_page() -> None:
     
     # Enhanced CSS with better spacing, colors, and visual hierarchy
     st.markdown(
-        """
-    <style>
+        """<style>
         :root {
             --primary-color: #008080;
             --primary-hover: #006666;
@@ -279,29 +278,19 @@ def render_page_header(
     # Build subtitle/badge HTML
     subtitle_html = ''
     if subtitle and badge_color:
-        subtitle_html = f'''<span style="display: inline-block; background-color: {badge_color}; 
-                 color: white; padding: 0.5rem 1rem; border-radius: 2rem; 
-                 font-weight: 600; font-size: 1rem; margin-left: 1rem; 
-                 vertical-align: middle;">{subtitle}</span>'''
+        subtitle_html = f'<span style="display: inline-block; background-color: {badge_color}; color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-weight: 600; font-size: 1rem; margin-left: 1rem; vertical-align: middle;">{subtitle}</span>'
     elif subtitle:
         subtitle_html = f'<span style="color: #64748b; margin-left: 1rem; font-size: 1.125rem; vertical-align: middle;">{subtitle}</span>'
     
     # Build description HTML
     description_html = ''
     if description:
-        description_html = f'''<p style="color: #6B7280; font-size: 1rem; margin: 1rem 0 0 0; 
-                 max-width: 800px; line-height: 1.6;">{description}</p>'''
+        description_html = f'<p style="color: #6B7280; font-size: 1rem; margin: 1rem 0 0 0; max-width: 800px; line-height: 1.6;">{description}</p>'
     
-    # Render the complete header
-    st.markdown(
-        f'''<div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #E5E7EB;">
-            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                {icon_html}<h1 style="color: #0f172a; margin: 0; font-size: 2.5rem; display: inline;">{title}</h1>{subtitle_html}
-            </div>
-            {description_html}
-        </div>''',
-        unsafe_allow_html=True,
-    )
+    # Render the complete header - all on one line to prevent string escaping issues
+    html = f'<div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #E5E7EB;"><div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;">{icon_html}<h1 style="color: #0f172a; margin: 0; font-size: 2.5rem; display: inline;">{title}</h1>{subtitle_html}</div>{description_html}</div>'
+    
+    st.markdown(html, unsafe_allow_html=True)
     
 def render_resort_card(resort_name: str, timezone: str, address: str) -> None:
     """Enhanced resort card with better visual hierarchy."""
