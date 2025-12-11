@@ -657,6 +657,7 @@ def main(forced_mode: str = "Renter") -> None:
 
     mode = UserMode(forced_mode)
     render_page_header(title="Calculator", subtitle=f"{mode.value} Mode", icon="🏨", badge_color="#059669" if mode == UserMode.OWNER else "#2563eb")
+    st.write("<!-- DEBUG: Header rendered -->")  # This will help identify if the stray div comes after
 
     # SETTINGS EXPANDER
     with st.expander("⚙️ Configuration & Settings", expanded=False):
