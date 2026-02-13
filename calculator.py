@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from common.ui import render_resort_card, render_resort_grid, render_page_header
-from common.charts import create_gantt_chart_image
+from common.charts import create_gantt_chart_from_resort_data
 from common.data import ensure_data_in_session
 
 # ==============================================================================
@@ -947,13 +947,14 @@ def main(forced_mode: str = "Renter") -> None:
     res_data = calc.repo.get_resort(r_name)
     if res_data and year_str in res_data.years:
         with st.expander("📅 Season & Holiday Calendar", expanded=False):
-            # Render Gantt chart as static image using function from charts.py
-            gantt_img = create_gantt_chart_image(res_data, year_str, st.session_state.data.get("global_holidays", {}))
-            
-            if gantt_img:
-                st.image(gantt_img, use_column_width=True)
-            else:
-                st.info("No season or holiday calendar data available for this year.")
+            st.plotly_chart(
+                create_gantt_chart_from_resort_data(
+                    res_data, 
+                    year_str, 
+                    st.session_state.data.get("global_holidays", {})
+                ), 
+                use_container_width=True
+            )
 
             cost_df = build_season_cost_table(res_data, int(year_str), rate_to_use, disc_mul, mode, owner_params)
             if cost_df is not None:
