@@ -947,14 +947,13 @@ def main(forced_mode: str = "Renter") -> None:
     res_data = calc.repo.get_resort(r_name)
     if res_data and year_str in res_data.years:
         with st.expander("📅 Season & Holiday Calendar", expanded=False):
-            st.plotly_chart(
-                create_gantt_chart_from_resort_data(
-                    res_data, 
-                    year_str, 
-                    st.session_state.data.get("global_holidays", {})
-                ), 
-                use_container_width=True
-            )
+            # Render Gantt chart as static image using function from charts.py
+            gantt_img = create_gantt_chart_image(res_data, year_str, st.session_state.data.get("global_holidays", {}))
+            
+            if gantt_img:
+                st.image(gantt_img, use_container_width=True)
+            else:
+                st.info("No season or holiday calendar data available for this year.")
 
             cost_df = build_season_cost_table(res_data, int(year_str), rate_to_use, disc_mul, mode, owner_params)
             if cost_df is not None:
