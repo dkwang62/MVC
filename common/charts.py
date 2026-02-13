@@ -3,10 +3,14 @@ from __future__ import annotations
 
 from datetime import datetime, date, timedelta
 from typing import Dict, Any, Optional, List
+import io
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from PIL import Image
 
 # ======================================================================
 # COLOUR MAP: Peak / High / Mid / Low / Holiday
@@ -17,8 +21,17 @@ COLOR_MAP: Dict[str, str] = {
     "High": "#FC8D59",     # Orange
     "Mid": "#FEE08B",      # Gold / yellow
     "Low": "#1F78B4",      # Cool blue
-    "Holiday": "#D73027",  # Purple
+    "Holiday": "#9C27B0",  # Purple
     "No Data": "#A6CEE3",  # Soft blue fallback
+}
+
+# Matplotlib color map (same colors)
+GANTT_COLORS: Dict[str, str] = {
+    "Peak": "#D73027",
+    "High": "#FC8D59", 
+    "Mid": "#FEE08B",
+    "Low": "#91BFDB",
+    "Holiday": "#9C27B0"
 }
 
 
@@ -303,3 +316,97 @@ def create_gantt_chart_v2(
     Uses the same logic, with auto-calculated height.
     """
     return create_gantt_chart_from_working(working, year, data, height=None)
+
+
+# ======================================================================
+# MATPLOTLIB-BASED GANTT CHART (Static Image)
+# ======================================================================
+
+def _season_bucket_matplotlib(name: str) -> str:
+    """Map season name to color bucket for matplotlib."""
+    n = (name or "").lower()
+    if "peak" in n: return "Peak"
+    if "high" in n: return "High"
+    if "mid" in n or "shoulder" in n: return "Mid"
+    if "low" in n: return "Low"
+    return "Low"
+
+
+def create_gantt_chart_image(
+    resort_data: Any,
+    year: str,
+    global_holidays: Optional[Dict[str, Dict[str, Dict[str, str]]]] = None,
+) -> Optional[Image.Image]:
+    """
+    Build a season + holiday Gantt chart as a static matplotlib image.
+    Returns PIL Image for display with st.image().
+    Version: 2.0 - Fixed title encoding and simplified month labels
+    """
+    rows = []
+    
+    if not hasattr(resort_data, "years") or year not in resort_data.years:
+        return None
+    
+    yd = resort_data.years[year]
+    
+    # Add seasons
+    for season in getattr(yd, "seasons", []):
+        name = getattr(season, "name", "Season")
+        bucket = _season_bucket_matplotlib(name)
+        for p in getattr(season, "periods", []):
+            start = getattr(p, "start", None)
+            end = getattr(p, "end", None)
+            if isinstance(start, date) and isinstance(end, date) and start <= end:
+                rows.append((name, start, end, bucket))
+    
+    # Add holidays
+    for h in getattr(yd, "holidays", []):
+        name = getattr(h, "name", "Holiday")
+        start = getattr(h, "start_date", None)
+        end = getattr(h, "end_date", None)
+        if isinstance(start, date) and isinstance(end, date) and start <= end:
+            rows.append((name, start, end, "Holiday"))
+    
+    if not rows:
+        return None
+    
+    # Create figure with explicit font settings to handle special characters
+    plt.rcParams['font.family'] = 'DejaVu Sans'
+    fig, ax = plt.subplots(figsize=(10, max(3, len(rows) * 0.5)))
+    
+    # Draw bars
+    for i, (label, start, end, typ) in enumerate(rows):
+        duration = (end - start).days + 1
+        ax.barh(i, duration, left=mdates.date2num(start), height=0.6, 
+                color=GANTT_COLORS.get(typ, "#999"), edgecolor="black", linewidth=0.5)
+    
+    # Configure axes
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([label for label, _, _, _ in rows])
+    ax.invert_yaxis()
+    
+    # Format x-axis with simple month names (no year)
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    
+    # Grid and styling
+    ax.grid(True, axis='x', alpha=0.3)
+    
+    # Title - use original resort name
+    resort_name = getattr(resort_data, "name", "Resort")
+    ax.set_title(f"{resort_name} - {year}", pad=12, size=12)
+    
+    # Legend
+    legend_elements = [
+        plt.Rectangle((0,0), 1, 1, facecolor=GANTT_COLORS[k], label=k) 
+        for k in GANTT_COLORS if any(t == k for _, _, _, t in rows)
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1, 1))
+    
+    # Convert to image
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight', dpi=150)
+    plt.close(fig)
+    buf.seek(0)
+    
+    return Image.open(buf)
