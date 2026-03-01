@@ -1382,51 +1382,47 @@ def main(forced_mode: str = "Renter") -> None:
             min_date = date(min_y, 1, 1)
             max_date = date(max_y, 12, 31)
             
+        # Use key as the primary source of truth
         checkin = st.date_input(
             "Check-in", 
-            value=st.session_state.calc_checkin, 
             min_value=min_date,
             max_value=max_date,
-            key="calc_checkin_widget"
+            key="calc_checkin" # Tied directly to session state
         )
-        
-        # Update session state with new check-in date
-        st.session_state.calc_checkin = checkin
 
-    if not st.session_state.calc_checkin_user_set and checkin != st.session_state.calc_initial_default:
-        st.session_state.calc_checkin_user_set = True
-        
     with c2:
         nights = st.number_input(
             "Nights", 
             min_value=1, 
             max_value=60, 
-            value=st.session_state.calc_nights,
-            key="nights_input",
+            key="calc_nights", # Tied directly to session state
             step=1
         )
-        
-        # Update session state immediately
-        st.session_state.calc_nights = nights
     
     # Always adjust for holidays when dates overlap
     adj_in, adj_n, adj = calc.adjust_holiday(r_name, checkin, nights)
 
     with c3:
-        # Use adjusted values for the final priced stay
+        # Calculate checkout based on the latest available inputs
         final_checkout = adj_in + timedelta(days=adj_n)
         
-        # Display checkout date as text for maximum reactivity/reliability
-        label = "Check-out (Holiday stay)" if adj else "Check-out"
+        # Display checkout date with a clear label and visual indicator
+        label = "📅 Check-out (Holiday)" if adj else "📅 Check-out"
         help_text = f"Stay adjusted to holiday: {adj_in.strftime('%b %d')} to {final_checkout.strftime('%b %d')}" if adj else None
         
+        # Using st.info or st.text_input to show the calculated value
         st.text_input(
             label,
             value=final_checkout.strftime('%A, %b %d, %Y'),
             disabled=True,
-            key="checkout_display_reactive",
             help=help_text
         )
+
+    # Optional stay summary for clarity
+    if adj:
+        st.info(f"✨ **Holiday Period:** Stay adjusted to **{adj_n} nights** from **{adj_in.strftime('%b %d')}** to **{final_checkout.strftime('%b %d')}**")
+    else:
+        st.caption(f"Stay: {checkin.strftime('%b %d, %Y')} to {final_checkout.strftime('%b %d, %Y')} ({nights} nights)")
 
     # Active pricing year defaults (based on effective adjusted check-in year).
     active_year = str(adj_in.year)
