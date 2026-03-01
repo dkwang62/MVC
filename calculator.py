@@ -1413,28 +1413,20 @@ def main(forced_mode: str = "Renter") -> None:
     adj_in, adj_n, adj = calc.adjust_holiday(r_name, checkin, nights)
 
     with c3:
-        # Calculate checkout date - use adjusted values for pricing but 
-        # let's be very clear in the UI about what's happening.
-        user_checkout = checkin + timedelta(days=nights)
+        # Use adjusted values for the final priced stay
         final_checkout = adj_in + timedelta(days=adj_n)
         
-        if adj:
-            # When holiday is active, show the adjusted checkout but with a clear label
-            st.date_input(
-                "Check-out (Holiday stay)",
-                value=final_checkout,
-                disabled=True,
-                key="checkout_display_holiday",
-                help=f"Your stay was adjusted to the full holiday period: {adj_in.strftime('%b %d')} to {final_checkout.strftime('%b %d')}."
-            )
-        else:
-            # Normal stay - simple checkout
-            st.date_input(
-                "Check-out",
-                value=user_checkout,
-                disabled=True,
-                key="checkout_display_normal"
-            )
+        # Display checkout date as text for maximum reactivity/reliability
+        label = "Check-out (Holiday stay)" if adj else "Check-out"
+        help_text = f"Stay adjusted to holiday: {adj_in.strftime('%b %d')} to {final_checkout.strftime('%b %d')}" if adj else None
+        
+        st.text_input(
+            label,
+            value=final_checkout.strftime('%A, %b %d, %Y'),
+            disabled=True,
+            key="checkout_display_reactive",
+            help=help_text
+        )
 
     # Active pricing year defaults (based on effective adjusted check-in year).
     active_year = str(adj_in.year)
