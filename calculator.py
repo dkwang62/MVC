@@ -868,15 +868,16 @@ class MVCCalculator:
 
     def _get_daily_points(self, resort: ResortData, day: date) -> Tuple[Dict[str, int], Optional[Holiday]]:
         year_str = str(day.year)
+        
+        # Check Holidays across ALL years (important for year-spanning holidays like NewYear)
+        for yd in resort.years.values():
+            for h in yd.holidays:
+                if h.start_date <= day <= h.end_date:
+                    return h.room_points, h
+
         if year_str not in resort.years:
             return {}, None
-
         yd = resort.years[year_str]
-
-        # Check Holidays
-        for h in yd.holidays:
-            if h.start_date <= day <= h.end_date:
-                return h.room_points, h
 
         # Check Seasons
         dow_map = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}
@@ -964,8 +965,10 @@ class MVCCalculator:
                 else:
                     cost = math.ceil(eff * curr_rate)
 
+                # Use checkout date for the label (end_date + 1)
+                checkout_dt = holiday.end_date + timedelta(days=1)
                 row = {
-                    "Date": f"{holiday.name} ({holiday.start_date.strftime('%b %d')} - {holiday.end_date.strftime('%b %d')}) [{holiday_days} nights]",
+                    "Date": f"{holiday.name} ({holiday.start_date.strftime('%b %d')} - {checkout_dt.strftime('%b %d')}) [{holiday_days} nights]",
                     "Points": eff
                 }
 
@@ -985,7 +988,10 @@ class MVCCalculator:
                 tot_m += m
                 tot_c += c
                 tot_d += dp
-                i += holiday_days
+                
+                # Jump to the end of THIS holiday period in the stay
+                remaining_holiday_nights = (holiday.end_date - d).days + 1
+                i += remaining_holiday_nights
 
             elif not holiday:
                 raw = pts_map.get(room, 0)
@@ -1055,12 +1061,13 @@ class MVCCalculator:
 
     def adjust_holiday(self, resort_name, checkin, nights):
         resort = self.repo.get_resort(resort_name)
-        if not resort or str(checkin.year) not in resort.years:
+        if not resort:
             return checkin, nights, False
 
         end = checkin + timedelta(days=nights - 1)
-        yd = resort.years[str(checkin.year)]
-        overlapping = [h for h in yd.holidays if h.start_date <= end and h.end_date >= checkin]
+        overlapping = []
+        for yd in resort.years.values():
+            overlapping.extend([h for h in yd.holidays if h.start_date <= end and h.end_date >= checkin])
 
         if not overlapping:
             return checkin, nights, False
@@ -1402,21 +1409,32 @@ def main(forced_mode: str = "Renter") -> None:
         # Update session state immediately
         st.session_state.calc_nights = nights
     
-    with c3:
-        # Calculate checkout date - recalculates on every render based on current inputs
-        checkout_date = checkin + timedelta(days=nights)
-        
-        # Display as a disabled date_input
-        # Using hash of date as key to force update when value changes
-        st.date_input(
-            "Check-out",
-            value=checkout_date,
-            disabled=True,
-            key="checkout_display"
-        )
-
     # Always adjust for holidays when dates overlap
     adj_in, adj_n, adj = calc.adjust_holiday(r_name, checkin, nights)
+
+    with c3:
+        # Calculate checkout date - use adjusted values for pricing but 
+        # let's be very clear in the UI about what's happening.
+        user_checkout = checkin + timedelta(days=nights)
+        final_checkout = adj_in + timedelta(days=adj_n)
+        
+        if adj:
+            # When holiday is active, show the adjusted checkout but with a clear label
+            st.date_input(
+                "Check-out (Holiday stay)",
+                value=final_checkout,
+                disabled=True,
+                key="checkout_display_holiday",
+                help=f"Your stay was adjusted to the full holiday period: {adj_in.strftime('%b %d')} to {final_checkout.strftime('%b %d')}."
+            )
+        else:
+            # Normal stay - simple checkout
+            st.date_input(
+                "Check-out",
+                value=user_checkout,
+                disabled=True,
+                key="checkout_display_normal"
+            )
 
     # Active pricing year defaults (based on effective adjusted check-in year).
     active_year = str(adj_in.year)
@@ -1439,8 +1457,7 @@ def main(forced_mode: str = "Renter") -> None:
 
     if adj:
         # Holiday adjustment occurred - show prominent alert
-        original_checkout = checkin + timedelta(days=nights - 1)
-        adjusted_checkout = adj_in + timedelta(days=adj_n - 1)
+        adjusted_checkout = adj_in + timedelta(days=adj_n)
         
         # Determine what changed
         date_changed = checkin != adj_in
