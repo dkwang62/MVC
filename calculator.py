@@ -890,6 +890,28 @@ class MVCCalculator:
                     for cat in s.day_categories:
                         if dow in cat.days:
                             return cat.room_points, None
+
+        # If ignore_holidays=True and day falls in a holiday gap (no season covers it),
+        # extrapolate from the nearest enclosing/adjacent season by proximity.
+        if ignore_holidays:
+            best_season = None
+            best_dist = None
+            for s in yd.seasons:
+                for p in s.periods:
+                    if day < p.start:
+                        dist = (p.start - day).days
+                    elif day > p.end:
+                        dist = (day - p.end).days
+                    else:
+                        dist = 0
+                    if best_dist is None or dist < best_dist:
+                        best_dist = dist
+                        best_season = s
+            if best_season:
+                for cat in best_season.day_categories:
+                    if dow in cat.days:
+                        return cat.room_points, None
+
         return {}, None
 
     def calculate_breakdown(
@@ -969,7 +991,7 @@ class MVCCalculator:
                 # Use checkout date for the label (end_date + 1)
                 checkout_dt = holiday.end_date + timedelta(days=1)
                 row = {
-                    "Day": i + 1,
+                    "Day": str(i + 1),
                     "Date": f"{holiday.name} ({holiday.start_date.strftime('%Y-%m-%d')} - {holiday.end_date.strftime('%Y-%m-%d')}) [{holiday_days} nights]",
                     "Points": eff
                 }
@@ -1031,7 +1053,7 @@ class MVCCalculator:
                 else:
                     cost = math.ceil(eff * curr_rate)
 
-                row = {"Day": i + 1, "Date": d.strftime("%Y-%m-%d (%a)"), "Points": eff}
+                row = {"Day": str(i + 1), "Date": d.strftime("%Y-%m-%d (%a)"), "Points": eff}
 
                 if is_owner:
                     row["Maintenance"] = m
@@ -1788,7 +1810,14 @@ def main(forced_mode: str = "Renter") -> None:
             if res.discount_applied: st.success(f"✨ Discount Applied: {len(res.discounted_days)} nights")
 
         # Daily Breakdown - displayed directly without subtitle (self-explanatory)
-        st.dataframe(res.breakdown_df, use_container_width=True, hide_index=True)
+        st.dataframe(
+            res.breakdown_df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Day": st.column_config.TextColumn("Day", width="small"),
+            },
+        )
     
     # --- SEASON AND HOLIDAY CALENDAR (Always available, independent of selection) ---
     st.divider()
