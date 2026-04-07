@@ -39693,7 +39693,7 @@
       "display_name": "Kauai Lagoon🌊☀️🐚",
       "code": "KL",
       "resort_name": "Kauai Lagoon🌊☀️🐚",
-      "address": "3610 Rice Street, Lihue, HI 96766, USA",
+      "address": "3325 Holokawelu Way, Lihue, HI 96766, USA",
       "timezone": "Pacific/Honolulu",
       "years": {
         "2025": {
@@ -39732,12 +39732,12 @@
                     "Thu"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 525,
-                    "2BR 5_OV": 650,
-                    "2BR 6_OF": 775,
-                    "3BR 1_Island": 625,
-                    "3BR 2_OV": 750,
-                    "3BR 3_OF": 875
+                    "2BR Island": 525,
+                    "2BR OV": 650,
+                    "2BR OF": 775,
+                    "3BR Island": 625,
+                    "3BR OV": 750,
+                    "3BR OF": 875
                   }
                 },
                 "fri_sat": {
@@ -39746,12 +39746,12 @@
                     "Sat"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 750,
-                    "2BR 5_OV": 925,
-                    "2BR 6_OF": 1100,
-                    "3BR 1_Island": 875,
-                    "3BR 2_OV": 1050,
-                    "3BR 3_OF": 1250
+                    "2BR Island": 750,
+                    "2BR OV": 925,
+                    "2BR OF": 1100,
+                    "3BR Island": 875,
+                    "3BR OV": 1050,
+                    "3BR OF": 1250
                   }
                 }
               }
@@ -39786,12 +39786,12 @@
                     "Thu"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 600,
-                    "2BR 5_OV": 750,
-                    "2BR 6_OF": 900,
-                    "3BR 1_Island": 700,
-                    "3BR 2_OV": 850,
-                    "3BR 3_OF": 1025
+                    "2BR Island": 600,
+                    "2BR OV": 750,
+                    "2BR OF": 900,
+                    "3BR Island": 700,
+                    "3BR OV": 850,
+                    "3BR OF": 1025
                   }
                 },
                 "fri_sat": {
@@ -39800,12 +39800,12 @@
                     "Sat"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 850,
-                    "2BR 5_OV": 1050,
-                    "2BR 6_OF": 1275,
-                    "3BR 1_Island": 1000,
-                    "3BR 2_OV": 1225,
-                    "3BR 3_OF": 1450
+                    "2BR Island": 850,
+                    "2BR OV": 1050,
+                    "2BR OF": 1275,
+                    "3BR Island": 1000,
+                    "3BR OV": 1225,
+                    "3BR OF": 1450
                   }
                 }
               }
@@ -39816,84 +39816,84 @@
               "name": "Presidents Day",
               "global_reference": "Presidents Day",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Easter2",
               "global_reference": "Easter2",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Independence Day",
               "global_reference": "Independence Day",
               "room_points": {
-                "2BR 4_Island": 4700,
-                "2BR 5_OV": 5850,
-                "2BR 6_OF": 7050,
-                "3BR 1_Island": 5500,
-                "3BR 2_OV": 6700,
-                "3BR 3_OF": 8025
+                "2BR Island": 4700,
+                "2BR OV": 5850,
+                "2BR OF": 7050,
+                "3BR Island": 5500,
+                "3BR OV": 6700,
+                "3BR OF": 8025
               }
             },
             {
               "name": "Thanksgiving1",
               "global_reference": "Thanksgiving1",
               "room_points": {
-                "2BR 4_Island": 4125,
-                "2BR 5_OV": 5100,
-                "2BR 6_OF": 6075,
-                "3BR 1_Island": 4875,
-                "3BR 2_OV": 5850,
-                "3BR 3_OF": 6875
+                "2BR Island": 4125,
+                "2BR OV": 5100,
+                "2BR OF": 6075,
+                "3BR Island": 4875,
+                "3BR OV": 5850,
+                "3BR OF": 6875
               }
             },
             {
               "name": "Thanksgiving2",
               "global_reference": "Thanksgiving2",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Christmas",
               "global_reference": "Christmas",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "NewYear",
               "global_reference": "NewYear",
               "room_points": {
-                "2BR 4_Island": 5450,
-                "2BR 5_OV": 6700,
-                "2BR 6_OF": 8075,
-                "3BR 1_Island": 6475,
-                "3BR 2_OV": 7800,
-                "3BR 3_OF": 9225
+                "2BR Island": 5450,
+                "2BR OV": 6700,
+                "2BR OF": 8075,
+                "3BR Island": 6475,
+                "3BR OV": 7800,
+                "3BR OF": 9225
               }
             }
           ]
@@ -39934,12 +39934,12 @@
                     "Thu"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 525,
-                    "2BR 5_OV": 650,
-                    "2BR 6_OF": 775,
-                    "3BR 1_Island": 625,
-                    "3BR 2_OV": 750,
-                    "3BR 3_OF": 875
+                    "2BR Island": 525,
+                    "2BR OV": 650,
+                    "2BR OF": 775,
+                    "3BR Island": 625,
+                    "3BR OV": 750,
+                    "3BR OF": 875
                   }
                 },
                 "fri_sat": {
@@ -39948,12 +39948,12 @@
                     "Sat"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 750,
-                    "2BR 5_OV": 925,
-                    "2BR 6_OF": 1100,
-                    "3BR 1_Island": 875,
-                    "3BR 2_OV": 1050,
-                    "3BR 3_OF": 1250
+                    "2BR Island": 750,
+                    "2BR OV": 925,
+                    "2BR OF": 1100,
+                    "3BR Island": 875,
+                    "3BR OV": 1050,
+                    "3BR OF": 1250
                   }
                 }
               }
@@ -39988,12 +39988,12 @@
                     "Thu"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 600,
-                    "2BR 5_OV": 750,
-                    "2BR 6_OF": 900,
-                    "3BR 1_Island": 700,
-                    "3BR 2_OV": 850,
-                    "3BR 3_OF": 1025
+                    "2BR Island": 600,
+                    "2BR OV": 750,
+                    "2BR OF": 900,
+                    "3BR Island": 700,
+                    "3BR OV": 850,
+                    "3BR OF": 1025
                   }
                 },
                 "fri_sat": {
@@ -40002,12 +40002,12 @@
                     "Sat"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 850,
-                    "2BR 5_OV": 1050,
-                    "2BR 6_OF": 1275,
-                    "3BR 1_Island": 1000,
-                    "3BR 2_OV": 1225,
-                    "3BR 3_OF": 1450
+                    "2BR Island": 850,
+                    "2BR OV": 1050,
+                    "2BR OF": 1275,
+                    "3BR Island": 1000,
+                    "3BR OV": 1225,
+                    "3BR OF": 1450
                   }
                 }
               }
@@ -40018,84 +40018,84 @@
               "name": "Presidents Day",
               "global_reference": "Presidents Day",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Easter2",
               "global_reference": "Easter2",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Independence Day",
               "global_reference": "Independence Day",
               "room_points": {
-                "2BR 4_Island": 4700,
-                "2BR 5_OV": 5850,
-                "2BR 6_OF": 7050,
-                "3BR 1_Island": 5500,
-                "3BR 2_OV": 6700,
-                "3BR 3_OF": 8025
+                "2BR Island": 4700,
+                "2BR OV": 5850,
+                "2BR OF": 7050,
+                "3BR Island": 5500,
+                "3BR OV": 6700,
+                "3BR OF": 8025
               }
             },
             {
               "name": "Thanksgiving1",
               "global_reference": "Thanksgiving1",
               "room_points": {
-                "2BR 4_Island": 4125,
-                "2BR 5_OV": 5100,
-                "2BR 6_OF": 6075,
-                "3BR 1_Island": 4875,
-                "3BR 2_OV": 5850,
-                "3BR 3_OF": 6875
+                "2BR Island": 4125,
+                "2BR OV": 5100,
+                "2BR OF": 6075,
+                "3BR Island": 4875,
+                "3BR OV": 5850,
+                "3BR OF": 6875
               }
             },
             {
               "name": "Thanksgiving2",
               "global_reference": "Thanksgiving2",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Christmas",
               "global_reference": "Christmas",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "NewYear",
               "global_reference": "NewYear",
               "room_points": {
-                "2BR 4_Island": 5450,
-                "2BR 5_OV": 6700,
-                "2BR 6_OF": 8075,
-                "3BR 1_Island": 6475,
-                "3BR 2_OV": 7800,
-                "3BR 3_OF": 9225
+                "2BR Island": 5450,
+                "2BR OV": 6700,
+                "2BR OF": 8075,
+                "3BR Island": 6475,
+                "3BR OV": 7800,
+                "3BR OF": 9225
               }
             }
           ]
@@ -40136,12 +40136,12 @@
                     "Thu"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 525,
-                    "2BR 5_OV": 650,
-                    "2BR 6_OF": 775,
-                    "3BR 1_Island": 625,
-                    "3BR 2_OV": 750,
-                    "3BR 3_OF": 875
+                    "2BR Island": 525,
+                    "2BR OV": 650,
+                    "2BR OF": 775,
+                    "3BR Island": 625,
+                    "3BR OV": 750,
+                    "3BR OF": 875
                   }
                 },
                 "fri_sat": {
@@ -40150,12 +40150,12 @@
                     "Sat"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 750,
-                    "2BR 5_OV": 925,
-                    "2BR 6_OF": 1100,
-                    "3BR 1_Island": 875,
-                    "3BR 2_OV": 1050,
-                    "3BR 3_OF": 1250
+                    "2BR Island": 750,
+                    "2BR OV": 925,
+                    "2BR OF": 1100,
+                    "3BR Island": 875,
+                    "3BR OV": 1050,
+                    "3BR OF": 1250
                   }
                 }
               }
@@ -40190,12 +40190,12 @@
                     "Thu"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 600,
-                    "2BR 5_OV": 750,
-                    "2BR 6_OF": 900,
-                    "3BR 1_Island": 700,
-                    "3BR 2_OV": 850,
-                    "3BR 3_OF": 1025
+                    "2BR Island": 600,
+                    "2BR OV": 750,
+                    "2BR OF": 900,
+                    "3BR Island": 700,
+                    "3BR OV": 850,
+                    "3BR OF": 1025
                   }
                 },
                 "fri_sat": {
@@ -40204,12 +40204,12 @@
                     "Sat"
                   ],
                   "room_points": {
-                    "2BR 4_Island": 850,
-                    "2BR 5_OV": 1050,
-                    "2BR 6_OF": 1275,
-                    "3BR 1_Island": 1000,
-                    "3BR 2_OV": 1225,
-                    "3BR 3_OF": 1450
+                    "2BR Island": 850,
+                    "2BR OV": 1050,
+                    "2BR OF": 1275,
+                    "3BR Island": 1000,
+                    "3BR OV": 1225,
+                    "3BR OF": 1450
                   }
                 }
               }
@@ -40220,84 +40220,84 @@
               "name": "Presidents Day",
               "global_reference": "Presidents Day",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Easter2",
               "global_reference": "Easter2",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Independence Day",
               "global_reference": "Independence Day",
               "room_points": {
-                "2BR 4_Island": 4700,
-                "2BR 5_OV": 5850,
-                "2BR 6_OF": 7050,
-                "3BR 1_Island": 5500,
-                "3BR 2_OV": 6700,
-                "3BR 3_OF": 8025
+                "2BR Island": 4700,
+                "2BR OV": 5850,
+                "2BR OF": 7050,
+                "3BR Island": 5500,
+                "3BR OV": 6700,
+                "3BR OF": 8025
               }
             },
             {
               "name": "Thanksgiving1",
               "global_reference": "Thanksgiving1",
               "room_points": {
-                "2BR 4_Island": 4125,
-                "2BR 5_OV": 5100,
-                "2BR 6_OF": 6075,
-                "3BR 1_Island": 4875,
-                "3BR 2_OV": 5850,
-                "3BR 3_OF": 6875
+                "2BR Island": 4125,
+                "2BR OV": 5100,
+                "2BR OF": 6075,
+                "3BR Island": 4875,
+                "3BR OV": 5850,
+                "3BR OF": 6875
               }
             },
             {
               "name": "Thanksgiving2",
               "global_reference": "Thanksgiving2",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "Christmas",
               "global_reference": "Christmas",
               "room_points": {
-                "2BR 4_Island": 4925,
-                "2BR 5_OV": 6125,
-                "2BR 6_OF": 7400,
-                "3BR 1_Island": 5850,
-                "3BR 2_OV": 7050,
-                "3BR 3_OF": 8425
+                "2BR Island": 4925,
+                "2BR OV": 6125,
+                "2BR OF": 7400,
+                "3BR Island": 5850,
+                "3BR OV": 7050,
+                "3BR OF": 8425
               }
             },
             {
               "name": "NewYear",
               "global_reference": "NewYear",
               "room_points": {
-                "2BR 4_Island": 5450,
-                "2BR 5_OV": 6700,
-                "2BR 6_OF": 8075,
-                "3BR 1_Island": 6475,
-                "3BR 2_OV": 7800,
-                "3BR 3_OF": 9225
+                "2BR Island": 5450,
+                "2BR OV": 6700,
+                "2BR OF": 8075,
+                "3BR Island": 6475,
+                "3BR OV": 7800,
+                "3BR OF": 9225
               }
             }
           ]
